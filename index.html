@@ -324,8 +324,14 @@
     from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
   // ── Firebase config ─────────────────────────────────────────────
-  import { firebaseConfig } from './firebaseconfig.js';
-  // ────────────────────────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyA6XJoxNAuNX0LN21WxBLS7cMbY3LJCri0",
+  authDomain: "swl-pms.firebaseapp.com",
+  projectId: "swl-pms",
+  storageBucket: "swl-pms.firebasestorage.app",
+  messagingSenderId: "465838605580",
+  appId: "1:465838605580:web:c3322da1833f219725b529"
+};  // ────────────────────────────────────────────────────────────────
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
