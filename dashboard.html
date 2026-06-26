@@ -3,171 +3,298 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="SWL-PMS Dashboard — Performance overview" />
   <title>Dashboard — SWL Performance Management</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  <link rel="stylesheet" href="css/styles.css" />
-  <link rel="manifest"   href="manifest.json" />
-  <link rel="icon"       href="assets/logo/favicon.svg" type="image/svg+xml" />
+    :root {
+      --green:        #3D6B2C;
+      --green-dark:   #2A4D1E;
+      --green-deeper: #1a3d18;
+      --accent:       #8B6914;
+      --bg:           #F4F6F2;
+      --border:       #B8CCB0;
+      --white:        #ffffff;
+      --gray-400:     #8FA889;
+      --gray-600:     #4A5E45;
+      --success:      #2E7D32;
+      --warning:      #E65100;
+      --error:        #C62828;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: #1A2618;
+      min-height: 100vh;
+    }
+
+    /* ── Top Nav ── */
+    .topnav {
+      position: fixed; top: 0; left: 0; right: 0; height: 64px;
+      background: var(--green);
+      display: flex; align-items: center;
+      padding: 0 1.5rem; gap: 1.5rem;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.20);
+    }
+    .brand {
+      display: flex; align-items: center; gap: 0.65rem;
+      text-decoration: none; flex-shrink: 0;
+    }
+    .brand svg {
+      width: 32px; height: 32px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 6px; padding: 4px;
+    }
+    .brand-name {
+      font-size: 1.05rem; font-weight: 700;
+      color: var(--white); letter-spacing: -0.02em;
+    }
+    .nav-links {
+      display: flex; align-items: center; gap: 0.25rem; flex: 1;
+    }
+    .nav-link {
+      padding: 0.375rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.875rem; font-weight: 500;
+      color: rgba(255,255,255,0.78);
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    .nav-link:hover, .nav-link.active {
+      background: rgba(255,255,255,0.15);
+      color: var(--white);
+    }
+    .nav-right {
+      display: flex; align-items: center; gap: 0.75rem; margin-left: auto;
+    }
+    .user-name { font-size: 0.875rem; color: rgba(255,255,255,0.88); font-weight: 500; }
+    .btn-logout {
+      padding: 0.375rem 0.875rem;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 8px;
+      color: rgba(255,255,255,0.85);
+      font-size: 0.8125rem; font-weight: 600;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .btn-logout:hover { background: rgba(255,255,255,0.22); }
+
+    /* Hamburger */
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer;
+      padding: 0.5rem; margin-left: auto;
+    }
+    .hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--white); border-radius: 99px;
+    }
+    .mobile-menu {
+      display: none; position: fixed;
+      top: 64px; left: 0; right: 0;
+      background: var(--green-dark);
+      padding: 0.75rem; flex-direction: column; gap: 0.25rem;
+      z-index: 99; box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu .nav-link { display: block; padding: 0.65rem 0.875rem; }
+    .mobile-divider { height: 1px; background: rgba(255,255,255,0.15); margin: 0.35rem 0; }
+
+    /* ── Page ── */
+    .page { padding-top: 64px; min-height: 100vh; }
+    .content { max-width: 1280px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+    .welcome h1 {
+      font-size: 1.875rem; font-weight: 700;
+      color: var(--green-dark);
+    }
+    .welcome p { color: var(--gray-600); margin-top: 0.25rem; }
+
+    /* ── KPI Grid ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .kpi-card {
+      background: var(--white);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(61,107,44,0.10);
+      padding: 1.5rem;
+      display: flex; flex-direction: column; gap: 0.65rem;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .kpi-card:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.12); transform: translateY(-2px); }
+    .kpi-icon  { font-size: 1.6rem; line-height: 1; }
+    .kpi-label { font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.05em; }
+    .kpi-value { font-size: 2.25rem; font-weight: 700; color: var(--green); line-height: 1; }
+    .kpi-meta  { font-size: 0.75rem; color: var(--gray-400); }
+    .kpi-card.completed .kpi-value { color: var(--success); }
+    .kpi-card.progress  .kpi-value { color: var(--accent); }
+    .kpi-card.overdue   .kpi-value { color: var(--error); }
+
+    /* Placeholder card */
+    .placeholder-card {
+      background: var(--white);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(61,107,44,0.10);
+      padding: 1.5rem;
+      margin-top: 2rem;
+    }
+    .placeholder-card h2 {
+      font-size: 1.05rem; font-weight: 600;
+      color: var(--green-dark); margin-bottom: 0.5rem;
+    }
+    .placeholder-card p { font-size: 0.875rem; color: var(--gray-400); }
+
+    @media (max-width: 1024px) { .kpi-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 768px) {
+      .nav-links, .nav-right { display: none; }
+      .hamburger { display: flex; }
+      .content { padding: 1.5rem 1rem; }
+      .kpi-grid { grid-template-columns: repeat(2,1fr); gap: 1rem; }
+    }
+    @media (max-width: 480px) { .kpi-grid { grid-template-columns: 1fr; } }
+  </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════
-     TOP NAVIGATION BAR
-     ═══════════════════════════════════════════════ -->
-<header class="topnav" role="banner">
-
-  <!-- Brand -->
-  <a href="dashboard.html" class="topnav__brand" aria-label="SWL Performance Management home">
-    <!-- Inline logo SVG (same mark as login page) -->
-    <svg class="topnav__logo" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"
-         fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"
-         stroke-linejoin="round" aria-hidden="true"
-         style="background:rgba(255,255,255,0.15);border-radius:6px;padding:4px;">
+<header class="topnav">
+  <a href="dashboard.html" class="brand">
+    <svg viewBox="0 0 48 48" fill="none" stroke="white" stroke-width="1.5"
+         stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
       <path d="M6 36 Q24 26 42 36"/>
       <path d="M14 36 L14 24 M10 28 L14 24 L18 28"/>
       <path d="M24 36 L24 18 M19 24 L24 18 L29 24"/>
       <path d="M34 36 L34 25 M30 29 L34 25 L38 29"/>
       <path d="M8 18 Q24 8 40 18" stroke-dasharray="2 3"/>
     </svg>
-    <span class="topnav__brand-name">SWL&nbsp;PMS</span>
+    <span class="brand-name">SWL PMS</span>
   </a>
 
-  <!-- Desktop nav links -->
-  <nav class="topnav__links" aria-label="Main navigation">
-    <a class="topnav__link" href="dashboard.html"   data-page="dashboard.html">Dashboard</a>
-    <a class="topnav__link" href="reviews.html"     data-page="reviews.html">Reviews</a>
-    <a class="topnav__link" href="goals.html"       data-page="goals.html">Goals</a>
-    <a class="topnav__link" href="compensation.html" data-page="compensation.html">Compensation</a>
-    <a class="topnav__link" href="reports.html"     data-page="reports.html">Reports</a>
-    <a class="topnav__link" href="admin.html"       data-page="admin.html">Administration</a>
+  <nav class="nav-links">
+    <a class="nav-link active" href="dashboard.html">Dashboard</a>
+    <a class="nav-link" href="#">Reviews</a>
+    <a class="nav-link" href="#">Goals</a>
+    <a class="nav-link" href="#">Compensation</a>
+    <a class="nav-link" href="#">Reports</a>
+    <a class="nav-link" href="#">Administration</a>
   </nav>
 
-  <!-- Desktop right: user name + logout -->
-  <div class="topnav__right" aria-label="User menu">
-    <span class="topnav__user-name" id="nav-user-name" aria-label="Signed in as">—</span>
-    <button class="btn btn-ghost" style="color:rgba(255,255,255,0.85);font-size:0.8125rem;"
-            data-action="logout" aria-label="Sign out">
-      Sign out
-    </button>
+  <div class="nav-right">
+    <span class="user-name" id="user-name"></span>
+    <button class="btn-logout" id="logout-btn">Sign out</button>
   </div>
 
-  <!-- Mobile hamburger button -->
-  <button
-    class="topnav__hamburger"
-    id="nav-hamburger"
-    aria-controls="nav-mobile-menu"
-    aria-expanded="false"
-    aria-label="Open menu"
-  >
-    <span></span>
-    <span></span>
-    <span></span>
+  <button class="hamburger" id="hamburger" aria-label="Open menu">
+    <span></span><span></span><span></span>
   </button>
-
 </header>
 
-<!-- ═══════════════════════════════════════════════
-     MOBILE NAVIGATION DRAWER
-     ═══════════════════════════════════════════════ -->
-<nav id="nav-mobile-menu" class="topnav__mobile-menu" aria-label="Mobile navigation">
-  <a class="topnav__link" href="dashboard.html"    data-page="dashboard.html">Dashboard</a>
-  <a class="topnav__link" href="reviews.html"      data-page="reviews.html">Reviews</a>
-  <a class="topnav__link" href="goals.html"        data-page="goals.html">Goals</a>
-  <a class="topnav__link" href="compensation.html" data-page="compensation.html">Compensation</a>
-  <a class="topnav__link" href="reports.html"      data-page="reports.html">Reports</a>
-  <a class="topnav__link" href="admin.html"        data-page="admin.html">Administration</a>
-  <div class="topnav__mobile-divider" aria-hidden="true"></div>
-  <button class="btn btn-ghost topnav__link" style="text-align:left;color:rgba(255,255,255,0.8);"
-          data-action="logout">Sign out</button>
+<nav class="mobile-menu" id="mobile-menu">
+  <a class="nav-link" href="dashboard.html">Dashboard</a>
+  <a class="nav-link" href="#">Reviews</a>
+  <a class="nav-link" href="#">Goals</a>
+  <a class="nav-link" href="#">Compensation</a>
+  <a class="nav-link" href="#">Reports</a>
+  <a class="nav-link" href="#">Administration</a>
+  <div class="mobile-divider"></div>
+  <button class="btn-logout" id="logout-btn-mobile">Sign out</button>
 </nav>
 
-<!-- ═══════════════════════════════════════════════
-     PAGE CONTENT
-     ═══════════════════════════════════════════════ -->
-<div class="page-wrapper">
-  <main class="page-content" role="main" id="main-content">
+<div class="page">
+  <div class="content">
 
-    <!-- ── Welcome Header ───────────────────────── -->
-    <div class="welcome-header">
-      <h1>Welcome, <span id="welcome-name">—</span></h1>
+    <div class="welcome">
+      <h1>Welcome, <span id="first-name">—</span></h1>
       <p>Here's a snapshot of your team's performance activity.</p>
     </div>
 
-    <!-- ── KPI Cards ────────────────────────────── -->
-    <div class="kpi-grid" role="list" aria-label="Key performance indicators">
-
-      <!-- Total Reviews -->
-      <article class="kpi-card" role="listitem">
-        <div class="kpi-card__icon" aria-hidden="true">📋</div>
-        <div class="kpi-card__label">Total Reviews</div>
-        <div class="kpi-card__value" id="kpi-total" aria-label="Total reviews: loading">—</div>
-        <div class="kpi-card__meta">Current review cycle</div>
-      </article>
-
-      <!-- Completed -->
-      <article class="kpi-card kpi-card--completed" role="listitem">
-        <div class="kpi-card__icon" aria-hidden="true">✅</div>
-        <div class="kpi-card__label">Completed</div>
-        <div class="kpi-card__value" id="kpi-completed" aria-label="Completed reviews: loading">—</div>
-        <div class="kpi-card__meta">Finalized &amp; signed off</div>
-      </article>
-
-      <!-- In Progress -->
-      <article class="kpi-card kpi-card--progress" role="listitem">
-        <div class="kpi-card__icon" aria-hidden="true">🔄</div>
-        <div class="kpi-card__label">In Progress</div>
-        <div class="kpi-card__value" id="kpi-progress" aria-label="Reviews in progress: loading">—</div>
-        <div class="kpi-card__meta">Awaiting submission</div>
-      </article>
-
-      <!-- Overdue -->
-      <article class="kpi-card kpi-card--overdue" role="listitem">
-        <div class="kpi-card__icon" aria-hidden="true">⚠️</div>
-        <div class="kpi-card__label">Overdue</div>
-        <div class="kpi-card__value" id="kpi-overdue" aria-label="Overdue reviews: loading">—</div>
-        <div class="kpi-card__meta">Past due date</div>
-      </article>
-
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon">📋</div>
+        <div class="kpi-label">Total Reviews</div>
+        <div class="kpi-value" id="kpi-total">0</div>
+        <div class="kpi-meta">Current review cycle</div>
+      </div>
+      <div class="kpi-card completed">
+        <div class="kpi-icon">✅</div>
+        <div class="kpi-label">Completed</div>
+        <div class="kpi-value" id="kpi-completed">0</div>
+        <div class="kpi-meta">Finalized &amp; signed off</div>
+      </div>
+      <div class="kpi-card progress">
+        <div class="kpi-icon">🔄</div>
+        <div class="kpi-label">In Progress</div>
+        <div class="kpi-value" id="kpi-progress">0</div>
+        <div class="kpi-meta">Awaiting submission</div>
+      </div>
+      <div class="kpi-card overdue">
+        <div class="kpi-icon">⚠️</div>
+        <div class="kpi-label">Overdue</div>
+        <div class="kpi-value" id="kpi-overdue">0</div>
+        <div class="kpi-meta">Past due date</div>
+      </div>
     </div>
 
-    <!-- ── Placeholder content area ─────────────── -->
-    <section class="card" style="margin-top:2rem;" aria-label="Recent activity placeholder">
-      <h2 style="font-size:1.125rem;font-weight:600;color:var(--color-primary-dark);margin-bottom:0.75rem;">
-        Recent Activity
-      </h2>
-      <p style="color:var(--color-gray-400);font-size:0.875rem;">
-        Activity feed coming in Phase 2 — reviews submitted, goals updated, and approvals pending will appear here.
-      </p>
-    </section>
+    <div class="placeholder-card">
+      <h2>Recent Activity</h2>
+      <p>Activity feed coming in Phase 2 — reviews submitted, goals updated, and approvals pending will appear here.</p>
+    </div>
 
-  </main>
+  </div>
 </div>
 
-<!-- ── Scripts ──────────────────────────────────────────────── -->
 <script type="module">
-  import { requireAuth }      from './js/auth.js';
-  import { initNav, initHamburger } from './js/app.js';
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+  import { getAuth, signOut, onAuthStateChanged }
+    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
-  // Auth guard — redirects to index.html if not signed in
-  const user = await requireAuth();
+  const firebaseConfig = {
+    apiKey: "AIzaSyA6XJoxNAuNX0LN21WxBLS7cMbY3LJCri0",
+    authDomain: "swl-pms.firebaseapp.com",
+    projectId: "swl-pms",
+    storageBucket: "swl-pms.firebasestorage.app",
+    messagingSenderId: "465838605580",
+    appId: "1:465838605580:web:c3322da1833f219725b529"
+  };
 
-  // Wire up nav user name, logout, active link, and hamburger
-  initNav(user);
-  initHamburger();
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
-  // ── Stub KPI data (replace with Firestore queries in Phase 2) ──
-  function loadKPIs() {
-    // These will be fetched from Firestore in the next phase
-    const stubData = { total: 0, completed: 0, progress: 0, overdue: 0 };
+  // Auth guard
+  onAuthStateChanged(auth, user => {
+    if (!user) {
+      window.location.href = 'index.html';
+      return;
+    }
+    const displayName = user.displayName || user.email.split('@')[0];
+    document.getElementById('user-name').textContent  = displayName;
+    document.getElementById('first-name').textContent = displayName.split(' ')[0];
+  });
 
-    document.getElementById('kpi-total').textContent     = stubData.total;
-    document.getElementById('kpi-completed').textContent = stubData.completed;
-    document.getElementById('kpi-progress').textContent  = stubData.progress;
-    document.getElementById('kpi-overdue').textContent   = stubData.overdue;
+  async function logout() {
+    await signOut(auth);
+    window.location.href = 'index.html';
   }
 
-  loadKPIs();
+  document.getElementById('logout-btn').addEventListener('click', logout);
+  document.getElementById('logout-btn-mobile').addEventListener('click', logout);
+
+  // Hamburger
+  const hamburger  = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobile-menu');
+  hamburger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+  document.addEventListener('click', e => {
+    if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target))
+      mobileMenu.classList.remove('open');
+  });
 </script>
 
 </body>
