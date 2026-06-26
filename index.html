@@ -3,165 +3,399 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="SWL-PMS — SouthWest Landscape Performance Management System" />
   <title>Sign In — SWL Performance Management</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  <link rel="stylesheet"  href="css/styles.css" />
-  <link rel="manifest"    href="manifest.json" />
-  <link rel="icon"        href="assets/logo/favicon.svg" type="image/svg+xml" />
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      /* Dark green top → mid green → deep forest bottom */
+      background: linear-gradient(160deg, #0d2410 0%, #1a3d18 30%, #2d6b25 60%, #1a3d18 85%, #0d2410 100%);
+      padding: 1.5rem;
+    }
+
+    /* ── Login Card: frosted glass ── */
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255, 255, 255, 0.10);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 20px;
+      padding: 2.75rem 2.5rem 2.25rem;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255,255,255,0.15);
+    }
+
+    /* Logo mark */
+    .logo {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    .logo svg {
+      width: 56px; height: 56px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 14px;
+      padding: 8px;
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+    .tagline {
+      text-align: center;
+      font-size: 0.8125rem;
+      color: rgba(255,255,255,0.60);
+      font-style: italic;
+      margin-top: 0.35rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Alert banner */
+    .alert {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      background: rgba(220, 60, 60, 0.25);
+      border: 1px solid rgba(255,100,100,0.40);
+      color: #ffcccc;
+      border-radius: 10px;
+      padding: 0.65rem 0.875rem;
+      font-size: 0.8125rem;
+      margin-bottom: 1.25rem;
+      line-height: 1.4;
+    }
+    .alert.hidden { display: none; }
+
+    /* Form */
+    .form-group { margin-bottom: 1.1rem; }
+    label {
+      display: block;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.80);
+      margin-bottom: 0.4rem;
+    }
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 10px;
+      font-size: 0.9375rem;
+      color: #ffffff;
+      outline: none;
+      transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+    }
+    input::placeholder { color: rgba(255,255,255,0.35); }
+    input:focus {
+      border-color: rgba(255,255,255,0.60);
+      background: rgba(255,255,255,0.18);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.10);
+    }
+    input.is-error { border-color: rgba(255,120,120,0.70); }
+
+    /* Remember + forgot row */
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      margin-top: 0.25rem;
+    }
+    .checkbox-group { display: flex; align-items: center; gap: 0.45rem; }
+    .checkbox-group input[type="checkbox"] {
+      width: 15px; height: 15px;
+      accent-color: #5db85d;
+      cursor: pointer;
+    }
+    .checkbox-group label {
+      font-size: 0.8125rem;
+      color: rgba(255,255,255,0.70);
+      margin: 0;
+      cursor: pointer;
+    }
+    .forgot {
+      font-size: 0.8125rem;
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .forgot:hover { color: #ffffff; text-decoration: underline; }
+
+    /* Sign in button */
+    .btn-signin {
+      width: 100%;
+      padding: 0.8rem;
+      background: rgba(255,255,255,0.92);
+      color: #1a3d18;
+      font-size: 0.9375rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .btn-signin:hover { background: #ffffff; box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
+    .btn-signin:active { transform: translateY(1px); }
+    .btn-signin:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+
+    .footer-note {
+      text-align: center;
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.35);
+      margin-top: 1.75rem;
+    }
+
+    /* Spinner */
+    .spinner {
+      width: 15px; height: 15px;
+      border: 2px solid rgba(26,61,24,0.3);
+      border-top-color: #1a3d18;
+      border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Forgot Password overlay ── */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .overlay.open { display: flex; }
+    .overlay-card {
+      width: 100%;
+      max-width: 380px;
+      background: rgba(20, 55, 18, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.20);
+      border-radius: 18px;
+      padding: 2rem 2rem 1.75rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+    .overlay-card h2 { font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 0.35rem; }
+    .overlay-card p  { font-size: 0.8125rem; color: rgba(255,255,255,0.60); margin-bottom: 1.25rem; }
+    .reset-alert {
+      display: none;
+      align-items: flex-start;
+      gap: 0.5rem;
+      border-radius: 10px;
+      padding: 0.65rem 0.875rem;
+      font-size: 0.8rem;
+      margin-bottom: 1rem;
+      line-height: 1.4;
+    }
+    .reset-alert.show-success {
+      display: flex;
+      background: rgba(60,180,60,0.20);
+      border: 1px solid rgba(100,200,100,0.40);
+      color: #aaffaa;
+    }
+    .reset-alert.show-error {
+      display: flex;
+      background: rgba(220,60,60,0.20);
+      border: 1px solid rgba(255,100,100,0.40);
+      color: #ffcccc;
+    }
+    .btn-row { display: flex; gap: 0.6rem; margin-top: 1rem; }
+    .btn-cancel {
+      flex: 1; padding: 0.7rem;
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.20);
+      border-radius: 10px;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.875rem; font-weight: 600;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .btn-cancel:hover { background: rgba(255,255,255,0.18); }
+    .btn-send {
+      flex: 1; padding: 0.7rem;
+      background: rgba(255,255,255,0.90);
+      border: none; border-radius: 10px;
+      color: #1a3d18;
+      font-size: 0.875rem; font-weight: 700;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .btn-send:hover { background: #fff; }
+    .btn-send:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    @media (max-width: 480px) {
+      .card { padding: 2rem 1.5rem 1.75rem; }
+    }
+  </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════
-     LOGIN PAGE
-     ═══════════════════════════════════════════════ -->
-<main class="login-bg" role="main">
+<!-- ── Login Card ── -->
+<div class="card">
 
-  <!-- CSS tree-silhouette layer -->
-  <div class="login-trees" aria-hidden="true"></div>
-
-  <!-- ── Login Card ────────────────────────────── -->
-  <div class="login-card" role="region" aria-label="Sign in to your account">
-
-    <!-- Logo Mark -->
-    <div class="login-card__logo-wrap">
-      <div class="login-card__logo" aria-hidden="true">
-        <!-- Inline SVG: stylized leaf / landscape icon -->
-        <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <!-- Ground line -->
-          <path d="M6 36 Q24 26 42 36" stroke-linecap="round"/>
-          <!-- Tree 1 -->
-          <path d="M14 36 L14 24 M10 28 L14 24 L18 28" stroke-linecap="round" stroke-linejoin="round"/>
-          <!-- Tree 2 (taller) -->
-          <path d="M24 36 L24 18 M19 24 L24 18 L29 24" stroke-linecap="round" stroke-linejoin="round"/>
-          <!-- Tree 3 -->
-          <path d="M34 36 L34 25 M30 29 L34 25 L38 29" stroke-linecap="round" stroke-linejoin="round"/>
-          <!-- Sun / arc -->
-          <path d="M8 18 Q24 8 40 18" stroke-linecap="round" stroke-dasharray="2 3"/>
-        </svg>
-      </div>
-    </div>
-
-    <!-- Heading -->
-    <h1 class="login-card__title">SWL Performance Management</h1>
-    <p  class="login-card__subtitle">Improving Landscapes Through Managed Care</p>
-
-    <!-- Inline error/success banner (hidden by default) -->
-    <div id="auth-alert" class="alert alert-error hidden" role="alert" aria-live="polite">
-      <span class="alert-icon" aria-hidden="true">⚠</span>
-      <span id="auth-alert-msg"></span>
-    </div>
-
-    <!-- ── Sign-In Form ─────────────────────────── -->
-    <form id="login-form" class="login-card__form" novalidate>
-
-      <!-- Email -->
-      <div class="form-group">
-        <label class="form-label" for="email">Email address</label>
-        <input
-          class="form-input"
-          type="email"
-          id="email"
-          name="email"
-          autocomplete="email"
-          placeholder="you@southwestlandscape.com"
-          required
-        />
-      </div>
-
-      <!-- Password -->
-      <div class="form-group">
-        <label class="form-label" for="password">Password</label>
-        <input
-          class="form-input"
-          type="password"
-          id="password"
-          name="password"
-          autocomplete="current-password"
-          placeholder="••••••••"
-          required
-        />
-      </div>
-
-      <!-- Remember Me + Forgot Password row -->
-      <div class="login-card__row">
-        <div class="form-checkbox-group">
-          <input
-            class="form-checkbox"
-            type="checkbox"
-            id="remember-me"
-            name="remember-me"
-          />
-          <label class="form-checkbox-label" for="remember-me">Remember me</label>
-        </div>
-
-        <a href="#" class="login-card__forgot" id="forgot-password-link">
-          Forgot password?
-        </a>
-      </div>
-
-      <!-- Submit -->
-      <button type="submit" class="btn btn-primary btn-lg btn-full" id="login-btn">
-        Sign In
-      </button>
-
-    </form>
-
-    <p class="login-card__footer">
-      &copy; <span id="footer-year"></span> SouthWest Landscape &mdash; All rights reserved
-    </p>
+  <div class="logo">
+    <svg viewBox="0 0 48 48" fill="none" stroke="white" stroke-width="1.5"
+         stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+      <path d="M6 36 Q24 26 42 36"/>
+      <path d="M14 36 L14 24 M10 28 L14 24 L18 28"/>
+      <path d="M24 36 L24 18 M19 24 L24 18 L29 24"/>
+      <path d="M34 36 L34 25 M30 29 L34 25 L38 29"/>
+      <path d="M8 18 Q24 8 40 18" stroke-dasharray="2 3"/>
+    </svg>
   </div>
-</main>
 
-<!-- ── Forgot Password Modal ─────────────────────────────────── -->
-<div id="reset-modal" class="hidden" role="dialog" aria-modal="true" aria-labelledby="reset-modal-title">
-  <div class="login-bg" style="position:fixed;inset:0;z-index:200;align-items:center;justify-content:center;display:flex;">
-    <div class="login-card" style="max-width:400px;">
-      <h2 class="login-card__title" id="reset-modal-title" style="font-size:1.25rem;">Reset your password</h2>
-      <p style="font-size:0.875rem;color:var(--color-gray-600);margin:0.5rem 0 1.5rem;">
-        Enter your email and we'll send you a reset link.
-      </p>
+  <h1>SWL Performance Management</h1>
+  <p class="tagline">Improving Landscapes Through Managed Care</p>
 
-      <div id="reset-alert" class="alert alert-success hidden" role="alert" aria-live="polite">
-        <span class="alert-icon" aria-hidden="true">✓</span>
-        <span id="reset-alert-msg"></span>
-      </div>
+  <div id="auth-alert" class="alert hidden">
+    <span>⚠</span>
+    <span id="auth-alert-msg"></span>
+  </div>
 
-      <form id="reset-form" class="login-card__form" novalidate>
-        <div class="form-group">
-          <label class="form-label" for="reset-email">Email address</label>
-          <input class="form-input" type="email" id="reset-email" required placeholder="you@southwestlandscape.com" />
-        </div>
-        <div style="display:flex;gap:0.75rem;">
-          <button type="button" id="reset-cancel" class="btn btn-secondary btn-full">Cancel</button>
-          <button type="submit"                   class="btn btn-primary  btn-full" id="reset-btn">Send link</button>
-        </div>
-      </form>
+  <form id="login-form" novalidate>
+    <div class="form-group">
+      <label for="email">Email address</label>
+      <input type="email" id="email" autocomplete="email"
+             placeholder="you@southwestlandscape.com" required />
     </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" autocomplete="current-password"
+             placeholder="••••••••" required />
+    </div>
+    <div class="row">
+      <div class="checkbox-group">
+        <input type="checkbox" id="remember-me" />
+        <label for="remember-me">Remember me</label>
+      </div>
+      <a href="#" class="forgot" id="forgot-link">Forgot password?</a>
+    </div>
+    <button type="submit" class="btn-signin" id="login-btn">Sign In</button>
+  </form>
+
+  <p class="footer-note">&copy; <span id="yr"></span> SouthWest Landscape &mdash; All rights reserved</p>
+</div>
+
+<!-- ── Forgot Password Overlay ── -->
+<div class="overlay" id="reset-overlay">
+  <div class="overlay-card">
+    <h2>Reset your password</h2>
+    <p>Enter your email and we'll send you a reset link.</p>
+    <div class="reset-alert" id="reset-alert"><span></span><span id="reset-alert-msg"></span></div>
+    <form id="reset-form" novalidate>
+      <div class="form-group">
+        <label for="reset-email">Email address</label>
+        <input type="email" id="reset-email" placeholder="you@southwestlandscape.com" required />
+      </div>
+      <div class="btn-row">
+        <button type="button" class="btn-cancel" id="reset-cancel">Cancel</button>
+        <button type="submit" class="btn-send" id="reset-btn">Send link</button>
+      </div>
+    </form>
   </div>
 </div>
 
-<!-- ── Scripts ────────────────────────────────────────────────── -->
 <script type="module">
-  import { login, redirectIfAuthenticated, requestPasswordReset, friendlyAuthError } from './js/auth.js';
+  import { initializeApp }            from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+  import { getAuth, signInWithEmailAndPassword, setPersistence,
+           browserLocalPersistence, browserSessionPersistence,
+           sendPasswordResetEmail, onAuthStateChanged }
+    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
-  // ── Footer year ─────────────────────────────────────────
-  document.getElementById('footer-year').textContent = new Date().getFullYear();
+  // ── Firebase config ─────────────────────────────────────────────
+  import { firebaseConfig } from './firebaseconfig.js';
+  // ────────────────────────────────────────────────────────────────
 
-  // ── If already signed in, skip to dashboard ──────────────
-  await redirectIfAuthenticated();
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
-  // ── DOM refs ─────────────────────────────────────────────
-  const form        = document.getElementById('login-form');
-  const emailEl     = document.getElementById('email');
-  const passwordEl  = document.getElementById('password');
-  const rememberEl  = document.getElementById('remember-me');
-  const loginBtn    = document.getElementById('login-btn');
-  const alertBox    = document.getElementById('auth-alert');
-  const alertMsg    = document.getElementById('auth-alert-msg');
+  document.getElementById('yr').textContent = new Date().getFullYear();
 
-  const forgotLink  = document.getElementById('forgot-password-link');
-  const resetModal  = document.getElementById('reset-modal');
+  // Redirect if already logged in
+  onAuthStateChanged(auth, user => {
+    if (user) window.location.href = 'dashboard.html';
+  });
+
+  // DOM refs
+  const form       = document.getElementById('login-form');
+  const emailEl    = document.getElementById('email');
+  const passEl     = document.getElementById('password');
+  const rememberEl = document.getElementById('remember-me');
+  const loginBtn   = document.getElementById('login-btn');
+  const alertBox   = document.getElementById('auth-alert');
+  const alertMsg   = document.getElementById('auth-alert-msg');
+
+  function showError(msg) {
+    alertBox.classList.remove('hidden');
+    alertMsg.textContent = msg;
+    emailEl.classList.add('is-error');
+    passEl.classList.add('is-error');
+  }
+  function clearError() {
+    alertBox.classList.add('hidden');
+    emailEl.classList.remove('is-error');
+    passEl.classList.remove('is-error');
+  }
+  function setLoading(on) {
+    loginBtn.disabled = on;
+    loginBtn.innerHTML = on
+      ? '<span class="spinner"></span> Signing in…'
+      : 'Sign In';
+  }
+
+  const errorMap = {
+    'auth/invalid-email':         'Please enter a valid email address.',
+    'auth/user-not-found':        'No account found with that email.',
+    'auth/wrong-password':        'Incorrect password. Please try again.',
+    'auth/invalid-credential':    'Invalid email or password.',
+    'auth/too-many-requests':     'Too many attempts. Please try again later.',
+    'auth/user-disabled':         'This account is disabled. Contact your administrator.',
+    'auth/network-request-failed':'Network error. Check your connection.',
+  };
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    clearError();
+    const email = emailEl.value.trim();
+    const pass  = passEl.value;
+    if (!email || !pass) { showError('Please enter your email and password.'); return; }
+    setLoading(true);
+    try {
+      const persistence = rememberEl.checked ? browserLocalPersistence : browserSessionPersistence;
+      await setPersistence(auth, persistence);
+      await signInWithEmailAndPassword(auth, email, pass);
+      window.location.href = 'dashboard.html';
+    } catch (err) {
+      showError(errorMap[err.code] || 'An unexpected error occurred.');
+      setLoading(false);
+    }
+  });
+
+  [emailEl, passEl].forEach(el => el.addEventListener('input', clearError));
+
+  // Forgot password
+  const overlay     = document.getElementById('reset-overlay');
   const resetForm   = document.getElementById('reset-form');
   const resetEmailEl= document.getElementById('reset-email');
   const resetBtn    = document.getElementById('reset-btn');
@@ -169,88 +403,31 @@
   const resetAlert  = document.getElementById('reset-alert');
   const resetAlertMsg = document.getElementById('reset-alert-msg');
 
-  // ── Helpers ──────────────────────────────────────────────
-  function showError(message) {
-    alertBox.classList.remove('hidden', 'alert-success');
-    alertBox.classList.add('alert-error');
-    alertMsg.textContent = message;
-    emailEl.classList.add('is-error');
-    passwordEl.classList.add('is-error');
-  }
-
-  function clearError() {
-    alertBox.classList.add('hidden');
-    emailEl.classList.remove('is-error');
-    passwordEl.classList.remove('is-error');
-  }
-
-  function setLoading(loading) {
-    loginBtn.disabled = loading;
-    loginBtn.innerHTML = loading
-      ? '<span class="btn-spinner" aria-hidden="true"></span> Signing in…'
-      : 'Sign In';
-  }
-
-  // ── Login form submission ─────────────────────────────────
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    clearError();
-
-    const email    = emailEl.value.trim();
-    const password = passwordEl.value;
-    const remember = rememberEl.checked;
-
-    if (!email || !password) {
-      showError('Please enter your email address and password.');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      await login(email, password, remember);
-      window.location.href = '/dashboard.html';
-    } catch (err) {
-      showError(friendlyAuthError(err));
-      setLoading(false);
-    }
-  });
-
-  // Clear errors on input
-  [emailEl, passwordEl].forEach(el =>
-    el.addEventListener('input', clearError)
-  );
-
-  // ── Forgot password flow ──────────────────────────────────
-  forgotLink.addEventListener('click', (e) => {
+  document.getElementById('forgot-link').addEventListener('click', e => {
     e.preventDefault();
     resetEmailEl.value = emailEl.value.trim();
-    resetAlert.classList.add('hidden');
-    resetModal.classList.remove('hidden');
+    resetAlert.className = 'reset-alert';
+    overlay.classList.add('open');
     resetEmailEl.focus();
   });
+  resetCancel.addEventListener('click', () => overlay.classList.remove('open'));
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
 
-  resetCancel.addEventListener('click', () => {
-    resetModal.classList.add('hidden');
-  });
-
-  resetForm.addEventListener('submit', async (e) => {
+  resetForm.addEventListener('submit', async e => {
     e.preventDefault();
     const email = resetEmailEl.value.trim();
     if (!email) return;
-
     resetBtn.disabled = true;
     resetBtn.textContent = 'Sending…';
     try {
-      await requestPasswordReset(email);
-      resetAlert.classList.remove('hidden', 'alert-error');
-      resetAlert.classList.add('alert-success');
+      await sendPasswordResetEmail(auth, email);
+      resetAlert.className = 'reset-alert show-success';
       resetAlertMsg.textContent = `Reset link sent to ${email}. Check your inbox.`;
       resetBtn.textContent = 'Sent!';
-      setTimeout(() => resetModal.classList.add('hidden'), 3000);
+      setTimeout(() => overlay.classList.remove('open'), 2800);
     } catch (err) {
-      resetAlert.classList.remove('hidden', 'alert-success');
-      resetAlert.classList.add('alert-error');
-      resetAlertMsg.textContent = friendlyAuthError(err);
+      resetAlert.className = 'reset-alert show-error';
+      resetAlertMsg.textContent = errorMap[err.code] || 'Something went wrong.';
       resetBtn.disabled = false;
       resetBtn.textContent = 'Send link';
     }
