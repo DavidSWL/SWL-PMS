@@ -1,0 +1,33 @@
+{
+  "name": "SWL Performance Management System",
+  "short_name": "SWL PMS",
+  "description": "SouthWest Landscape Performance Management System — Improving Landscapes Through Managed Care",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#3D6B2C",
+  "theme_color": "#3D6B2C",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "assets/logo/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/logo/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "url": "/dashboard.html",
+      "description": "Go to the main dashboard"
+    }
+  ]
+}
