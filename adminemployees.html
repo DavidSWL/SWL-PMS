@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Employees — SWL Performance Management</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:        #3D6B2C;
+      --green-dark:   #2A4D1E;
+      --green-deeper: #1a3d18;
+      --green-light:  #EEF4EB;
+      --accent:       #8B6914;
+      --bg:           #F4F6F2;
+      --border:       #B8CCB0;
+      --white:        #ffffff;
+      --gray-50:      #F9FAF8;
+      --gray-100:     #EEF1EB;
+      --gray-400:     #8FA889;
+      --gray-600:     #4A5E45;
+      --gray-900:     #1A2618;
+      --success:      #2E7D32;
+      --success-bg:   #E8F5E9;
+      --error:        #C62828;
+      --error-bg:     #FFEBEE;
+      --warning:      #E65100;
+    }
+
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--gray-900); min-height: 100vh; }
+
+    /* ── Nav (same as dashboard) ── */
+    .topnav {
+      position: fixed; top: 0; left: 0; right: 0; height: 64px;
+      background: var(--green); display: flex; align-items: center;
+      padding: 0 1.5rem; gap: 1.5rem; z-index: 200;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.20);
+    }
+    .brand { display: flex; align-items: center; gap: 0.65rem; text-decoration: none; flex-shrink: 0; }
+    .brand svg { width: 32px; height: 32px; background: rgba(255,255,255,0.15); border-radius: 6px; padding: 4px; }
+    .brand-name { font-size: 1.05rem; font-weight: 700; color: var(--white); letter-spacing: -0.02em; }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; flex: 1; }
+    .nav-link { padding: 0.375rem 0.75rem; border-radius: 8px; font-size: 0.875rem; font-weight: 500; color: rgba(255,255,255,0.78); text-decoration: none; transition: background 0.15s, color 0.15s; white-space: nowrap; }
+    .nav-link:hover, .nav-link.active { background: rgba(255,255,255,0.15); color: var(--white); }
+    .nav-right { display: flex; align-items: center; gap: 0.75rem; margin-left: auto; }
+    .user-name { font-size: 0.875rem; color: rgba(255,255,255,0.88); font-weight: 500; }
+    .btn-logout { padding: 0.375rem 0.875rem; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; color: rgba(255,255,255,0.85); font-size: 0.8125rem; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+    .btn-logout:hover { background: rgba(255,255,255,0.22); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; margin-left: auto; }
+    .hamburger span { display: block; width: 22px; height: 2px; background: var(--white); border-radius: 99px; }
+    .mobile-menu { display: none; position: fixed; top: 64px; left: 0; right: 0; background: var(--green-dark); padding: 0.75rem; flex-direction: column; gap: 0.25rem; z-index: 199; box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu .nav-link { display: block; padding: 0.65rem 0.875rem; }
+    .mobile-divider { height: 1px; background: rgba(255,255,255,0.15); margin: 0.35rem 0; }
+
+    /* ── Page shell ── */
+    .page { padding-top: 64px; min-height: 100vh; }
+    .content { max-width: 1280px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+    /* ── Page header ── */
+    .page-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.75rem; }
+    .page-header h1 { font-size: 1.625rem; font-weight: 700; color: var(--green-dark); }
+    .page-header p { font-size: 0.875rem; color: var(--gray-600); margin-top: 0.2rem; }
+
+    /* ── Buttons ── */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.5rem 1.1rem; border: none; border-radius: 8px; font-family: inherit; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: background 0.15s, box-shadow 0.15s, transform 0.1s; white-space: nowrap; }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary { background: var(--green); color: var(--white); }
+    .btn-primary:hover { background: var(--green-dark); box-shadow: 0 3px 10px rgba(61,107,44,0.30); }
+    .btn-secondary { background: var(--white); color: var(--green); border: 1.5px solid var(--border); }
+    .btn-secondary:hover { background: var(--gray-50); border-color: var(--green); }
+    .btn-danger { background: var(--error-bg); color: var(--error); border: 1.5px solid #FFCDD2; }
+    .btn-danger:hover { background: #FFCDD2; }
+    .btn-icon { padding: 0.4rem 0.6rem; font-size: 0.85rem; }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+    /* ── Toolbar: search + filters ── */
+    .toolbar { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .search-wrap { position: relative; flex: 1; min-width: 200px; }
+    .search-wrap input { width: 100%; padding: 0.55rem 0.875rem 0.55rem 2.25rem; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.875rem; background: var(--white); color: var(--gray-900); outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+    .search-wrap input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(61,107,44,0.12); }
+    .search-icon { position: absolute; left: 0.7rem; top: 50%; transform: translateY(-50%); color: var(--gray-400); font-size: 0.875rem; pointer-events: none; }
+    .filter-select { padding: 0.55rem 0.875rem; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.875rem; background: var(--white); color: var(--gray-900); outline: none; cursor: pointer; transition: border-color 0.15s; }
+    .filter-select:focus { border-color: var(--green); }
+    .toolbar-right { display: flex; align-items: center; gap: 0.5rem; margin-left: auto; }
+    .count-badge { font-size: 0.8125rem; color: var(--gray-600); white-space: nowrap; }
+
+    /* ── Employee table ── */
+    .table-card { background: var(--white); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(61,107,44,0.08); overflow: hidden; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    thead { background: var(--gray-50); }
+    th { padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; border-bottom: 1px solid var(--border); }
+    td { padding: 0.875rem 1rem; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr { transition: background 0.1s; }
+    tbody tr:hover { background: var(--gray-50); }
+
+    /* Avatar */
+    .avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--green); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0; }
+    .employee-cell { display: flex; align-items: center; gap: 0.75rem; }
+    .employee-info .name { font-weight: 600; color: var(--gray-900); }
+    .employee-info .email { font-size: 0.78rem; color: var(--gray-400); margin-top: 0.1rem; }
+
+    /* Badges */
+    .badge { display: inline-flex; align-items: center; padding: 0.2rem 0.6rem; border-radius: 99px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+    .badge-active   { background: var(--success-bg); color: var(--success); }
+    .badge-inactive { background: var(--gray-100);   color: var(--gray-600); }
+    .badge-admin    { background: #E8EAF6; color: #3949AB; }
+    .badge-manager  { background: #FFF3E0; color: #E65100; }
+    .badge-employee { background: var(--green-light); color: var(--green-dark); }
+
+    /* Row actions */
+    .actions { display: flex; gap: 0.35rem; }
+
+    /* Empty state */
+    .empty-state { padding: 3.5rem 1.5rem; text-align: center; color: var(--gray-400); }
+    .empty-state .icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .empty-state p { font-size: 0.9375rem; }
+    .empty-state small { font-size: 0.8125rem; }
+
+    /* Loading */
+    .loading-row td { text-align: center; padding: 2.5rem; color: var(--gray-400); }
+    .spin { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Modal backdrop ── */
+    .modal-backdrop {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+      z-index: 300; align-items: center; justify-content: center; padding: 1rem;
+    }
+    .modal-backdrop.open { display: flex; }
+
+    /* ── Modal ── */
+    .modal {
+      background: var(--white); border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      width: 100%; max-width: 680px;
+      max-height: 90vh; display: flex; flex-direction: column;
+      animation: slideUp 0.2s ease;
+    }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 1.75rem 1.25rem; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .modal-header h2 { font-size: 1.125rem; font-weight: 700; color: var(--green-dark); }
+    .modal-close { background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--gray-400); padding: 0.25rem 0.5rem; border-radius: 6px; line-height: 1; transition: background 0.15s, color 0.15s; }
+    .modal-close:hover { background: var(--gray-100); color: var(--gray-900); }
+
+    .modal-body { padding: 1.5rem 1.75rem; overflow-y: auto; flex: 1; }
+    .modal-footer { display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; padding: 1.25rem 1.75rem; border-top: 1px solid var(--border); flex-shrink: 0; }
+
+    /* ── Form grid ── */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem 1.25rem; }
+    .form-grid .span-2 { grid-column: 1 / -1; }
+    .form-section-title { font-size: 0.75rem; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); grid-column: 1 / -1; margin-top: 0.5rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .form-group label { font-size: 0.8125rem; font-weight: 500; color: var(--gray-600); }
+    .form-group label .req { color: var(--error); margin-left: 2px; }
+    .form-control {
+      padding: 0.575rem 0.875rem; border: 1.5px solid var(--border); border-radius: 8px;
+      font-family: inherit; font-size: 0.9rem; color: var(--gray-900);
+      background: var(--white); outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-control:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(61,107,44,0.12); }
+    .form-control.is-error { border-color: var(--error); box-shadow: 0 0 0 3px rgba(198,40,40,0.10); }
+    .form-hint { font-size: 0.75rem; color: var(--gray-400); }
+    .field-error { font-size: 0.75rem; color: var(--error); }
+
+    /* Form alert */
+    .form-alert { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.65rem 0.875rem; border-radius: 8px; font-size: 0.8125rem; margin-bottom: 1.25rem; line-height: 1.4; }
+    .form-alert.error   { background: var(--error-bg);   color: var(--error);   border: 1px solid #FFCDD2; }
+    .form-alert.success { background: var(--success-bg); color: var(--success); border: 1px solid #C8E6C9; }
+    .form-alert.hidden  { display: none; }
+
+    /* ── Delete confirm modal ── */
+    .confirm-modal { max-width: 420px; }
+    .confirm-modal .modal-body { text-align: center; padding: 2rem 1.75rem 1.5rem; }
+    .confirm-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .confirm-modal h3 { font-size: 1.05rem; font-weight: 700; color: var(--gray-900); margin-bottom: 0.5rem; }
+    .confirm-modal p { font-size: 0.875rem; color: var(--gray-600); line-height: 1.5; }
+
+    /* ── Toast ── */
+    #toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 9999; }
+    .toast { display: flex; align-items: center; gap: 0.5rem; padding: 0.7rem 1rem; border-radius: 10px; font-size: 0.875rem; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,0.15); animation: slideIn 0.25s ease; min-width: 240px; }
+    .toast.success { background: var(--success-bg); color: var(--success); border: 1px solid #C8E6C9; }
+    .toast.error   { background: var(--error-bg);   color: var(--error);   border: 1px solid #FFCDD2; }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .nav-links, .nav-right { display: none; }
+      .hamburger { display: flex; }
+      .content { padding: 1.5rem 1rem; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid .span-2 { grid-column: 1; }
+      th:nth-child(4), td:nth-child(4),
+      th:nth-child(5), td:nth-child(5),
+      th:nth-child(6), td:nth-child(6) { display: none; }
+    }
+    @media (max-width: 480px) {
+      .toolbar { flex-direction: column; align-items: stretch; }
+      .toolbar-right { margin-left: 0; }
+      .page-header { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Top Nav ── -->
+<header class="topnav">
+  <a href="dashboard.html" class="brand">
+    <svg viewBox="0 0 48 48" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 36 Q24 26 42 36"/><path d="M14 36 L14 24 M10 28 L14 24 L18 28"/>
+      <path d="M24 36 L24 18 M19 24 L24 18 L29 24"/><path d="M34 36 L34 25 M30 29 L34 25 L38 29"/>
+      <path d="M8 18 Q24 8 40 18" stroke-dasharray="2 3"/>
+    </svg>
+    <span class="brand-name">SWL PMS</span>
+  </a>
+  <nav class="nav-links">
+    <a class="nav-link" href="dashboard.html">Dashboard</a>
+    <a class="nav-link" href="#">Reviews</a>
+    <a class="nav-link" href="#">Goals</a>
+    <a class="nav-link" href="#">Compensation</a>
+    <a class="nav-link" href="#">Reports</a>
+    <a class="nav-link active" href="admin-employees.html">Administration</a>
+  </nav>
+  <div class="nav-right">
+    <span class="user-name" id="nav-user-name"></span>
+    <button class="btn-logout" id="logout-btn">Sign out</button>
+  </div>
+  <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+</header>
+
+<nav class="mobile-menu" id="mobile-menu">
+  <a class="nav-link" href="dashboard.html">Dashboard</a>
+  <a class="nav-link" href="#">Reviews</a>
+  <a class="nav-link" href="#">Goals</a>
+  <a class="nav-link" href="#">Compensation</a>
+  <a class="nav-link" href="#">Reports</a>
+  <a class="nav-link active" href="admin-employees.html">Administration</a>
+  <div class="mobile-divider"></div>
+  <button class="btn-logout" id="logout-btn-mobile">Sign out</button>
+</nav>
+
+<!-- ── Page ── -->
+<div class="page">
+  <div class="content">
+
+    <div class="page-header">
+      <div>
+        <h1>Employee Management</h1>
+        <p>Add, edit, and manage all SWL employees and their system access.</p>
+      </div>
+      <button class="btn btn-primary" id="add-employee-btn">＋ Add Employee</button>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Search by name, email, or position…" />
+      </div>
+      <select class="filter-select" id="filter-branch">
+        <option value="">All Branches</option>
+        <option>Phoenix</option>
+        <option>Tucson</option>
+        <option>Scottsdale</option>
+        <option>Mesa</option>
+        <option>Flagstaff</option>
+      </select>
+      <select class="filter-select" id="filter-dept">
+        <option value="">All Departments</option>
+        <option>Maintenance</option>
+        <option>Irrigation</option>
+        <option>Enhancements</option>
+        <option>Tree Care</option>
+        <option>Operations</option>
+        <option>Administration</option>
+        <option>Sales</option>
+      </select>
+      <select class="filter-select" id="filter-status">
+        <option value="">All Status</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+      <div class="toolbar-right">
+        <span class="count-badge" id="count-badge">— employees</span>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Employee</th>
+              <th>Position</th>
+              <th>Department</th>
+              <th>Branch</th>
+              <th>Pay</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="employee-tbody">
+            <tr class="loading-row"><td colspan="8"><span class="spin"></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     ADD / EDIT EMPLOYEE MODAL
+     ════════════════════════════════════════ -->
+<div class="modal-backdrop" id="employee-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-title">Add Employee</h2>
+      <button class="modal-close" id="modal-close-btn" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="form-alert hidden" id="form-alert">
+        <span id="form-alert-msg"></span>
+      </div>
+
+      <div class="form-grid">
+
+        <!-- Personal -->
+        <div class="form-section-title">Personal Information</div>
+
+        <div class="form-group">
+          <label for="f-first">First Name <span class="req">*</span></label>
+          <input class="form-control" type="text" id="f-first" placeholder="e.g. David" />
+          <span class="field-error hidden" id="err-first"></span>
+        </div>
+        <div class="form-group">
+          <label for="f-last">Last Name <span class="req">*</span></label>
+          <input class="form-control" type="text" id="f-last" placeholder="e.g. Smith" />
+          <span class="field-error hidden" id="err-last"></span>
+        </div>
+        <div class="form-group span-2">
+          <label for="f-email">Email Address <span class="req">*</span></label>
+          <input class="form-control" type="email" id="f-email" placeholder="employee@southwestlandscape.com" />
+          <span class="field-error hidden" id="err-email"></span>
+        </div>
+
+        <!-- Job -->
+        <div class="form-section-title">Job Details</div>
+
+        <div class="form-group">
+          <label for="f-position">Position / Title <span class="req">*</span></label>
+          <input class="form-control" type="text" id="f-position" placeholder="e.g. Crew Leader" />
+          <span class="field-error hidden" id="err-position"></span>
+        </div>
+        <div class="form-group">
+          <label for="f-dept">Department <span class="req">*</span></label>
+          <select class="form-control" id="f-dept">
+            <option value="">— Select —</option>
+            <option>Maintenance</option>
+            <option>Irrigation</option>
+            <option>Enhancements</option>
+            <option>Tree Care</option>
+            <option>Operations</option>
+            <option>Administration</option>
+            <option>Sales</option>
+          </select>
+          <span class="field-error hidden" id="err-dept"></span>
+        </div>
+        <div class="form-group">
+          <label for="f-branch">Branch <span class="req">*</span></label>
+          <select class="form-control" id="f-branch">
+            <option value="">— Select —</option>
+            <option>Phoenix</option>
+            <option>Tucson</option>
+            <option>Scottsdale</option>
+            <option>Mesa</option>
+            <option>Flagstaff</option>
+          </select>
+          <span class="field-error hidden" id="err-branch"></span>
+        </div>
+        <div class="form-group">
+          <label for="f-hire-date">Hire Date</label>
+          <input class="form-control" type="date" id="f-hire-date" />
+        </div>
+        <div class="form-group span-2">
+          <label for="f-manager">Manager</label>
+          <select class="form-control" id="f-manager">
+            <option value="">— None / Self —</option>
+          </select>
+          <span class="form-hint">Populated from active employees.</span>
+        </div>
+
+        <!-- Compensation -->
+        <div class="form-section-title">Compensation</div>
+
+        <div class="form-group">
+          <label for="f-pay-type">Pay Type <span class="req">*</span></label>
+          <select class="form-control" id="f-pay-type">
+            <option value="">— Select —</option>
+            <option value="hourly">Hourly</option>
+            <option value="salary">Salary</option>
+          </select>
+          <span class="field-error hidden" id="err-pay-type"></span>
+        </div>
+        <div class="form-group">
+          <label for="f-rate">Current Rate <span class="req">*</span></label>
+          <input class="form-control" type="number" id="f-rate" min="0" step="0.01" placeholder="0.00" />
+          <span class="form-hint" id="rate-hint">Enter hourly rate or annual salary.</span>
+          <span class="field-error hidden" id="err-rate"></span>
+        </div>
+
+        <!-- System -->
+        <div class="form-section-title">System Access</div>
+
+        <div class="form-group">
+          <label for="f-role">System Role <span class="req">*</span></label>
+          <select class="form-control" id="f-role">
+            <option value="">— Select —</option>
+            <option value="employee">Employee — view own reviews &amp; goals</option>
+            <option value="manager">Manager — review &amp; manage their team</option>
+            <option value="admin">Admin — full system access</option>
+          </select>
+          <span class="field-error hidden" id="err-role"></span>
+        </div>
+        <div class="form-group">
+          <label for="f-status">Status</label>
+          <select class="form-control" id="f-status">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="modal-cancel-btn">Cancel</button>
+      <button class="btn btn-primary" id="modal-save-btn">Save Employee</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     DELETE CONFIRM MODAL
+     ════════════════════════════════════════ -->
+<div class="modal-backdrop" id="confirm-modal">
+  <div class="modal confirm-modal">
+    <div class="modal-body">
+      <div class="confirm-icon">🗑️</div>
+      <h3>Delete Employee?</h3>
+      <p id="confirm-text">This will permanently remove <strong id="confirm-name"></strong> from the system. This action cannot be undone.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="confirm-cancel-btn">Cancel</button>
+      <button class="btn btn-danger" id="confirm-delete-btn">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<!-- ════════════════════════════════════════
+     SCRIPT
+     ════════════════════════════════════════ -->
+<script type="module">
+  import { initializeApp }   from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+  import { getAuth, signOut, onAuthStateChanged }
+    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+  import {
+    getFirestore, collection, doc,
+    getDocs, addDoc, updateDoc, deleteDoc,
+    query, orderBy, serverTimestamp
+  } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+  // ── Firebase init ──────────────────────────────────────────────
+  const firebaseConfig = {
+    apiKey: "AIzaSyA6XJoxNAuNX0LN21WxBLS7cMbY3LJCri0",
+    authDomain: "swl-pms.firebaseapp.com",
+    projectId: "swl-pms",
+    storageBucket: "swl-pms.firebasestorage.app",
+    messagingSenderId: "465838605580",
+    appId: "1:465838605580:web:c3322da1833f219725b529"
+  };
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  // ── Auth guard ─────────────────────────────────────────────────
+  onAuthStateChanged(auth, user => {
+    if (!user) { window.location.href = 'index.html'; return; }
+    document.getElementById('nav-user-name').textContent =
+      user.displayName || user.email.split('@')[0];
+  });
+
+  async function logout() { await signOut(auth); window.location.href = 'index.html'; }
+  document.getElementById('logout-btn').addEventListener('click', logout);
+  document.getElementById('logout-btn-mobile').addEventListener('click', logout);
+
+  // ── Hamburger ──────────────────────────────────────────────────
+  const hamburger  = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobile-menu');
+  hamburger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+  document.addEventListener('click', e => {
+    if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target))
+      mobileMenu.classList.remove('open');
+  });
+
+  // ── State ──────────────────────────────────────────────────────
+  let allEmployees = [];   // raw Firestore docs
+  let editingId    = null; // null = adding, string = editing
+
+  // ── Firestore helpers ──────────────────────────────────────────
+  async function fetchEmployees() {
+    const q    = query(collection(db, 'employees'), orderBy('lastName'));
+    const snap = await getDocs(q);
+    allEmployees = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderTable();
+    populateManagerSelect();
+  }
+
+  async function saveEmployee(data) {
+    if (editingId) {
+      await updateDoc(doc(db, 'employees', editingId), { ...data, updatedAt: serverTimestamp() });
+    } else {
+      await addDoc(collection(db, 'employees'), { ...data, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+    }
+    await fetchEmployees();
+  }
+
+  async function deleteEmployee(id) {
+    await deleteDoc(doc(db, 'employees', id));
+    await fetchEmployees();
+  }
+
+  // ── Render table ───────────────────────────────────────────────
+  function renderTable() {
+    const search     = document.getElementById('search-input').value.toLowerCase();
+    const branch     = document.getElementById('filter-branch').value;
+    const dept       = document.getElementById('filter-dept').value;
+    const statusFilt = document.getElementById('filter-status').value;
+
+    const filtered = allEmployees.filter(e => {
+      const name = `${e.firstName} ${e.lastName}`.toLowerCase();
+      const matchSearch = !search ||
+        name.includes(search) ||
+        (e.email||'').toLowerCase().includes(search) ||
+        (e.position||'').toLowerCase().includes(search);
+      const matchBranch  = !branch  || e.branch === branch;
+      const matchDept    = !dept    || e.department === dept;
+      const matchStatus  = !statusFilt || e.status === statusFilt;
+      return matchSearch && matchBranch && matchDept && matchStatus;
+    });
+
+    document.getElementById('count-badge').textContent =
+      `${filtered.length} employee${filtered.length !== 1 ? 's' : ''}`;
+
+    const tbody = document.getElementById('employee-tbody');
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `
+        <tr><td colspan="8">
+          <div class="empty-state">
+            <div class="icon">👥</div>
+            <p>${allEmployees.length === 0 ? 'No employees yet.' : 'No employees match your filters.'}</p>
+            <small>${allEmployees.length === 0 ? 'Click "+ Add Employee" to get started.' : 'Try adjusting your search or filters.'}</small>
+          </div>
+        </td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(e => {
+      const initials = `${(e.firstName||'?')[0]}${(e.lastName||'?')[0]}`.toUpperCase();
+      const roleBadge = {
+        admin:    '<span class="badge badge-admin">Admin</span>',
+        manager:  '<span class="badge badge-manager">Manager</span>',
+        employee: '<span class="badge badge-employee">Employee</span>',
+      }[e.role] || '<span class="badge badge-employee">Employee</span>';
+      const statusBadge = e.status === 'inactive'
+        ? '<span class="badge badge-inactive">Inactive</span>'
+        : '<span class="badge badge-active">Active</span>';
+      const payLabel = e.payType === 'salary'
+        ? `$${Number(e.currentRate||0).toLocaleString()}/yr`
+        : `$${Number(e.currentRate||0).toFixed(2)}/hr`;
+
+      return `
+        <tr>
+          <td>
+            <div class="employee-cell">
+              <div class="avatar">${initials}</div>
+              <div class="employee-info">
+                <div class="name">${e.firstName} ${e.lastName}</div>
+                <div class="email">${e.email||''}</div>
+              </div>
+            </div>
+          </td>
+          <td>${e.position||'—'}</td>
+          <td>${e.department||'—'}</td>
+          <td>${e.branch||'—'}</td>
+          <td>${payLabel}</td>
+          <td>${roleBadge}</td>
+          <td>${statusBadge}</td>
+          <td>
+            <div class="actions">
+              <button class="btn btn-secondary btn-icon" onclick="openEdit('${e.id}')" title="Edit">✏️</button>
+              <button class="btn btn-danger btn-icon" onclick="openDelete('${e.id}')" title="Delete">🗑</button>
+            </div>
+          </td>
+        </tr>`;
+    }).join('');
+  }
+
+  // ── Manager dropdown ───────────────────────────────────────────
+  function populateManagerSelect(excludeId = null) {
+    const sel = document.getElementById('f-manager');
+    const current = sel.value;
+    sel.innerHTML = '<option value="">— None / Self —</option>';
+    allEmployees
+      .filter(e => e.id !== excludeId && e.status !== 'inactive')
+      .sort((a,b) => `${a.lastName}${a.firstName}`.localeCompare(`${b.lastName}${b.firstName}`))
+      .forEach(e => {
+        const opt = document.createElement('option');
+        opt.value = e.id;
+        opt.textContent = `${e.firstName} ${e.lastName} — ${e.position||e.department||''}`;
+        sel.appendChild(opt);
+      });
+    if (current) sel.value = current;
+  }
+
+  // ── Filters & search ───────────────────────────────────────────
+  ['search-input','filter-branch','filter-dept','filter-status'].forEach(id =>
+    document.getElementById(id).addEventListener('input', renderTable)
+  );
+
+  // ── Modal helpers ──────────────────────────────────────────────
+  const modal         = document.getElementById('employee-modal');
+  const confirmModal  = document.getElementById('confirm-modal');
+
+  function openModal()  { modal.classList.add('open'); }
+  function closeModal() { modal.classList.remove('open'); clearForm(); }
+
+  function clearForm() {
+    ['f-first','f-last','f-email','f-position','f-hire-date','f-rate'].forEach(id =>
+      document.getElementById(id).value = '');
+    ['f-dept','f-branch','f-pay-type','f-role'].forEach(id =>
+      document.getElementById(id).value = '');
+    document.getElementById('f-status').value = 'active';
+    document.getElementById('f-manager').value = '';
+    clearErrors();
+    hideFormAlert();
+  }
+
+  function clearErrors() {
+    document.querySelectorAll('.field-error').forEach(el => { el.textContent=''; el.classList.add('hidden'); });
+    document.querySelectorAll('.form-control').forEach(el => el.classList.remove('is-error'));
+  }
+
+  function showFieldError(fieldId, errId, msg) {
+    document.getElementById(fieldId).classList.add('is-error');
+    const el = document.getElementById(errId);
+    el.textContent = msg; el.classList.remove('hidden');
+  }
+
+  function showFormAlert(msg, type = 'error') {
+    const el = document.getElementById('form-alert');
+    el.className = `form-alert ${type}`;
+    document.getElementById('form-alert-msg').textContent = msg;
+  }
+  function hideFormAlert() {
+    document.getElementById('form-alert').className = 'form-alert hidden';
+  }
+
+  // ── Open Add ───────────────────────────────────────────────────
+  document.getElementById('add-employee-btn').addEventListener('click', () => {
+    editingId = null;
+    document.getElementById('modal-title').textContent = 'Add Employee';
+    document.getElementById('modal-save-btn').textContent = 'Save Employee';
+    clearForm();
+    populateManagerSelect();
+    openModal();
+  });
+
+  // ── Open Edit (global so inline onclick works) ─────────────────
+  window.openEdit = function(id) {
+    const emp = allEmployees.find(e => e.id === id);
+    if (!emp) return;
+    editingId = id;
+    document.getElementById('modal-title').textContent = 'Edit Employee';
+    document.getElementById('modal-save-btn').textContent = 'Update Employee';
+    clearForm();
+    populateManagerSelect(id);
+
+    document.getElementById('f-first').value    = emp.firstName   || '';
+    document.getElementById('f-last').value     = emp.lastName    || '';
+    document.getElementById('f-email').value    = emp.email       || '';
+    document.getElementById('f-position').value = emp.position    || '';
+    document.getElementById('f-dept').value     = emp.department  || '';
+    document.getElementById('f-branch').value   = emp.branch      || '';
+    document.getElementById('f-hire-date').value= emp.hireDate    || '';
+    document.getElementById('f-manager').value  = emp.managerId   || '';
+    document.getElementById('f-pay-type').value = emp.payType     || '';
+    document.getElementById('f-rate').value     = emp.currentRate || '';
+    document.getElementById('f-role').value     = emp.role        || '';
+    document.getElementById('f-status').value   = emp.status      || 'active';
+    openModal();
+  };
+
+  // ── Close modal ────────────────────────────────────────────────
+  document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+  document.getElementById('modal-cancel-btn').addEventListener('click', closeModal);
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+  // ── Pay type hint ──────────────────────────────────────────────
+  document.getElementById('f-pay-type').addEventListener('change', function() {
+    document.getElementById('rate-hint').textContent =
+      this.value === 'salary' ? 'Enter annual salary (e.g. 55000).'
+      : this.value === 'hourly' ? 'Enter hourly rate (e.g. 18.50).'
+      : 'Enter hourly rate or annual salary.';
+  });
+
+  // ── Save ───────────────────────────────────────────────────────
+  document.getElementById('modal-save-btn').addEventListener('click', async () => {
+    clearErrors();
+    hideFormAlert();
+    let valid = true;
+
+    const firstName   = document.getElementById('f-first').value.trim();
+    const lastName    = document.getElementById('f-last').value.trim();
+    const email       = document.getElementById('f-email').value.trim();
+    const position    = document.getElementById('f-position').value.trim();
+    const department  = document.getElementById('f-dept').value;
+    const branch      = document.getElementById('f-branch').value;
+    const hireDate    = document.getElementById('f-hire-date').value;
+    const managerId   = document.getElementById('f-manager').value;
+    const payType     = document.getElementById('f-pay-type').value;
+    const currentRate = document.getElementById('f-rate').value;
+    const role        = document.getElementById('f-role').value;
+    const status      = document.getElementById('f-status').value;
+
+    if (!firstName)   { showFieldError('f-first',    'err-first',    'First name is required.');    valid = false; }
+    if (!lastName)    { showFieldError('f-last',     'err-last',     'Last name is required.');     valid = false; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+                      { showFieldError('f-email',    'err-email',    'A valid email is required.'); valid = false; }
+    if (!position)    { showFieldError('f-position', 'err-position', 'Position is required.');      valid = false; }
+    if (!department)  { showFieldError('f-dept',     'err-dept',     'Department is required.');    valid = false; }
+    if (!branch)      { showFieldError('f-branch',   'err-branch',   'Branch is required.');        valid = false; }
+    if (!payType)     { showFieldError('f-pay-type', 'err-pay-type', 'Pay type is required.');      valid = false; }
+    if (!currentRate || isNaN(currentRate) || Number(currentRate) < 0)
+                      { showFieldError('f-rate',     'err-rate',     'Enter a valid rate.');        valid = false; }
+    if (!role)        { showFieldError('f-role',     'err-role',     'System role is required.');   valid = false; }
+
+    if (!valid) return;
+
+    const saveBtn = document.getElementById('modal-save-btn');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving…';
+
+    try {
+      await saveEmployee({
+        firstName, lastName, email, position, department, branch,
+        hireDate: hireDate || null,
+        managerId: managerId || null,
+        payType, currentRate: parseFloat(currentRate),
+        role, status,
+      });
+      closeModal();
+      toast(editingId ? 'Employee updated.' : 'Employee added.', 'success');
+    } catch (err) {
+      showFormAlert('Failed to save: ' + err.message);
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = editingId ? 'Update Employee' : 'Save Employee';
+    }
+  });
+
+  // ── Delete confirm ─────────────────────────────────────────────
+  let deleteTargetId = null;
+
+  window.openDelete = function(id) {
+    const emp = allEmployees.find(e => e.id === id);
+    if (!emp) return;
+    deleteTargetId = id;
+    document.getElementById('confirm-name').textContent = `${emp.firstName} ${emp.lastName}`;
+    confirmModal.classList.add('open');
+  };
+
+  document.getElementById('confirm-cancel-btn').addEventListener('click', () => {
+    confirmModal.classList.remove('open');
+    deleteTargetId = null;
+  });
+  confirmModal.addEventListener('click', e => {
+    if (e.target === confirmModal) { confirmModal.classList.remove('open'); deleteTargetId = null; }
+  });
+
+  document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+    if (!deleteTargetId) return;
+    const btn = document.getElementById('confirm-delete-btn');
+    btn.disabled = true; btn.textContent = 'Deleting…';
+    try {
+      await deleteEmployee(deleteTargetId);
+      confirmModal.classList.remove('open');
+      toast('Employee deleted.', 'success');
+    } catch (err) {
+      toast('Delete failed: ' + err.message, 'error');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Yes, Delete';
+      deleteTargetId = null;
+    }
+  });
+
+  // ── Toast ──────────────────────────────────────────────────────
+  function toast(msg, type = 'success') {
+    const container = document.getElementById('toast-container');
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    el.innerHTML = `<span>${type === 'success' ? '✓' : '⚠'}</span> ${msg}`;
+    container.appendChild(el);
+    setTimeout(() => el.remove(), 3500);
+  }
+
+  // ── Init ───────────────────────────────────────────────────────
+  fetchEmployees();
+
+</script>
+</body>
+</html>
