@@ -13,12 +13,12 @@ import { getStorage }      from 'https://www.gstatic.com/firebasejs/10.12.2/fire
 
 // ── Replace these values with your Firebase project credentials ──────────────
 const firebaseConfig = {
-  apiKey:            'YOUR_API_KEY',
-  authDomain:        'YOUR_PROJECT_ID.firebaseapp.com',
-  projectId:         'YOUR_PROJECT_ID',
-  storageBucket:     'YOUR_PROJECT_ID.appspot.com',
-  messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-  appId:             'YOUR_APP_ID',
+  apiKey: "AIzaSyA6XJoxNAuNX0LN21WxBLS7cMbY3LJCri0",
+  authDomain: "swl-pms.firebaseapp.com",
+  projectId: "swl-pms",
+  storageBucket: "swl-pms.firebasestorage.app",
+  messagingSenderId: "465838605580",
+  appId: "1:465838605580:web:c3322da1833f219725b529"
   // measurementId: 'YOUR_MEASUREMENT_ID',  // Optional: only if Google Analytics is enabled
 };
 // ─────────────────────────────────────────────────────────────────────────────
