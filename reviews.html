@@ -342,18 +342,12 @@
       text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem;
       display: flex; align-items: center; justify-content: space-between;
     }
-    .mkt-bar-wrap { position: relative; padding-bottom: 2rem; }
+    .mkt-bar-wrap { position: relative; padding-bottom: 2rem; padding-left: 0.25rem; padding-right: 0.25rem; }
     .mkt-bar-track {
       height: 14px; border-radius: 99px;
       background: linear-gradient(90deg, #c8e6c9 0%, #66bb6a 40%, #2e7d32 100%);
       position: relative; overflow: visible;
     }
-    .mkt-endpoint {
-      position: absolute; top: 50%; transform: translateY(-50%);
-      font-size: 0.6875rem; font-weight: 700; color: var(--gray-600); white-space: nowrap;
-    }
-    .mkt-endpoint.lo { right: calc(100% + 0.35rem); }
-    .mkt-endpoint.hi { left: calc(100% + 0.35rem); }
     .mkt-dot {
       position: absolute; top: 50%; transform: translate(-50%, -50%);
       width: 22px; height: 22px; border-radius: 50%;
@@ -724,8 +718,6 @@
               </div>
               <div class="mkt-bar-wrap">
                 <div class="mkt-bar-track" id="mkt-bar-track">
-                  <span class="mkt-endpoint lo" id="mkt-lo-label"></span>
-                  <span class="mkt-endpoint hi" id="mkt-hi-label"></span>
                   <!-- Current dot -->
                   <div class="mkt-flag current-flag" id="mkt-current-flag" style="left:50%">Current</div>
                   <div class="mkt-dot current" id="mkt-current-dot" style="left:50%">C</div>
@@ -1702,11 +1694,9 @@
     document.getElementById('comp-role-note').innerHTML =
       `Matched role: <strong>${roleTitle}</strong> — BLS OES 2024, OC/LA Metro. Market range: ${fmtCurrency(low)} (10th %ile) → ${fmtCurrency(median)} (median) → ${fmtCurrency(high)} (90th %ile).`;
 
-    // Bar endpoints
-    document.getElementById('mkt-lo-label').textContent = fmtCurrency(low);
-    document.getElementById('mkt-hi-label').textContent = fmtCurrency(high);
-    document.getElementById('mkt-label-lo').textContent = fmtCurrency(low);
-    document.getElementById('mkt-label-hi').textContent = fmtCurrency(high);
+    // Bar range labels (below bar)
+    document.getElementById('mkt-label-lo').textContent = fmtCurrency(low) + ' (10th %ile)';
+    document.getElementById('mkt-label-hi').textContent = fmtCurrency(high) + ' (90th %ile)';
 
     // Current dot
     if (currentSalary) {
@@ -1729,7 +1719,8 @@
       const diff = currentSalary - median;
       const pct = ((currentSalary / median - 1) * 100).toFixed(1);
       document.getElementById('cc-vs-median').textContent = (diff >= 0 ? '+' : '') + fmtCurrency(diff);
-      document.getElementById('cc-vs-median-sub').textContent = `${diff >= 0 ? '+' : ''}${pct}% vs median`;
+      document.getElementById('cc-vs-median-sub').textContent =
+        `Current salary is ${Math.abs(+pct)}% ${diff >= 0 ? 'above' : 'below'} the ${fmtCurrency(median)} market median`;
 
       // Market position pill
       const pill = document.getElementById('comp-market-pill');
@@ -1747,10 +1738,11 @@
       document.getElementById('comp-market-pill').textContent = 'No salary on file';
     }
 
-    recalcProposed(currentSalary, low, high);
+    const roleForMedian = matchBLSRole(emp?.position);
+    recalcProposed(currentSalary, low, high, roleForMedian?.median);
   }
 
-  function recalcProposed(currentSalary, low, high) {
+  function recalcProposed(currentSalary, low, high, median) {
     const pctVal = parseFloat(document.getElementById('comp-pct-input').value);
     if (!pctVal || isNaN(pctVal) || !currentSalary) {
       document.getElementById('cc-proposed').textContent = '—';
@@ -1768,6 +1760,15 @@
     document.getElementById('cc-increase').textContent = fmtCurrency(increase);
     document.getElementById('cc-increase-sub').textContent = `Per year`;
 
+    // Update vs median card to show proposed vs median
+    if (median) {
+      const diff = proposed - median;
+      const diffPct = ((proposed / median - 1) * 100).toFixed(1);
+      document.getElementById('cc-vs-median').textContent = (diff >= 0 ? '+' : '') + fmtCurrency(diff);
+      document.getElementById('cc-vs-median-sub').textContent =
+        `Proposed is ${Math.abs(+diffPct)}% ${diff >= 0 ? 'above' : 'below'} the ${fmtCurrency(median)} market median`;
+    }
+
     const ppt = barPct(proposed, low, high);
     document.getElementById('mkt-proposed-dot').style.left = ppt + '%';
     document.getElementById('mkt-proposed-dot').style.display = 'flex';
@@ -1781,13 +1782,13 @@
     if (!currentReview) return;
     const emp = allEmployees[currentReview.employeeId];
     const role = matchBLSRole(emp?.position);
-    const { low, high } = role || { low: 40000, high: 90000 };
+    const { low, high, median } = role || { low: 40000, median: 60000, high: 90000 };
     let currentSalary = null;
     if (emp?.currentRate) {
       const rate = parseFloat(emp.currentRate);
       currentSalary = emp.payType === 'hourly' ? rate * 2080 : rate;
     }
-    recalcProposed(currentSalary, low, high);
+    recalcProposed(currentSalary, low, high, median);
   });
 
   // ── Toast ──
