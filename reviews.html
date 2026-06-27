@@ -203,6 +203,126 @@
     .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* ── Compensation Analysis Panel ── */
+    .comp-panel {
+      margin-top: 1.75rem;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 20px rgba(61,107,44,0.12);
+    }
+    .comp-panel-header {
+      background: linear-gradient(135deg, var(--green-dark) 0%, #1a3d18 100%);
+      padding: 1.25rem 1.5rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+    }
+    .comp-panel-title { color: var(--white); font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+    .comp-panel-title svg { opacity: 0.85; }
+    .comp-score-chip {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 99px; padding: 0.3rem 0.9rem;
+      font-size: 0.8125rem; font-weight: 700; color: var(--white);
+    }
+    .comp-panel-body { background: var(--white); padding: 1.5rem; }
+
+    /* Proposed input row */
+    .comp-input-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+      margin-bottom: 1.5rem; align-items: end;
+    }
+    .comp-input-group label {
+      display: block; font-size: 0.75rem; font-weight: 700;
+      color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem;
+    }
+    .comp-input-hint { font-size: 0.7rem; color: var(--gray-400); margin-top: 0.25rem; }
+    .comp-input-field {
+      width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border);
+      border-radius: 8px; font-size: 0.9375rem; font-weight: 600; background: var(--white);
+      color: var(--gray-900); transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .comp-input-field:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px rgba(61,107,44,0.12); }
+    .suggest-pill {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      background: rgba(139,105,20,0.1); border: 1px solid rgba(139,105,20,0.3);
+      border-radius: 99px; padding: 0.25rem 0.7rem;
+      font-size: 0.75rem; font-weight: 600; color: var(--accent);
+    }
+
+    /* Market bar */
+    .mkt-section { margin-bottom: 1.5rem; }
+    .mkt-section-label {
+      font-size: 0.75rem; font-weight: 700; color: var(--gray-600);
+      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .mkt-bar-wrap { position: relative; padding-bottom: 2rem; }
+    .mkt-bar-track {
+      height: 14px; border-radius: 99px;
+      background: linear-gradient(90deg, #c8e6c9 0%, #66bb6a 40%, #2e7d32 100%);
+      position: relative; overflow: visible;
+    }
+    .mkt-endpoint {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      font-size: 0.6875rem; font-weight: 700; color: var(--gray-600); white-space: nowrap;
+    }
+    .mkt-endpoint.lo { right: calc(100% + 0.35rem); }
+    .mkt-endpoint.hi { left: calc(100% + 0.35rem); }
+    .mkt-dot {
+      position: absolute; top: 50%; transform: translate(-50%, -50%);
+      width: 22px; height: 22px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.5rem; font-weight: 900; color: var(--white);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: default; z-index: 2;
+    }
+    .mkt-dot.current  { background: var(--accent); border: 2px solid #fff; }
+    .mkt-dot.proposed { background: var(--green);  border: 2px solid #fff; }
+    .mkt-flag {
+      position: absolute; top: -2.1rem; transform: translateX(-50%);
+      background: var(--gray-900); color: var(--white);
+      border-radius: 6px; padding: 0.2rem 0.45rem;
+      font-size: 0.65rem; font-weight: 700; white-space: nowrap;
+      transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .mkt-flag::after {
+      content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+      border: 4px solid transparent; border-top-color: var(--gray-900);
+    }
+    .mkt-flag.current-flag  { background: var(--accent); }
+    .mkt-flag.current-flag::after { border-top-color: var(--accent); }
+    .mkt-flag.proposed-flag { background: var(--green); }
+    .mkt-flag.proposed-flag::after { border-top-color: var(--green); }
+    .mkt-dot-wrap { position: absolute; top: 0; bottom: 0; pointer-events: none; }
+    .mkt-bar-labels { display: flex; justify-content: space-between; margin-top: 0.4rem; font-size: 0.7rem; color: var(--gray-400); }
+    .mkt-status-pill {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      border-radius: 99px; padding: 0.25rem 0.75rem;
+      font-size: 0.75rem; font-weight: 700;
+    }
+    .mkt-status-pill.below  { background: #FFF3E0; color: #E65100; }
+    .mkt-status-pill.within { background: var(--success-bg); color: var(--success); }
+    .mkt-status-pill.above  { background: var(--info-bg); color: var(--info); }
+
+    /* Summary cards */
+    .comp-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.875rem; margin-top: 1.5rem; }
+    .comp-card {
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 1rem; background: var(--gray-50);
+    }
+    .comp-card-label { font-size: 0.6875rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem; }
+    .comp-card-value { font-size: 1.25rem; font-weight: 800; color: var(--green-dark); line-height: 1.1; }
+    .comp-card-sub { font-size: 0.7rem; color: var(--gray-400); margin-top: 0.2rem; }
+    .comp-card.highlight { border-color: var(--green); background: #f0f7ed; }
+    .comp-card.highlight .comp-card-value { color: var(--green); }
+    .comp-card.accent-card { border-color: rgba(139,105,20,0.35); background: var(--accent-bg); }
+    .comp-card.accent-card .comp-card-value { color: var(--accent); }
+
+    /* role match note */
+    .role-match-note { font-size: 0.75rem; color: var(--gray-600); background: var(--gray-50); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.875rem; margin-bottom: 1rem; }
+    .role-match-note strong { color: var(--green-dark); }
+
     @media (max-width: 900px) { .stats-row { grid-template-columns: repeat(2,1fr); } }
     @media (max-width: 768px) {
       .nav-links, .nav-right { display: none; }
@@ -234,7 +354,7 @@
   <nav class="nav-links">
     <a class="nav-link" href="dashboard.html">Dashboard</a>
     <a class="nav-link active" href="reviews.html">Reviews</a>
-    <a class="nav-link" href="#">Goals</a>
+    <a class="nav-link" href="goals.html">Goals</a>
     <a class="nav-link" href="compensation.html">Compensation</a>
     <a class="nav-link" href="#">Reports</a>
     <a class="nav-link" href="adminemployees.html">Administration</a>
@@ -251,7 +371,7 @@
 <nav class="mobile-menu" id="mobile-menu">
   <a class="nav-link" href="dashboard.html">Dashboard</a>
   <a class="nav-link active" href="reviews.html">Reviews</a>
-  <a class="nav-link" href="#">Goals</a>
+  <a class="nav-link" href="goals.html">Goals</a>
   <a class="nav-link" href="compensation.html">Compensation</a>
   <a class="nav-link" href="#">Reports</a>
   <a class="nav-link" href="adminemployees.html">Administration</a>
@@ -447,6 +567,87 @@
           <label class="form-label">Employee's Self-Eval — Challenges</label>
           <textarea class="form-control readonly-field" id="mgr-view-q2" rows="2" readonly></textarea>
         </div>
+
+        <!-- Compensation Analysis Panel -->
+        <div class="comp-panel" id="comp-panel" style="display:none">
+          <div class="comp-panel-header">
+            <div class="comp-panel-title">
+              <svg width="18" height="18" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              Compensation Analysis — OC/LA Metro Market Data
+            </div>
+            <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
+              <span class="comp-score-chip" id="comp-score-label">Score: —</span>
+              <span class="suggest-pill" id="comp-suggest-label" style="display:none"></span>
+            </div>
+          </div>
+          <div class="comp-panel-body">
+
+            <div class="role-match-note" id="comp-role-note"></div>
+
+            <div class="comp-input-row">
+              <div class="comp-input-group">
+                <label>Proposed Increase (%)</label>
+                <input type="number" class="comp-input-field" id="comp-pct-input" min="0" max="50" step="0.1" placeholder="e.g. 3.5" />
+                <div class="comp-input-hint">Enter the % raise you want to propose</div>
+              </div>
+              <div class="comp-input-group">
+                <label>Market Position</label>
+                <div style="padding-top:0.35rem">
+                  <span class="mkt-status-pill" id="comp-market-pill">—</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mkt-section">
+              <div class="mkt-section-label">
+                <span>Market Range vs. Compensation</span>
+                <span style="font-size:0.7rem;color:var(--gray-400);font-weight:400;text-transform:none;letter-spacing:0">BLS OES 2024 · OC/LA Metro</span>
+              </div>
+              <div class="mkt-bar-wrap">
+                <div class="mkt-bar-track" id="mkt-bar-track">
+                  <span class="mkt-endpoint lo" id="mkt-lo-label"></span>
+                  <span class="mkt-endpoint hi" id="mkt-hi-label"></span>
+                  <!-- Current dot -->
+                  <div class="mkt-flag current-flag" id="mkt-current-flag" style="left:50%">Current</div>
+                  <div class="mkt-dot current" id="mkt-current-dot" style="left:50%">C</div>
+                  <!-- Proposed dot -->
+                  <div class="mkt-flag proposed-flag" id="mkt-proposed-flag" style="left:50%;display:none">Proposed</div>
+                  <div class="mkt-dot proposed" id="mkt-proposed-dot" style="left:50%;display:none">P</div>
+                </div>
+                <div class="mkt-bar-labels">
+                  <span id="mkt-label-lo"></span>
+                  <span id="mkt-label-med">Median</span>
+                  <span id="mkt-label-hi"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="comp-cards">
+              <div class="comp-card">
+                <div class="comp-card-label">Current Salary</div>
+                <div class="comp-card-value" id="cc-current">—</div>
+                <div class="comp-card-sub" id="cc-current-sub"></div>
+              </div>
+              <div class="comp-card highlight">
+                <div class="comp-card-label">Proposed Salary</div>
+                <div class="comp-card-value" id="cc-proposed">—</div>
+                <div class="comp-card-sub" id="cc-proposed-sub">Enter % above</div>
+              </div>
+              <div class="comp-card accent-card">
+                <div class="comp-card-label">Dollar Increase</div>
+                <div class="comp-card-value" id="cc-increase">—</div>
+                <div class="comp-card-sub" id="cc-increase-sub"></div>
+              </div>
+              <div class="comp-card">
+                <div class="comp-card-label">vs. Market Median</div>
+                <div class="comp-card-value" id="cc-vs-median">—</div>
+                <div class="comp-card-sub" id="cc-vs-median-sub"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
       </div>
 
     </div>
@@ -1057,7 +1258,12 @@
   });
 
   // ── Modal close ──
-  function closeModal() { document.getElementById('review-modal').classList.remove('open'); currentReview = null; }
+  function closeModal() {
+    document.getElementById('review-modal').classList.remove('open');
+    document.getElementById('comp-panel').style.display = 'none';
+    document.getElementById('comp-pct-input').value = '';
+    currentReview = null;
+  }
   document.getElementById('modal-close').addEventListener('click', closeModal);
   document.getElementById('modal-cancel').addEventListener('click', closeModal);
   document.getElementById('review-modal').addEventListener('click', e => {
@@ -1073,6 +1279,176 @@
   hamburger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
   document.addEventListener('click', e => {
     if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) mobileMenu.classList.remove('open');
+  });
+
+  // ── BLS OES 2024 — OC / LA Metro ──
+  const BLS_OC_DATA = [
+    { keywords: ['landscap','grounds','crew member','field tech','field worker'], title: 'Landscaping & Groundskeeping Worker', low: 32000, median: 40000, high: 54000 },
+    { keywords: ['crew leader','crew lead','foreman'], title: 'Crew Leader / Landscaping Supervisor', low: 45000, median: 58000, high: 76000 },
+    { keywords: ['supervisor','first-line','landscape supervisor'], title: 'First-Line Supervisor, Landscaping', low: 50000, median: 65000, high: 85000 },
+    { keywords: ['tree','arborist','trimmer','pruner','climber'], title: 'Tree Trimmer & Pruner', low: 37000, median: 50000, high: 68000 },
+    { keywords: ['irrigat','sprinkler'], title: 'Irrigation Technician', low: 38000, median: 52000, high: 70000 },
+    { keywords: ['branch manager','area manager'], title: 'Branch / Area Manager', low: 75000, median: 105000, high: 155000 },
+    { keywords: ['regional manager'], title: 'Regional Manager', low: 80000, median: 112000, high: 165000 },
+    { keywords: ['operations manager','ops manager'], title: 'Operations Manager', low: 78000, median: 108000, high: 160000 },
+    { keywords: ['hr manager','human resources manager','hr director'], title: 'Human Resources Manager', low: 85000, median: 118000, high: 165000 },
+    { keywords: ['hr specialist','hr generalist','human resources specialist','recruiter'], title: 'HR Specialist', low: 50000, median: 68000, high: 92000 },
+    { keywords: ['hr','human resources'], title: 'HR Support', low: 44000, median: 58000, high: 80000 },
+    { keywords: ['account manager','account exec'], title: 'Account Manager', low: 58000, median: 82000, high: 125000 },
+    { keywords: ['sales manager','business dev'], title: 'Sales Manager', low: 72000, median: 110000, high: 175000 },
+    { keywords: ['sales rep','sales representative','salesperson'], title: 'Sales Representative', low: 45000, median: 68000, high: 110000 },
+    { keywords: ['office manager'], title: 'Office Manager', low: 52000, median: 70000, high: 95000 },
+    { keywords: ['admin','administrative assistant','coordinator','receptionist'], title: 'Administrative Assistant', low: 40000, median: 54000, high: 72000 },
+    { keywords: ['estimator','bid'], title: 'Estimator', low: 58000, median: 78000, high: 110000 },
+    { keywords: ['dispatcher','scheduler'], title: 'Dispatcher / Scheduler', low: 42000, median: 55000, high: 72000 },
+    { keywords: ['finance','accounting','accountant'], title: 'Accountant / Finance', low: 58000, median: 80000, high: 115000 },
+    { keywords: ['manager'], title: 'Manager (General)', low: 65000, median: 90000, high: 140000 },
+  ];
+
+  const SCORE_SUGGEST = { 5: '5–7%', 4: '4–5%', 3: '2–3%', 2: '1–2%', 1: '0–1%' };
+
+  function matchBLSRole(position) {
+    if (!position) return null;
+    const pos = position.toLowerCase();
+    // Score each entry by how many keywords match (longer keywords rank higher)
+    let best = null, bestScore = 0;
+    for (const entry of BLS_OC_DATA) {
+      let score = 0;
+      for (const kw of entry.keywords) {
+        if (pos.includes(kw)) score += kw.length;
+      }
+      if (score > bestScore) { bestScore = score; best = entry; }
+    }
+    return best;
+  }
+
+  function fmtCurrency(n) {
+    if (n == null || isNaN(n)) return '—';
+    return '$' + Math.round(n).toLocaleString();
+  }
+
+  function barPct(value, low, high) {
+    if (!value || !low || !high || high === low) return 5;
+    return Math.min(93, Math.max(7, (value - low) / (high - low) * 100));
+  }
+
+  function updateCompPanel() {
+    if (!currentReview) return;
+    const score = document.getElementById('mgr-overall-score').value;
+    const panel = document.getElementById('comp-panel');
+
+    if (!score) { panel.style.display = 'none'; return; }
+
+    panel.style.display = 'block';
+
+    const emp = allEmployees[currentReview.employeeId];
+    const role = matchBLSRole(emp?.position);
+    const { low, median, high, title: roleTitle } = role || { low: 40000, median: 60000, high: 90000, title: 'General Role' };
+
+    // Current salary
+    let currentSalary = null;
+    if (emp?.currentRate) {
+      const rate = parseFloat(emp.currentRate);
+      currentSalary = emp.payType === 'hourly' ? rate * 2080 : rate;
+    }
+
+    // UI: score chip
+    document.getElementById('comp-score-label').textContent = `Score: ${score} / 5`;
+    const suggestText = SCORE_SUGGEST[score];
+    const suggestEl = document.getElementById('comp-suggest-label');
+    suggestEl.textContent = `Suggested raise: ${suggestText}`;
+    suggestEl.style.display = 'inline-flex';
+
+    // Role note
+    document.getElementById('comp-role-note').innerHTML =
+      `Matched role: <strong>${roleTitle}</strong> — BLS OES 2024, OC/LA Metro. Market range: ${fmtCurrency(low)} (10th %ile) → ${fmtCurrency(median)} (median) → ${fmtCurrency(high)} (90th %ile).`;
+
+    // Bar endpoints
+    document.getElementById('mkt-lo-label').textContent = fmtCurrency(low);
+    document.getElementById('mkt-hi-label').textContent = fmtCurrency(high);
+    document.getElementById('mkt-label-lo').textContent = fmtCurrency(low);
+    document.getElementById('mkt-label-hi').textContent = fmtCurrency(high);
+
+    // Current dot
+    if (currentSalary) {
+      const pct = barPct(currentSalary, low, high);
+      document.getElementById('mkt-current-dot').style.left = pct + '%';
+      document.getElementById('mkt-current-flag').style.left = pct + '%';
+      document.getElementById('mkt-current-flag').style.display = 'block';
+      document.getElementById('mkt-current-dot').style.display = 'flex';
+    } else {
+      document.getElementById('mkt-current-dot').style.display = 'none';
+      document.getElementById('mkt-current-flag').style.display = 'none';
+    }
+
+    // Summary cards
+    document.getElementById('cc-current').textContent = currentSalary ? fmtCurrency(currentSalary) : '—';
+    document.getElementById('cc-current-sub').textContent = emp?.payType === 'hourly' ? `($${parseFloat(emp.currentRate||0).toFixed(2)}/hr × 2,080)` : (emp?.payType === 'salary' ? 'Annual salary' : '');
+
+    // vs market median
+    if (currentSalary) {
+      const diff = currentSalary - median;
+      const pct = ((currentSalary / median - 1) * 100).toFixed(1);
+      document.getElementById('cc-vs-median').textContent = (diff >= 0 ? '+' : '') + fmtCurrency(diff);
+      document.getElementById('cc-vs-median-sub').textContent = `${diff >= 0 ? '+' : ''}${pct}% vs median`;
+
+      // Market position pill
+      const pill = document.getElementById('comp-market-pill');
+      if (currentSalary < low * 1.02) {
+        pill.className = 'mkt-status-pill below'; pill.textContent = '⚠ Below Market';
+      } else if (currentSalary > high * 0.98) {
+        pill.className = 'mkt-status-pill above'; pill.textContent = '↑ Above Market';
+      } else {
+        pill.className = 'mkt-status-pill within'; pill.textContent = '✓ Within Market Range';
+      }
+    } else {
+      document.getElementById('cc-vs-median').textContent = '—';
+      document.getElementById('cc-vs-median-sub').textContent = 'No salary on file';
+      document.getElementById('comp-market-pill').className = 'mkt-status-pill';
+      document.getElementById('comp-market-pill').textContent = 'No salary on file';
+    }
+
+    recalcProposed(currentSalary, low, high);
+  }
+
+  function recalcProposed(currentSalary, low, high) {
+    const pctVal = parseFloat(document.getElementById('comp-pct-input').value);
+    if (!pctVal || isNaN(pctVal) || !currentSalary) {
+      document.getElementById('cc-proposed').textContent = '—';
+      document.getElementById('cc-proposed-sub').textContent = 'Enter % above';
+      document.getElementById('cc-increase').textContent = '—';
+      document.getElementById('cc-increase-sub').textContent = '';
+      document.getElementById('mkt-proposed-dot').style.display = 'none';
+      document.getElementById('mkt-proposed-flag').style.display = 'none';
+      return;
+    }
+    const proposed = currentSalary * (1 + pctVal / 100);
+    const increase = proposed - currentSalary;
+    document.getElementById('cc-proposed').textContent = fmtCurrency(proposed);
+    document.getElementById('cc-proposed-sub').textContent = `+${pctVal}% raise`;
+    document.getElementById('cc-increase').textContent = fmtCurrency(increase);
+    document.getElementById('cc-increase-sub').textContent = `Per year`;
+
+    const ppt = barPct(proposed, low, high);
+    document.getElementById('mkt-proposed-dot').style.left = ppt + '%';
+    document.getElementById('mkt-proposed-dot').style.display = 'flex';
+    document.getElementById('mkt-proposed-flag').style.left = ppt + '%';
+    document.getElementById('mkt-proposed-flag').style.display = 'block';
+  }
+
+  // Wire up panel triggers
+  document.getElementById('mgr-overall-score').addEventListener('change', updateCompPanel);
+  document.getElementById('comp-pct-input').addEventListener('input', () => {
+    if (!currentReview) return;
+    const emp = allEmployees[currentReview.employeeId];
+    const role = matchBLSRole(emp?.position);
+    const { low, high } = role || { low: 40000, high: 90000 };
+    let currentSalary = null;
+    if (emp?.currentRate) {
+      const rate = parseFloat(emp.currentRate);
+      currentSalary = emp.payType === 'hourly' ? rate * 2080 : rate;
+    }
+    recalcProposed(currentSalary, low, high);
   });
 
   // ── Toast ──
