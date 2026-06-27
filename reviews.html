@@ -203,6 +203,92 @@
     .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* ── Goal Cards ── */
+    .goal-list-wrap { margin-bottom: 1rem; }
+    .goal-empty-state {
+      text-align: center; padding: 1.25rem;
+      border: 2px dashed var(--border); border-radius: 10px;
+      color: var(--gray-400); font-size: 0.8125rem;
+    }
+    .goal-card {
+      border: 1px solid var(--border); border-radius: 10px;
+      background: var(--white); margin-bottom: 0.625rem;
+      overflow: hidden; transition: box-shadow 0.15s;
+    }
+    .goal-card:hover { box-shadow: 0 3px 10px rgba(61,107,44,0.1); }
+    .goal-card-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 0.75rem; padding: 0.875rem 1rem 0.5rem;
+    }
+    .goal-card-title { font-size: 0.9rem; font-weight: 700; color: var(--gray-900); flex: 1; }
+    .goal-card-actions { display: flex; gap: 0.35rem; flex-shrink: 0; }
+    .goal-icon-btn {
+      width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border);
+      background: var(--white); cursor: pointer; display: flex; align-items: center; justify-content: center;
+      color: var(--gray-600); transition: background 0.12s, color 0.12s;
+    }
+    .goal-icon-btn:hover { background: var(--gray-100); color: var(--gray-900); }
+    .goal-icon-btn.del:hover { background: var(--error-bg); color: var(--error); border-color: var(--error); }
+    .goal-badges { display: flex; gap: 0.35rem; flex-wrap: wrap; padding: 0 1rem 0.5rem; }
+    .goal-badge {
+      display: inline-flex; align-items: center;
+      padding: 0.15rem 0.55rem; border-radius: 99px;
+      font-size: 0.68rem; font-weight: 700;
+    }
+    .gb-cat  { background: var(--green-light); color: var(--green-dark); }
+    .gb-pri-high   { background: var(--error-bg); color: var(--error); }
+    .gb-pri-medium { background: var(--warning-bg); color: var(--warning); }
+    .gb-pri-low    { background: var(--info-bg); color: var(--info); }
+    .gb-status-ns  { background: var(--gray-100); color: var(--gray-600); }
+    .gb-status-ip  { background: var(--accent-bg); color: var(--accent); }
+    .gb-status-done { background: var(--success-bg); color: var(--success); }
+    .gb-status-hold { background: var(--warning-bg); color: var(--warning); }
+    .goal-progress-row { padding: 0 1rem 0.75rem; }
+    .goal-progress-label { font-size: 0.68rem; color: var(--gray-600); font-weight: 600; margin-bottom: 0.25rem; }
+    .goal-progress-bar-track {
+      height: 6px; border-radius: 99px; background: var(--gray-100); overflow: hidden;
+    }
+    .goal-progress-bar-fill {
+      height: 100%; border-radius: 99px; background: var(--green);
+      transition: width 0.4s ease;
+    }
+    .goal-desc { padding: 0 1rem 0.75rem; font-size: 0.8rem; color: var(--gray-600); line-height: 1.5; }
+    .goal-meta-row { display: flex; gap: 1rem; padding: 0 1rem 0.75rem; font-size: 0.75rem; color: var(--gray-400); }
+
+    /* Inline goal form */
+    .goal-form-inline {
+      border: 2px solid var(--green); border-radius: 10px;
+      background: #f8fbf6; padding: 1rem;
+      margin-bottom: 0.625rem;
+    }
+    .goal-form-inline .gf-title {
+      font-size: 0.8125rem; font-weight: 700; color: var(--green-dark);
+      margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;
+    }
+    .goal-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem; }
+    .goal-form-grid.single { grid-template-columns: 1fr; }
+    .gf-group label { display: block; font-size: 0.7rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.3rem; }
+    .gf-control {
+      width: 100%; padding: 0.45rem 0.65rem; border: 1px solid var(--border);
+      border-radius: 7px; font-size: 0.8375rem; font-family: inherit;
+      background: var(--white); color: var(--gray-900);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .gf-control:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px rgba(61,107,44,0.12); }
+    textarea.gf-control { resize: vertical; min-height: 60px; }
+    .gf-range-wrap { display: flex; align-items: center; gap: 0.5rem; }
+    .gf-range { flex: 1; accent-color: var(--green); }
+    .gf-range-val { font-size: 0.8125rem; font-weight: 700; color: var(--green); min-width: 2.5rem; text-align: right; }
+    .gf-footer { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.25rem; }
+    .add-goal-btn {
+      width: 100%; padding: 0.6rem; border: 2px dashed var(--border); border-radius: 10px;
+      background: none; cursor: pointer; font-size: 0.8125rem; font-weight: 600;
+      color: var(--gray-600); display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+      margin-top: 0.25rem;
+    }
+    .add-goal-btn:hover { border-color: var(--green); color: var(--green); background: var(--green-light); }
+
     /* ── Compensation Analysis Panel ── */
     .comp-panel {
       margin-top: 1.75rem;
@@ -523,8 +609,12 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">What are your professional goals for the coming year? <span class="req">*</span></label>
-          <textarea class="form-control" id="self-q3" rows="4" placeholder="List 2–3 specific goals — skills to develop, projects to lead, certifications to earn, responsibilities to grow into…"></textarea>
+          <label class="form-label">Your Goals for Next Year <span class="req">*</span></label>
+          <div class="goal-list-wrap" id="self-goal-list"></div>
+          <button class="add-goal-btn" id="self-add-goal-btn" type="button">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            Add Goal
+          </button>
         </div>
         <div class="form-group">
           <label class="form-label">What support or resources do you need from your manager to achieve these goals?</label>
@@ -578,7 +668,7 @@
 
         <div class="form-group">
           <label class="form-label">Employee's Goals for Next Year</label>
-          <textarea class="form-control readonly-field" id="mgr-view-q3" rows="3" readonly placeholder="(Employee has not submitted goals yet)"></textarea>
+          <div class="goal-list-wrap" id="self-goal-list-mgr-view"></div>
         </div>
         <div class="form-group">
           <label class="form-label">Support Requested by Employee</label>
@@ -586,7 +676,11 @@
         </div>
         <div class="form-group">
           <label class="form-label">Manager's Suggested Goals for Next Year</label>
-          <textarea class="form-control" id="mgr-goals" rows="4" placeholder="What goals do you want this employee to focus on? Be specific — skills to build, targets to hit, behaviors to develop…"></textarea>
+          <div class="goal-list-wrap" id="mgr-goal-list"></div>
+          <button class="add-goal-btn" id="mgr-add-goal-btn" type="button">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            Add Suggested Goal
+          </button>
         </div>
         <div class="form-group">
           <label class="form-label">How Will You Support This Employee?</label>
@@ -753,6 +847,190 @@
   let activeTab = 'self';
   let selfRatings = {};
   let mgrRatings = {};
+  let selfGoals = [];
+  let mgrGoals  = [];
+
+  const GOAL_CATEGORIES = ['Professional Development','Technical Skills','Leadership & Management','Safety & Compliance','Productivity','Customer Service','Other'];
+  const GOAL_PRIORITIES  = ['High','Medium','Low'];
+  const GOAL_STATUSES    = ['Not Started','In Progress','Completed','On Hold'];
+
+  function goalStatusClass(s) {
+    return { 'Not Started': 'gb-status-ns', 'In Progress': 'gb-status-ip', 'Completed': 'gb-status-done', 'On Hold': 'gb-status-hold' }[s] || 'gb-status-ns';
+  }
+  function goalPriClass(p) {
+    return { High: 'gb-pri-high', Medium: 'gb-pri-medium', Low: 'gb-pri-low' }[p] || 'gb-pri-low';
+  }
+
+  function renderGoalList(prefix, goals, editable) {
+    const listEl    = document.getElementById(`${prefix}-goal-list`);
+    const addBtnEl  = document.getElementById(`${prefix}-add-goal-btn`);
+    if (!listEl) return;
+
+    listEl.innerHTML = goals.length === 0
+      ? `<div class="goal-empty-state">No goals added yet${editable ? ' — click Add Goal below' : ''}.</div>`
+      : goals.map((g, i) => `
+          <div class="goal-card">
+            <div class="goal-card-header">
+              <div class="goal-card-title">${escHtml(g.title)}</div>
+              ${editable ? `<div class="goal-card-actions">
+                <button class="goal-icon-btn" data-action="edit" data-prefix="${prefix}" data-idx="${i}" title="Edit">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </button>
+                <button class="goal-icon-btn del" data-action="del" data-prefix="${prefix}" data-idx="${i}" title="Remove">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                </button>
+              </div>` : ''}
+            </div>
+            <div class="goal-badges">
+              ${g.category ? `<span class="goal-badge gb-cat">${escHtml(g.category)}</span>` : ''}
+              ${g.priority ? `<span class="goal-badge ${goalPriClass(g.priority)}">${escHtml(g.priority)} Priority</span>` : ''}
+              <span class="goal-badge ${goalStatusClass(g.status || 'Not Started')}">${escHtml(g.status || 'Not Started')}</span>
+            </div>
+            ${g.description ? `<div class="goal-desc">${escHtml(g.description)}</div>` : ''}
+            <div class="goal-progress-row">
+              <div class="goal-progress-label">Progress — ${g.progress || 0}%</div>
+              <div class="goal-progress-bar-track"><div class="goal-progress-bar-fill" style="width:${g.progress||0}%"></div></div>
+            </div>
+            ${g.targetDate || g.notes ? `<div class="goal-meta-row">
+              ${g.targetDate ? `<span>🗓 ${g.targetDate}</span>` : ''}
+              ${g.notes ? `<span>📝 ${escHtml(g.notes)}</span>` : ''}
+            </div>` : ''}
+          </div>`).join('');
+
+    if (addBtnEl) addBtnEl.style.display = editable ? 'flex' : 'none';
+
+    if (editable) {
+      listEl.querySelectorAll('[data-action="edit"]').forEach(btn => {
+        btn.addEventListener('click', () => showGoalForm(btn.dataset.prefix, +btn.dataset.idx));
+      });
+      listEl.querySelectorAll('[data-action="del"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const arr = btn.dataset.prefix === 'self' ? selfGoals : mgrGoals;
+          arr.splice(+btn.dataset.idx, 1);
+          renderGoalList(btn.dataset.prefix, arr, true);
+        });
+      });
+    }
+  }
+
+  function showGoalForm(prefix, editIdx = null) {
+    const arr  = prefix === 'self' ? selfGoals : mgrGoals;
+    const g    = editIdx !== null ? arr[editIdx] : {};
+    const listEl = document.getElementById(`${prefix}-goal-list`);
+    const addBtn = document.getElementById(`${prefix}-add-goal-btn`);
+    if (addBtn) addBtn.style.display = 'none';
+
+    const formId = `${prefix}-goal-form`;
+    const existing = document.getElementById(formId);
+    if (existing) existing.remove();
+
+    const form = document.createElement('div');
+    form.className = 'goal-form-inline';
+    form.id = formId;
+    form.innerHTML = `
+      <div class="gf-title">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        ${editIdx !== null ? 'Edit Goal' : 'New Goal'}
+      </div>
+      <div class="goal-form-grid single">
+        <div class="gf-group">
+          <label>Goal Title <span style="color:var(--error)">*</span></label>
+          <input type="text" class="gf-control" id="${formId}-title" placeholder="e.g. Complete irrigation certification" value="${escHtml(g.title||'')}" />
+        </div>
+      </div>
+      <div class="goal-form-grid single">
+        <div class="gf-group">
+          <label>Description</label>
+          <textarea class="gf-control" id="${formId}-desc" rows="2" placeholder="Describe the goal and what success looks like…">${escHtml(g.description||'')}</textarea>
+        </div>
+      </div>
+      <div class="goal-form-grid">
+        <div class="gf-group">
+          <label>Category <span style="color:var(--error)">*</span></label>
+          <select class="gf-control" id="${formId}-cat">
+            <option value="">— Select —</option>
+            ${GOAL_CATEGORIES.map(c => `<option value="${c}" ${g.category===c?'selected':''}>${c}</option>`).join('')}
+          </select>
+        </div>
+        <div class="gf-group">
+          <label>Priority <span style="color:var(--error)">*</span></label>
+          <select class="gf-control" id="${formId}-pri">
+            <option value="">— Select —</option>
+            ${GOAL_PRIORITIES.map(p => `<option value="${p}" ${g.priority===p?'selected':''}>${p}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="goal-form-grid">
+        <div class="gf-group">
+          <label>Target Date</label>
+          <input type="date" class="gf-control" id="${formId}-date" value="${g.targetDate||''}" />
+        </div>
+        <div class="gf-group">
+          <label>Status</label>
+          <select class="gf-control" id="${formId}-status">
+            ${GOAL_STATUSES.map(s => `<option value="${s}" ${(g.status||'Not Started')===s?'selected':''}>${s}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="goal-form-grid single">
+        <div class="gf-group">
+          <label>Progress — <span id="${formId}-prog-val">${g.progress||0}%</span></label>
+          <div class="gf-range-wrap">
+            <input type="range" class="gf-range" id="${formId}-prog" min="0" max="100" step="5" value="${g.progress||0}" />
+          </div>
+        </div>
+      </div>
+      <div class="goal-form-grid single">
+        <div class="gf-group">
+          <label>Notes</label>
+          <textarea class="gf-control" id="${formId}-notes" rows="2" placeholder="Any additional context or updates…">${escHtml(g.notes||'')}</textarea>
+        </div>
+      </div>
+      <div class="gf-footer">
+        <button class="btn btn-ghost btn-sm" id="${formId}-cancel" type="button">Cancel</button>
+        <button class="btn btn-primary btn-sm" id="${formId}-save" type="button">Save Goal</button>
+      </div>`;
+
+    listEl.after(form);
+
+    document.getElementById(`${formId}-prog`).addEventListener('input', function() {
+      document.getElementById(`${formId}-prog-val`).textContent = this.value + '%';
+    });
+
+    document.getElementById(`${formId}-cancel`).addEventListener('click', () => {
+      form.remove();
+      if (addBtn) addBtn.style.display = 'flex';
+    });
+
+    document.getElementById(`${formId}-save`).addEventListener('click', () => {
+      const title = document.getElementById(`${formId}-title`).value.trim();
+      const cat   = document.getElementById(`${formId}-cat`).value;
+      const pri   = document.getElementById(`${formId}-pri`).value;
+      if (!title) { alert('Please enter a goal title.'); return; }
+      if (!cat)   { alert('Please select a category.'); return; }
+      if (!pri)   { alert('Please select a priority.'); return; }
+
+      const goalObj = {
+        title,
+        description: document.getElementById(`${formId}-desc`).value.trim(),
+        category: cat, priority: pri,
+        targetDate: document.getElementById(`${formId}-date`).value,
+        status: document.getElementById(`${formId}-status`).value,
+        progress: +document.getElementById(`${formId}-prog`).value,
+        notes: document.getElementById(`${formId}-notes`).value.trim(),
+      };
+
+      if (editIdx !== null) arr[editIdx] = goalObj;
+      else arr.push(goalObj);
+
+      form.remove();
+      renderGoalList(prefix, arr, true);
+    });
+  }
+
+  function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
 
   // ── Auth Guard ──
   onAuthStateChanged(auth, async user => {
@@ -962,9 +1240,34 @@
 
     selfRatings = { ...(currentReview.selfEval?.ratings || {}) };
     mgrRatings  = { ...(currentReview.managerEval?.ratings || {}) };
+    selfGoals   = JSON.parse(JSON.stringify(currentReview.selfEval?.goals || []));
+    mgrGoals    = JSON.parse(JSON.stringify(currentReview.managerEval?.goals || []));
+
+    const canEditSelfGoals = isOwn && !currentReview.selfEval?.submitted;
+    const canEditMgrGoals  = (isMgrOfEmp || isAdmin) && currentReview.status !== 'completed';
 
     buildCompetencies('self-competencies', selfRatings, isOwn && !currentReview.selfEval?.submitted, 'self');
     buildCompetencies('mgr-competencies',  mgrRatings,  (isMgrOfEmp || isAdmin) && currentReview.status !== 'completed', 'mgr');
+
+    renderGoalList('self', selfGoals, canEditSelfGoals);
+    renderGoalList('mgr',  mgrGoals,  canEditMgrGoals);
+    // Show employee's goals read-only inside the manager tab
+    const mgrViewGoalEl = document.getElementById('self-goal-list-mgr-view');
+    if (mgrViewGoalEl) {
+      mgrViewGoalEl.innerHTML = selfGoals.length === 0
+        ? '<div class="goal-empty-state">Employee has not added goals yet.</div>'
+        : selfGoals.map(g => `
+            <div class="goal-card">
+              <div class="goal-card-header"><div class="goal-card-title">${escHtml(g.title)}</div></div>
+              <div class="goal-badges">
+                ${g.category ? `<span class="goal-badge gb-cat">${escHtml(g.category)}</span>` : ''}
+                ${g.priority ? `<span class="goal-badge ${goalPriClass(g.priority)}">${escHtml(g.priority)} Priority</span>` : ''}
+                <span class="goal-badge ${goalStatusClass(g.status||'Not Started')}">${escHtml(g.status||'Not Started')}</span>
+              </div>
+              ${g.description ? `<div class="goal-desc">${escHtml(g.description)}</div>` : ''}
+              ${g.targetDate ? `<div class="goal-meta-row"><span>🗓 ${g.targetDate}</span></div>` : ''}
+            </div>`).join('');
+    }
 
     // Self fields
     const selfSubmitted = currentReview.selfEval?.submitted;
@@ -987,7 +1290,6 @@
     // Mgr view of self-eval answers
     setField('mgr-view-q1', currentReview.selfEval?.q1 || '(Not submitted yet)', true);
     setField('mgr-view-q2', currentReview.selfEval?.q2 || '(Not submitted yet)', true);
-    setField('mgr-view-q3', currentReview.selfEval?.q3 || '(No goals submitted yet)', true);
     setField('mgr-view-q4', currentReview.selfEval?.q4 || '(Not provided)', true);
 
     // Mgr fields
@@ -1122,6 +1424,9 @@
     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
   });
 
+  document.getElementById('self-add-goal-btn').addEventListener('click', () => showGoalForm('self'));
+  document.getElementById('mgr-add-goal-btn').addEventListener('click',  () => showGoalForm('mgr'));
+
   // ── Save Draft ──
   document.getElementById('modal-save-draft').addEventListener('click', async () => {
     if (activeTab === 'self') await saveSelfDraft();
@@ -1134,7 +1439,7 @@
         ratings: selfRatings,
         q1: document.getElementById('self-q1').value.trim(),
         q2: document.getElementById('self-q2').value.trim(),
-        q3: document.getElementById('self-q3').value.trim(),
+        goals: selfGoals,
         q4: document.getElementById('self-q4').value.trim(),
         submitted: false,
         savedAt: serverTimestamp()
@@ -1156,7 +1461,7 @@
         overallScore: document.getElementById('mgr-overall-score').value,
         recommendedAction: document.getElementById('mgr-action').value,
         comments: document.getElementById('mgr-comments').value.trim(),
-        suggestedGoals: document.getElementById('mgr-goals').value.trim(),
+        goals: mgrGoals,
         managerSupport: document.getElementById('mgr-support').value.trim(),
         savedAt: serverTimestamp()
       },
@@ -1187,7 +1492,7 @@
       selfEval: {
         ratings: selfRatings,
         q1, q2,
-        q3: document.getElementById('self-q3').value.trim(),
+        goals: selfGoals,
         q4: document.getElementById('self-q4').value.trim(),
         submitted: true,
         submittedAt: serverTimestamp()
@@ -1217,7 +1522,7 @@
         overallScore: +score,
         recommendedAction: document.getElementById('mgr-action').value,
         comments,
-        suggestedGoals: document.getElementById('mgr-goals').value.trim(),
+        goals: mgrGoals,
         managerSupport: document.getElementById('mgr-support').value.trim(),
         completedAt: serverTimestamp()
       },
@@ -1295,6 +1600,7 @@
     document.getElementById('review-modal').classList.remove('open');
     document.getElementById('comp-panel').style.display = 'none';
     document.getElementById('comp-pct-input').value = '';
+    selfGoals = []; mgrGoals = [];
     currentReview = null;
   }
   document.getElementById('modal-close').addEventListener('click', closeModal);
