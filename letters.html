@@ -97,6 +97,23 @@
     .letter .sig-label { font-family: 'Segoe UI', sans-serif; font-size: 0.75rem; color: var(--gray-500); }
     .letter-placeholder { color: var(--gray-400); font-style: italic; }
 
+    /* ── Print ── */
+    @media print {
+      @page { margin: 0; size: letter; }
+      body { background: white !important; }
+      .nav, .page-header, .config-panel, .form-panel, .preview-toolbar,
+      .toast-wrap, .modal-overlay, .btn, button { display: none !important; }
+      .main-layout { display: block !important; padding: 0 !important; }
+      .preview-panel { border: none !important; box-shadow: none !important; border-radius: 0 !important; }
+      .preview-body { padding: 0 !important; }
+      .letter { max-width: 100% !important; padding: 0 !important; font-size: 12pt !important; }
+      .ltr-hdr-wrap { margin: 0 0 1.25rem !important; border-radius: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .ltr-hdr-top { padding: 0.75rem 1in !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      .ltr-hdr-bot { padding: 0.35rem 1in !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      .letter p, .letter .section-bold, .letter .sig-area { padding-left: 1in; padding-right: 1in; }
+      .letter .sig-area { padding-bottom: 0.5in; }
+    }
+
     /* ── Upload slots ── */
     .upload-slot { border: 2px dashed var(--border); border-radius: 8px; padding: 0.75rem; text-align: center; cursor: pointer; transition: border-color 0.15s; }
     .upload-slot:hover { border-color: var(--green); }
@@ -888,26 +905,33 @@
   // ── Shared print/export CSS ──
   function letterCss() {
     return `
-  @page { margin: 1in; size: letter; }
-  body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.65; color: #111; }
-  p { margin-bottom: 0.7rem; }
+  @page { margin: 0; size: letter; }
+  body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.65; color: #111;
+         -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  p { margin: 0 1in 0.7rem; }
   .section-bold { font-weight: bold; }
-  /* Option-D header */
-  .ltr-hdr-wrap { margin: -1in -1in 1.25rem; }
-  .ltr-hdr-top { background: #083520; padding: 0.75rem 1in; display: flex; align-items: center; gap: 0.9rem; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  /* Option-D header — full bleed */
+  .ltr-hdr-wrap { margin: 0 0 1.25rem; }
+  .ltr-hdr-top { background: #083520 !important; padding: 0.75rem 1in; display: flex; align-items: center; gap: 0.9rem;
+                 -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   .ltr-hdr-logo { height: 44px; width: auto; max-width: 110px; object-fit: contain; flex-shrink: 0; }
   .ltr-hdr-logo-placeholder { height: 44px; width: 44px; }
-  .ltr-hdr-company { font-family: Arial, sans-serif; font-size: 16pt; font-weight: 900; color: #fff; line-height: 1.1; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .ltr-hdr-tagline { font-family: Arial, sans-serif; font-size: 7.5pt; color: rgba(255,255,255,0.65); margin-top: 2px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .ltr-hdr-bot { background: #0E4C2D; padding: 0.35rem 1in; display: flex; align-items: center; justify-content: space-between; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .ltr-hdr-doctype { font-family: Arial, sans-serif; font-size: 7.5pt; font-weight: 700; color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 0.12em; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .ltr-hdr-address { font-family: Arial, sans-serif; font-size: 7pt; color: rgba(255,255,255,0.65); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .ltr-hdr-company { font-family: Arial, sans-serif; font-size: 16pt; font-weight: 900; color: #ffffff !important; line-height: 1.1; }
+  .ltr-hdr-tagline { font-family: Arial, sans-serif; font-size: 7.5pt; color: #aaccbb !important; margin-top: 2px; }
+  .ltr-hdr-bot { background: #0E4C2D !important; padding: 0.35rem 1in; display: flex; align-items: center;
+                 justify-content: space-between; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .ltr-hdr-doctype { font-family: Arial, sans-serif; font-size: 7.5pt; font-weight: 700; color: #ffffff !important;
+                     text-transform: uppercase; letter-spacing: 0.12em; }
+  .ltr-hdr-address { font-family: Arial, sans-serif; font-size: 7pt; color: #aaccbb !important; }
+  /* Body content indented to match 1in page margins */
+  .letter > *:not(.ltr-hdr-wrap) { padding-left: 1in; padding-right: 1in; }
+  .letter > p { padding-left: 1in; padding-right: 1in; margin-left: 0; margin-right: 0; }
   /* Signature */
+  .sig-area { margin: 1.5rem 1in 0.5in; }
   .sig-sender { margin-bottom: 1.25rem; }
   .sig-sender-img { display: block; height: 52px; width: auto; max-width: 190px; object-fit: contain; margin-bottom: 2px; }
   .sig-sender-name { font-family: Arial, sans-serif; font-weight: 700; font-size: 10pt; }
   .sig-sender-title { font-family: Arial, sans-serif; font-size: 9pt; color: #555; }
-  .sig-area { margin-top: 1.5rem; }
   .sig-title { font-weight: bold; margin-bottom: 1rem; }
   .sig-row { display: flex; gap: 2.5rem; margin-top: 1.25rem; }
   .sig-line { border-bottom: 1.5px solid #333; height: 28px; min-width: 200px; margin-bottom: 3px; }
@@ -917,15 +941,7 @@
   // ── Print ──
   document.getElementById('print-btn').addEventListener('click', printLetter);
   function printLetter() {
-    const inner = document.getElementById('letter-output').innerHTML;
-    const w = window.open('', '_blank');
-    w.document.write(`<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>Southwest Landscape — Letter</title>
-<style>${letterCss()}</style>
-</head><body>${inner}</body></html>`);
-    w.document.close();
-    w.focus();
-    w.print();
+    window.print();
   }
 
   // ── Download Word ──
