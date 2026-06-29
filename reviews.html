@@ -648,6 +648,7 @@
         <option value="draft">Draft</option>
         <option value="submitted">Submitted</option>
         <option value="in-review">In Review</option>
+        <option value="mgr-complete">Mgr Complete</option>
         <option value="completed">Completed</option>
       </select>
     </div>
@@ -663,7 +664,8 @@
               <th>Branch</th>
               <th>Manager</th>
               <th>Self-Eval</th>
-              <th>Manager Review</th>
+              <th>Mgr Review</th>
+              <th>Exec Review</th>
               <th>Score</th>
               <th></th>
             </tr>
@@ -706,6 +708,7 @@
     <div class="modal-tabs">
       <button class="tab-btn active" data-tab="self">Self-Evaluation</button>
       <button class="tab-btn" data-tab="manager">Manager Review</button>
+      <button class="tab-btn" data-tab="executive">Executive Assessment</button>
     </div>
 
     <div class="modal-body">
@@ -753,58 +756,6 @@
         <div class="competency-grid" id="mgr-competencies"></div>
 
         <div class="section-title" style="margin-top:1.5rem">Manager Assessment</div>
-        <div class="overall-score-row">
-          <div class="form-group" style="margin-bottom:0">
-            <label class="form-label">Overall Performance Score <span class="req">*</span></label>
-            <select class="form-control" id="mgr-overall-score">
-              <option value="">— Select —</option>
-              <option value="1">1 — Unsatisfactory</option>
-              <option value="2">2 — Needs Improvement</option>
-              <option value="3">3 — Meets Expectations</option>
-              <option value="4">4 — Exceeds Expectations</option>
-              <option value="5">5 — Exceptional</option>
-            </select>
-          </div>
-          <div class="form-group" style="margin-bottom:0">
-            <label class="form-label">Recommended Action</label>
-            <select class="form-control" id="mgr-action">
-              <option value="no-change">No Change</option>
-              <option value="merit-increase">Merit Increase</option>
-              <option value="promotion">Promotion</option>
-              <option value="performance-plan">Performance Improvement Plan</option>
-            </select>
-          </div>
-        </div>
-        <!-- Auto-suggested score banner -->
-        <div class="score-suggest-banner" id="score-suggest-banner">
-          <div class="score-suggest-num" id="score-suggest-num">—</div>
-          <div class="score-suggest-text">
-            <strong id="score-suggest-label">—</strong>
-            <small id="score-suggest-sub">Based on average competency rating</small>
-          </div>
-        </div>
-
-        <!-- Score summary card (shown once overall score is selected) -->
-        <div class="score-summary-card" id="score-summary-card">
-          <div class="score-summary-header" id="score-summary-header">
-            <div class="score-summary-score" id="score-summary-score">—</div>
-            <div>
-              <div class="score-summary-label" id="score-summary-label-txt">—</div>
-              <div class="score-summary-desc" id="score-summary-desc">—</div>
-            </div>
-          </div>
-          <div class="score-summary-body">
-            <div class="score-strengths">
-              <div class="score-section-title">Key Strengths</div>
-              <ul class="score-comp-list" id="score-strengths-list"></ul>
-            </div>
-            <div class="score-improve">
-              <div class="score-section-title">Areas to Develop</div>
-              <ul class="score-comp-list" id="score-improve-list"></ul>
-            </div>
-          </div>
-        </div>
-
         <div class="form-group">
           <label class="form-label">Manager Comments <span class="req">*</span></label>
           <textarea class="form-control" id="mgr-comments" rows="4" placeholder="Provide overall feedback and context for your ratings…"></textarea>
@@ -841,7 +792,91 @@
           <textarea class="form-control" id="mgr-support" rows="3" placeholder="Training opportunities, mentorship, resources, check-in cadence, stretch assignments…"></textarea>
         </div>
 
-        <!-- Compensation Analysis Panel -->
+      </div>
+
+      <!-- Executive Assessment Tab -->
+      <div class="tab-panel" id="tab-executive">
+        <div id="exec-status-note"></div>
+
+        <div class="section-title">Manager's Competency Ratings <span style="font-weight:400;color:var(--gray-400);text-transform:none;letter-spacing:0">(Read Only)</span></div>
+        <div class="competency-grid" id="exec-view-mgr-competencies"></div>
+
+        <!-- Auto-suggested score banner -->
+        <div class="score-suggest-banner" id="score-suggest-banner">
+          <div class="score-suggest-num" id="score-suggest-num">—</div>
+          <div class="score-suggest-text">
+            <strong id="score-suggest-label">—</strong>
+            <small id="score-suggest-sub">Based on average competency rating</small>
+          </div>
+        </div>
+
+        <!-- Score summary card -->
+        <div class="score-summary-card" id="score-summary-card">
+          <div class="score-summary-header" id="score-summary-header">
+            <div class="score-summary-score" id="score-summary-score">—</div>
+            <div>
+              <div class="score-summary-label" id="score-summary-label-txt">—</div>
+              <div class="score-summary-desc" id="score-summary-desc">—</div>
+            </div>
+          </div>
+          <div class="score-summary-body">
+            <div class="score-strengths">
+              <div class="score-section-title">Key Strengths</div>
+              <ul class="score-comp-list" id="score-strengths-list"></ul>
+            </div>
+            <div class="score-improve">
+              <div class="score-section-title">Areas to Develop</div>
+              <ul class="score-comp-list" id="score-improve-list"></ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title" style="margin-top:1.5rem">Executive Decision</div>
+        <div class="overall-score-row">
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Overall Performance Score <span class="req">*</span></label>
+            <select class="form-control" id="exec-overall-score">
+              <option value="">— Select —</option>
+              <option value="1">1 — Unsatisfactory</option>
+              <option value="2">2 — Needs Improvement</option>
+              <option value="3">3 — Meets Expectations</option>
+              <option value="4">4 — Exceeds Expectations</option>
+              <option value="5">5 — Exceptional</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Recommended Action <span class="req">*</span></label>
+            <select class="form-control" id="exec-action">
+              <option value="no-change">No Change</option>
+              <option value="merit-increase">Merit Increase</option>
+              <option value="promotion">Promotion</option>
+              <option value="performance-plan">Performance Improvement Plan</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Executive Comments <span class="req">*</span></label>
+          <textarea class="form-control" id="exec-comments" rows="4" placeholder="Provide executive-level feedback and justify the recommended action…"></textarea>
+        </div>
+
+        <div class="section-title" style="margin-top:1.5rem">Manager's Assessment (Read Only)</div>
+        <div class="form-group">
+          <label class="form-label">Manager Comments</label>
+          <textarea class="form-control readonly-field" id="exec-view-mgr-comments" rows="3" readonly placeholder="(Manager has not submitted yet)"></textarea>
+        </div>
+
+        <div class="section-title" style="margin-top:1.5rem">Employee Self-Evaluation (Read Only)</div>
+        <div class="form-group">
+          <label class="form-label">Key Accomplishments</label>
+          <textarea class="form-control readonly-field" id="exec-view-q1" rows="2" readonly placeholder="(Not submitted yet)"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Challenges &amp; Approach</label>
+          <textarea class="form-control readonly-field" id="exec-view-q2" rows="2" readonly placeholder="(Not submitted yet)"></textarea>
+        </div>
+
+        <!-- Compensation Analysis Panel (exec only) -->
         <div class="comp-panel" id="comp-panel" style="display:none">
           <div class="comp-panel-header">
             <div class="comp-panel-title">
@@ -854,9 +889,7 @@
             </div>
           </div>
           <div class="comp-panel-body">
-
             <div class="role-match-note" id="comp-role-note"></div>
-
             <div class="comp-input-row">
               <div class="comp-input-group">
                 <label>Proposed Increase (%)</label>
@@ -870,7 +903,6 @@
                 </div>
               </div>
             </div>
-
             <div class="mkt-section">
               <div class="mkt-section-label">
                 <span>Market Range vs. Compensation</span>
@@ -878,10 +910,8 @@
               </div>
               <div class="mkt-bar-wrap">
                 <div class="mkt-bar-track" id="mkt-bar-track">
-                  <!-- Current dot -->
                   <div class="mkt-flag current-flag" id="mkt-current-flag" style="left:50%">Current</div>
                   <div class="mkt-dot current" id="mkt-current-dot" style="left:50%">C</div>
-                  <!-- Proposed dot -->
                   <div class="mkt-flag proposed-flag" id="mkt-proposed-flag" style="left:50%;display:none">Proposed</div>
                   <div class="mkt-dot proposed" id="mkt-proposed-dot" style="left:50%;display:none">P</div>
                 </div>
@@ -892,7 +922,6 @@
                 </div>
               </div>
             </div>
-
             <div class="comp-cards">
               <div class="comp-card">
                 <div class="comp-card-label">Current Salary</div>
@@ -915,8 +944,6 @@
                 <div class="comp-card-sub" id="cc-vs-median-sub"></div>
               </div>
             </div>
-
-            <!-- Industry Value Section -->
             <div class="value-section" id="value-section" style="display:none">
               <div class="value-section-header">
                 <div class="value-section-title">
@@ -951,8 +978,6 @@
                 </div>
               </div>
               <div class="value-insight" id="vc-insight" style="margin-top:1rem"></div>
-
-              <!-- Regional market + competitor comparison -->
               <div id="regional-comp-wrap" style="display:none;margin-top:1.5rem;border-top:1px solid var(--border);padding-top:1.25rem">
                 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem">
                   <div class="value-section-title">🗺️ Regional Market &amp; Competitor Comparison</div>
@@ -961,8 +986,6 @@
                     <button class="region-tab" onclick="switchRegion('ie')">Inland Empire</button>
                   </div>
                 </div>
-
-                <!-- BLS market range for region -->
                 <div id="regional-bls-block" style="margin-bottom:1rem">
                   <div style="font-size:0.7rem;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem">
                     BLS Market Range — <span id="regional-bls-label"></span>
@@ -984,15 +1007,12 @@
                   </div>
                   <div id="regional-bls-vs-swl" style="font-size:.78rem;color:var(--green-dark);background:#F0F6EC;border:1px solid #C5DDB8;border-radius:6px;padding:.5rem .75rem"></div>
                 </div>
-
-                <!-- Competitor rows -->
                 <div style="font-size:.7rem;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem">
                   Competitor Pay — <span id="regional-comp-region-label"></span>
                 </div>
                 <div id="regional-comp-rows"></div>
               </div>
             </div>
-
           </div>
         </div>
 
@@ -1075,9 +1095,9 @@
   let currentReview = null;
   let activeTab = 'self';
   let selfRatings = {};
-  let mgrRatings = {};
-  let selfGoals = [];
-  let mgrGoals  = [];
+  let mgrRatings  = {};
+  let selfGoals   = [];
+  let mgrGoals    = [];
 
   const GOAL_CATEGORIES = ['Professional Development','Technical Skills','Leadership & Management','Safety & Compliance','Productivity','Customer Service','Other'];
   const GOAL_PRIORITIES  = ['High','Medium','Low'];
@@ -1364,7 +1384,7 @@
     }
 
     // Stats
-    const inProgress = Object.values(allReviews).filter(r => ['draft','submitted','in-review'].includes(r.status)).length;
+    const inProgress = Object.values(allReviews).filter(r => ['draft','submitted','in-review','mgr-complete'].includes(r.status)).length;
     const notStarted = Object.values(allReviews).filter(r => r.status === 'not-started').length;
     document.getElementById('stat-total').textContent    = total;
     document.getElementById('stat-done').textContent     = completed;
@@ -1385,6 +1405,7 @@
     const status = document.getElementById('filter-status').value;
     const isAdmin = !currentEmployee || currentEmployee.role === 'admin';
     const isMgr   = currentEmployee?.role === 'manager';
+    const isExec  = currentEmployee?.role === 'executive';
 
     // Build rows: match reviews to employees
     let rows = Object.values(allReviews).map(rev => ({
@@ -1393,9 +1414,13 @@
     })).filter(r => r.emp);
 
     // Role filter
-    if (!isAdmin && isMgr && currentEmployee) {
-      rows = rows.filter(r => r.emp.managerId === currentEmployee.id || r.review.employeeId === currentEmployee.id);
-    } else if (!isAdmin && !isMgr && currentEmployee) {
+    if (!isAdmin && (isMgr || isExec) && currentEmployee) {
+      rows = rows.filter(r =>
+        r.emp.managerId === currentEmployee.id ||
+        r.emp.executiveId === currentEmployee.id ||
+        r.review.employeeId === currentEmployee.id
+      );
+    } else if (!isAdmin && !isMgr && !isExec && currentEmployee) {
       rows = rows.filter(r => r.review.employeeId === currentEmployee.id);
     }
 
@@ -1411,7 +1436,7 @@
 
     const tbody = document.getElementById('reviews-tbody');
     if (rows.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><p>No reviews match your filters.</p></div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><p>No reviews match your filters.</p></div></td></tr>`;
       return;
     }
 
@@ -1419,10 +1444,11 @@
       const initials = `${emp.firstName[0]}${emp.lastName[0]}`;
       const mgr = emp.managerId ? allEmployees[emp.managerId] : null;
       const mgrName = mgr ? `${mgr.firstName} ${mgr.lastName}` : '—';
-      const selfStatus  = getSelfStatus(review);
-      const mgrStatus   = getMgrStatus(review);
-      const score = review.managerEval?.overallScore
-        ? `<span class="score-cell">${review.managerEval.overallScore} / 5</span>`
+      const selfStatus = getSelfStatus(review);
+      const mgrStatus  = getMgrStatus(review);
+      const execStatus = getExecStatus(review);
+      const score = review.executiveEval?.overallScore
+        ? `<span class="score-cell">${review.executiveEval.overallScore} / 5</span>`
         : `<span class="score-cell na">—</span>`;
       return `
         <tr>
@@ -1435,6 +1461,7 @@
           <td>${mgrName}</td>
           <td>${selfStatus}</td>
           <td>${mgrStatus}</td>
+          <td>${execStatus}</td>
           <td>${score}</td>
           <td style="white-space:nowrap">
             <button class="btn-action" data-id="${review.id}">Open</button>
@@ -1475,9 +1502,16 @@
   }
 
   function getMgrStatus(r) {
-    if (r.status === 'completed') return `<span class="badge badge-completed">Completed</span>`;
-    if (r.managerEval?.savedAt)   return `<span class="badge badge-in-review">In Review</span>`;
-    if (r.selfEval?.submitted)    return `<span class="badge badge-submitted">Ready for Review</span>`;
+    if (r.managerEval?.completedAt) return `<span class="badge badge-completed">Submitted</span>`;
+    if (r.managerEval?.savedAt)     return `<span class="badge badge-in-review">In Review</span>`;
+    if (r.selfEval?.submitted)      return `<span class="badge badge-submitted">Ready</span>`;
+    return `<span class="badge badge-not-started">Waiting</span>`;
+  }
+
+  function getExecStatus(r) {
+    if (r.status === 'completed')       return `<span class="badge badge-completed">Completed</span>`;
+    if (r.executiveEval?.savedAt)       return `<span class="badge badge-in-review">In Review</span>`;
+    if (r.status === 'mgr-complete')    return `<span class="badge badge-submitted">Ready</span>`;
     return `<span class="badge badge-not-started">Waiting</span>`;
   }
 
@@ -1492,9 +1526,10 @@
     currentReview = allReviews[reviewId];
     const emp = allEmployees[currentReview.employeeId];
     const mgr = emp?.managerId ? allEmployees[emp.managerId] : null;
-    const isOwn = currentEmployee?.id === currentReview.employeeId;
+    const isOwn      = currentEmployee?.id === currentReview.employeeId;
     const isMgrOfEmp = currentEmployee?.id === emp?.managerId;
-    const isAdmin = !currentEmployee || currentEmployee.role === 'admin';
+    const isExecOfEmp= currentEmployee?.id === emp?.executiveId;
+    const isAdmin    = !currentEmployee || currentEmployee.role === 'admin';
 
     document.getElementById('modal-emp-name').textContent = emp ? `${emp.firstName} ${emp.lastName}` : 'Employee';
     document.getElementById('modal-emp-sub').textContent  = `${emp?.position || ''} · ${emp?.branch || ''} · ${selectedYear} Annual Review`;
@@ -1556,15 +1591,12 @@
     // Mgr fields
     const completed = currentReview.status === 'completed';
     const canEditMgr = (isMgrOfEmp || isAdmin) && !completed;
-    setField('mgr-overall-score', currentReview.managerEval?.overallScore || '', !canEditMgr, true);
-    setField('mgr-action',        currentReview.managerEval?.recommendedAction || 'no-change', !canEditMgr, true);
     setField('mgr-comments',      currentReview.managerEval?.comments || '', !canEditMgr);
-    setField('mgr-goals',         currentReview.managerEval?.suggestedGoals || '', !canEditMgr);
     setField('mgr-support',       currentReview.managerEval?.managerSupport || '', !canEditMgr);
 
     const mn = document.getElementById('mgr-status-note');
-    if (completed) {
-      mn.innerHTML = `<div class="status-note success">This review has been completed.</div>`;
+    if (currentReview.managerEval?.completedAt) {
+      mn.innerHTML = `<div class="status-note success">Manager review submitted.</div>`;
     } else if (!isMgrOfEmp && !isAdmin) {
       mn.innerHTML = `<div class="status-note info">Manager review is completed by ${mgr ? mgr.firstName + ' ' + mgr.lastName : 'the assigned manager'}.</div>`;
     } else if (!selfSubmitted) {
@@ -1573,30 +1605,44 @@
       mn.innerHTML = '';
     }
 
+    // Exec tab fields
+    const mgrComplete = !!currentReview.managerEval?.completedAt;
+    const canEditExec = (isExecOfEmp || isAdmin) && currentReview.status !== 'completed';
+    setField('exec-overall-score', currentReview.executiveEval?.overallScore || '', !canEditExec, true);
+    setField('exec-action',        currentReview.executiveEval?.recommendedAction || 'no-change', !canEditExec, true);
+    setField('exec-comments',      currentReview.executiveEval?.comments || '', !canEditExec);
+    setField('exec-view-mgr-comments', currentReview.managerEval?.comments || '(Manager has not submitted yet)', true);
+    setField('exec-view-q1', currentReview.selfEval?.q1 || '(Not submitted yet)', true);
+    setField('exec-view-q2', currentReview.selfEval?.q2 || '(Not submitted yet)', true);
+
+    // Build read-only mgr competency grid in exec tab
+    buildCompetencies('exec-view-mgr-competencies', mgrRatings, false, 'exec-mgr');
+
+    const en = document.getElementById('exec-status-note');
+    if (completed) {
+      en.innerHTML = `<div class="status-note success">Executive assessment completed.</div>`;
+    } else if (!isExecOfEmp && !isAdmin) {
+      const execEmp = emp?.executiveId ? allEmployees[emp.executiveId] : null;
+      en.innerHTML = `<div class="status-note info">Executive assessment is completed by ${execEmp ? execEmp.firstName + ' ' + execEmp.lastName : 'the assigned executive'}.</div>`;
+    } else if (!mgrComplete) {
+      en.innerHTML = `<div class="status-note warning">Waiting for manager to complete their review before executive assessment can be finalized.</div>`;
+    } else {
+      en.innerHTML = '';
+    }
+
     // Footer
     document.getElementById('modal-footer-status').textContent =
       `Status: ${statusLabel(currentReview.status)}`;
-
-    // Button visibility
-    const saveDraft = document.getElementById('modal-save-draft');
-    const submitBtn = document.getElementById('modal-submit');
-
-    // Determine context
-    if (activeTab === 'self') {
-      saveDraft.style.display = canEditSelf ? 'inline-flex' : 'none';
-      submitBtn.style.display = canEditSelf ? 'inline-flex' : 'none';
-      submitBtn.textContent = 'Submit Self-Eval';
-    } else {
-      saveDraft.style.display = canEditMgr ? 'inline-flex' : 'none';
-      submitBtn.style.display = canEditMgr ? 'inline-flex' : 'none';
-      submitBtn.textContent = 'Complete Review';
-    }
 
     // Initialize score summary for existing reviews that already have ratings/score
     updateMgrScoreSuggestion();
     updateScoreSummaryCard();
 
-    switchTab('self');
+    // Determine which tab to open
+    let defaultTab = 'self';
+    if (!isOwn && (isMgrOfEmp || isAdmin)) defaultTab = 'manager';
+    if (isExecOfEmp && !isMgrOfEmp && !isOwn) defaultTab = 'executive';
+    switchTab(defaultTab);
     document.getElementById('review-modal').classList.add('open');
   }
 
@@ -1616,7 +1662,7 @@
   }
 
   function statusLabel(s) {
-    return { 'not-started': 'Not Started', draft: 'Draft', submitted: 'Submitted', 'in-review': 'In Review', completed: 'Completed' }[s] || s;
+    return { 'not-started': 'Not Started', draft: 'Draft', submitted: 'Submitted', 'in-review': 'In Review', 'mgr-complete': 'Mgr Complete', completed: 'Completed' }[s] || s;
   }
 
   // ── Build Competency Rating Rows ──
@@ -1675,12 +1721,12 @@
       document.getElementById('score-suggest-sub').textContent = `Average competency rating: ${avg.toFixed(1)} / 5 — click to apply`;
       banner.classList.add('show');
       // Auto-populate the dropdown if not already set
-      const sel = document.getElementById('mgr-overall-score');
+      const sel = document.getElementById('exec-overall-score');
       if (sel && !sel.disabled && !sel.value) sel.value = sug;
       updateScoreSummaryCard();
       // Clicking banner applies the suggestion
       banner.onclick = () => {
-        const sel2 = document.getElementById('mgr-overall-score');
+        const sel2 = document.getElementById('exec-overall-score');
         if (sel2 && !sel2.disabled) { sel2.value = sug; updateScoreSummaryCard(); }
       };
     } else {
@@ -1691,7 +1737,7 @@
 
   function updateScoreSummaryCard() {
     const card = document.getElementById('score-summary-card');
-    const scoreVal = parseInt(document.getElementById('mgr-overall-score')?.value);
+    const scoreVal = parseInt(document.getElementById('exec-overall-score')?.value);
     if (!scoreVal || !SCORE_META[scoreVal]) { card.classList.remove('show'); return; }
 
     const meta = SCORE_META[scoreVal];
@@ -1726,16 +1772,19 @@
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
     document.getElementById('tab-self').classList.toggle('active', tab === 'self');
     document.getElementById('tab-manager').classList.toggle('active', tab === 'manager');
+    document.getElementById('tab-executive').classList.toggle('active', tab === 'executive');
 
     if (!currentReview) return;
     const emp = allEmployees[currentReview.employeeId];
-    const isOwn = currentEmployee?.id === currentReview.employeeId;
+    const isOwn      = currentEmployee?.id === currentReview.employeeId;
     const isMgrOfEmp = currentEmployee?.id === emp?.managerId;
-    const isAdmin = !currentEmployee || currentEmployee.role === 'admin';
+    const isExecOfEmp= currentEmployee?.id === emp?.executiveId;
+    const isAdmin    = !currentEmployee || currentEmployee.role === 'admin';
     const selfSubmitted = currentReview.selfEval?.submitted;
-    const completed = currentReview.status === 'completed';
+    const completed  = currentReview.status === 'completed';
     const canEditSelf = isOwn && !selfSubmitted;
-    const canEditMgr  = (isMgrOfEmp || isAdmin) && !completed;
+    const canEditMgr  = (isMgrOfEmp || isAdmin) && !currentReview.managerEval?.completedAt;
+    const canEditExec = (isExecOfEmp || isAdmin) && !completed;
 
     const saveDraft = document.getElementById('modal-save-draft');
     const submitBtn = document.getElementById('modal-submit');
@@ -1744,10 +1793,14 @@
       saveDraft.style.display = canEditSelf ? 'inline-flex' : 'none';
       submitBtn.style.display = canEditSelf ? 'inline-flex' : 'none';
       submitBtn.textContent = 'Submit Self-Eval';
-    } else {
+    } else if (tab === 'manager') {
       saveDraft.style.display = canEditMgr ? 'inline-flex' : 'none';
       submitBtn.style.display = canEditMgr ? 'inline-flex' : 'none';
-      submitBtn.textContent = 'Complete Review';
+      submitBtn.textContent = 'Complete Manager Review';
+    } else {
+      saveDraft.style.display = canEditExec ? 'inline-flex' : 'none';
+      submitBtn.style.display = canEditExec ? 'inline-flex' : 'none';
+      submitBtn.textContent = 'Complete Assessment';
     }
   }
 
@@ -1755,15 +1808,14 @@
     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
   });
 
-  document.getElementById('mgr-overall-score').addEventListener('change', updateScoreSummaryCard);
-
   document.getElementById('self-add-goal-btn').addEventListener('click', () => showGoalForm('self'));
   document.getElementById('mgr-add-goal-btn').addEventListener('click',  () => showGoalForm('mgr'));
 
   // ── Save Draft ──
   document.getElementById('modal-save-draft').addEventListener('click', async () => {
     if (activeTab === 'self') await saveSelfDraft();
-    else await saveMgrDraft();
+    else if (activeTab === 'manager') await saveMgrDraft();
+    else await saveExecDraft();
   });
 
   async function saveSelfDraft() {
@@ -1791,8 +1843,6 @@
     const payload = {
       managerEval: {
         ratings: mgrRatings,
-        overallScore: document.getElementById('mgr-overall-score').value,
-        recommendedAction: document.getElementById('mgr-action').value,
         comments: document.getElementById('mgr-comments').value.trim(),
         goals: mgrGoals,
         managerSupport: document.getElementById('mgr-support').value.trim(),
@@ -1808,10 +1858,28 @@
     renderTable();
   }
 
+  async function saveExecDraft() {
+    const payload = {
+      executiveEval: {
+        overallScore: document.getElementById('exec-overall-score').value,
+        recommendedAction: document.getElementById('exec-action').value,
+        comments: document.getElementById('exec-comments').value.trim(),
+        savedAt: serverTimestamp()
+      },
+      updatedAt: serverTimestamp()
+    };
+    await updateDoc(doc(db, 'reviews', currentReview.id), payload);
+    currentReview = { ...currentReview, ...payload };
+    allReviews[currentReview.id] = currentReview;
+    toast('Executive draft saved.', 'success');
+    renderTable();
+  }
+
   // ── Submit ──
   document.getElementById('modal-submit').addEventListener('click', async () => {
     if (activeTab === 'self') await submitSelfEval();
-    else await completeReview();
+    else if (activeTab === 'manager') await completeManagerReview();
+    else await completeExecutiveAssessment();
   });
 
   async function submitSelfEval() {
@@ -1841,10 +1909,8 @@
     await loadData();
   }
 
-  async function completeReview() {
-    const score = document.getElementById('mgr-overall-score').value;
+  async function completeManagerReview() {
     const comments = document.getElementById('mgr-comments').value.trim();
-    if (!score) { toast('Please select an overall performance score.', 'error'); return; }
     if (!comments) { toast('Please add manager comments before completing.', 'error'); return; }
     const allRated = COMPETENCIES.every(c => mgrRatings[c.key]);
     if (!allRated) { toast('Please rate all competencies.', 'error'); return; }
@@ -1852,11 +1918,33 @@
     const payload = {
       managerEval: {
         ratings: mgrRatings,
-        overallScore: +score,
-        recommendedAction: document.getElementById('mgr-action').value,
         comments,
         goals: mgrGoals,
         managerSupport: document.getElementById('mgr-support').value.trim(),
+        completedAt: serverTimestamp()
+      },
+      status: 'mgr-complete',
+      updatedAt: serverTimestamp()
+    };
+    await updateDoc(doc(db, 'reviews', currentReview.id), payload);
+    currentReview = { ...currentReview, ...payload };
+    allReviews[currentReview.id] = currentReview;
+    toast('Manager review submitted!', 'success');
+    closeModal();
+    await loadData();
+  }
+
+  async function completeExecutiveAssessment() {
+    const score    = document.getElementById('exec-overall-score').value;
+    const comments = document.getElementById('exec-comments').value.trim();
+    if (!score)    { toast('Please select an overall performance score.', 'error'); return; }
+    if (!comments) { toast('Please add executive comments before completing.', 'error'); return; }
+
+    const payload = {
+      executiveEval: {
+        overallScore: +score,
+        recommendedAction: document.getElementById('exec-action').value,
+        comments,
         completedAt: serverTimestamp()
       },
       status: 'completed',
@@ -1865,7 +1953,7 @@
     await updateDoc(doc(db, 'reviews', currentReview.id), payload);
     currentReview = { ...currentReview, ...payload };
     allReviews[currentReview.id] = currentReview;
-    toast('Review completed!', 'success');
+    toast('Executive assessment completed!', 'success');
     closeModal();
     await loadData();
   }
@@ -1891,14 +1979,16 @@
     for (const emp of activeEmps) {
       if (existing.has(emp.id)) continue;
       await addDoc(collection(db, 'reviews'), {
-        employeeId: emp.id,
-        managerId: emp.managerId || null,
-        year: selectedYear,
-        status: 'not-started',
-        selfEval: null,
-        managerEval: null,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
+        employeeId:   emp.id,
+        managerId:    emp.managerId   || null,
+        executiveId:  emp.executiveId || null,
+        year:         selectedYear,
+        status:       'not-started',
+        selfEval:     null,
+        managerEval:  null,
+        executiveEval: null,
+        createdAt:    serverTimestamp(),
+        updatedAt:    serverTimestamp()
       });
       created++;
     }
@@ -1937,6 +2027,7 @@
     document.getElementById('score-summary-card').classList.remove('show');
     selfGoals = []; mgrGoals = [];
     currentReview = null;
+    activeTab = 'self';
   }
   document.getElementById('modal-close').addEventListener('click', closeModal);
   document.getElementById('modal-cancel').addEventListener('click', closeModal);
@@ -2428,7 +2519,7 @@
 
   function updateCompPanel() {
     if (!currentReview) return;
-    const score = document.getElementById('mgr-overall-score').value;
+    const score = document.getElementById('exec-overall-score').value;
     const panel = document.getElementById('comp-panel');
 
     if (!score) { panel.style.display = 'none'; return; }
@@ -2543,7 +2634,7 @@
   }
 
   // Wire up panel triggers
-  document.getElementById('mgr-overall-score').addEventListener('change', updateCompPanel);
+  document.getElementById('exec-overall-score').addEventListener('change', () => { updateScoreSummaryCard(); updateCompPanel(); });
   document.getElementById('comp-pct-input').addEventListener('input', () => {
     if (!currentReview) return;
     const emp = allEmployees[currentReview.employeeId];
