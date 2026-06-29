@@ -100,13 +100,14 @@
     /* ── Print ── */
     @media print {
       @page { margin: 0; size: letter; }
-      body { background: white !important; }
-      .nav, .page-header, .config-panel, .form-panel, .preview-toolbar,
+      html, body { background: white !important; margin: 0 !important; }
+      .topnav, .page-header, .config-panel, .preview-toolbar,
       .toast-wrap, .modal-overlay, .btn, button { display: none !important; }
-      .main-layout { display: block !important; padding: 0 !important; }
+      .main { margin: 0 !important; padding: 0 !important; }
+      .gen-layout { display: block !important; gap: 0 !important; }
       .preview-panel { border: none !important; box-shadow: none !important; border-radius: 0 !important; }
       .preview-body { padding: 0 !important; }
-      .letter { max-width: 100% !important; padding: 0 1in !important; font-size: 12pt !important; }
+      .letter { max-width: 100% !important; padding: 0 1in !important; font-size: 12pt !important; margin: 0 !important; }
       .letter > .ltr-hdr-wrap { margin: 0 -1in 1.25rem !important; border-radius: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       .ltr-hdr-top { padding: 0.75rem 1in !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
       .ltr-hdr-bot { padding: 0.35rem 1in !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -738,7 +739,7 @@
 
   function buildHourlyEn(name, date, effDate, rate, otRate, address, supervisor, schedule, returnDate) {
     return `<div class="letter">
-      ${letterHead('Compensation Notice')}
+      ${letterHead('Wage Increase Notice')}
       <p>${date}</p>
       <p><strong>Dear ${name}:</strong></p>
       <p>Southwest Landscape is pleased to notify you of a wage increase in recognition of your continued contributions and commitment to our team.</p>
@@ -756,16 +757,13 @@
       <p><span class="section-bold">Conditional Offer.</span> This offer of employment is contingent upon the successful completion of standard pre-employment verifications. These may include confirmation of employment history, reference checks, review of driving record (if applicable), and verification of any information or credentials provided during the hiring process. This offer is made with the understanding that all information disclosed by the candidate is accurate and complete.</p>
       <p><span class="section-bold">Employment Relationship.</span>&nbsp; Notwithstanding any of the above, your employment with Southwest Landscape is "at will" meaning that you or Southwest Landscape can terminate the employment relationship at any time, with or without cause, and with or without notice.</p>
       <p>If you wish to accept this offer, please sign and date this letter and return it to me by <strong>${returnDate}</strong>.</p>
-      <p style="margin-top:1.5rem">Sincerely,<br><br><br>
-      David Eufracio Jr<br>
-      Human Resources Manager</p>
       ${sigBlock('Signature', 'Date', 'Print Name')}
     </div>`;
   }
 
   function buildHourlyEs(name, date, effDate, rate, otRate, address, supervisor, schedule, returnDate) {
     return `<div class="letter">
-      ${letterHead('Aviso de Compensación')}
+      ${letterHead('Aviso de Aumento Salarial')}
       <p>${date}</p>
       <p><strong>Estimado/a ${name}:</strong></p>
       <p>Southwest Landscape se complace en notificarle un aumento salarial en reconocimiento a sus continuas contribuciones y compromiso con nuestro equipo.</p>
@@ -783,10 +781,7 @@
       <p><span class="section-bold">Oferta Condicional.</span> Esta oferta de empleo está condicionada a la finalización exitosa de las verificaciones estándar previas al empleo. Estas pueden incluir confirmación de historial laboral, verificación de referencias, revisión del registro de manejo (si aplica) y verificación de cualquier información o credenciales proporcionadas durante el proceso de contratación. Esta oferta se realiza bajo el entendimiento de que toda la información proporcionada por el candidato es precisa y completa.</p>
       <p><span class="section-bold">Relación Laboral.</span>&nbsp; Sin perjuicio de lo anterior, su empleo con Southwest Landscape es "a voluntad", lo que significa que usted o Southwest Landscape pueden terminar la relación laboral en cualquier momento, con o sin causa, y con o sin previo aviso.</p>
       <p>Si desea aceptar esta oferta, firme y feche esta carta y regrésela a mí antes del <strong>${returnDate}</strong>.</p>
-      <p style="margin-top:1.5rem">Atentamente,<br><br><br>
-      David Eufracio Jr<br>
-      Gerente de Recursos Humanos</p>
-      ${sigBlock('Firma del Empleado', 'Fecha', 'Nombre en letra de molde')}
+      ${sigBlock('Firma del Empleado', 'Fecha', 'Nombre en letra de molde', 'Atentamente,', 'Gerente de Recursos Humanos', 'ACEPTACIÓN Y ACUERDO:')}
     </div>`;
   }
 
@@ -795,7 +790,7 @@
       ${letterHead('Offer of Employment')}
       <p>${date}</p>
       <p><strong>Dear ${name}:</strong></p>
-      <p>On behalf of Southwest Landscape, I am pleased to offer you a <strong>${empType}</strong> position as (<strong>${position}</strong>). If accepted, the terms of your employment with Southwest Landscape will be as follows:</p>
+      <p>On behalf of Southwest Landscape, I am pleased to offer you a <strong>${empType}</strong> position as <strong>${position}</strong>. If accepted, the terms of your employment with Southwest Landscape will be as follows:</p>
       <p><span class="section-bold">Start Date.</span>&nbsp; Your anticipated start date is scheduled for <strong>${startDate}</strong>.</p>
       <p><span class="section-bold">Compensation.</span><br>
       You will be paid a starting salary of <strong>${salary} per annum</strong>.</p>
@@ -809,9 +804,6 @@
       <p><span class="section-bold">Conditional Offer.</span> This offer of employment is contingent upon the successful completion of standard pre-employment verifications. These may include confirmation of employment history, reference checks, review of driving record (if applicable), and verification of any information or credentials provided during the hiring process. This offer is made with the understanding that all information disclosed by the candidate is accurate and complete.</p>
       <p><span class="section-bold">Employment Relationship.</span>&nbsp; Notwithstanding any of the above, your employment with Southwest Landscape is "at will" meaning that you or Southwest Landscape can terminate the employment relationship at any time, with or without cause, and with or without notice.</p>
       <p>If you wish to accept this offer, please sign and date this letter and return it to me by <strong>${returnDate}</strong>.</p>
-      <p style="margin-top:1.5rem">Sincerely,<br><br><br>
-      David Eufracio Jr<br>
-      Human Resources Manager</p>
       ${sigBlock('Signature', 'Date', 'Print Name')}
     </div>`;
   }
@@ -879,18 +871,18 @@
     </div>`;
   }
 
-  function sigBlock(sig, date, print) {
+  function sigBlock(sig, date, print, closing = 'Sincerely,', title = 'Human Resources Manager', agreementLabel = 'ACCEPTANCE AND AGREEMENT:') {
     const sigImgHtml = sigDataUrl
       ? `<img class="sig-sender-img" src="${sigDataUrl}" alt="Signature">`
       : `<div style="height:56px;border-bottom:1px solid #ccc;width:200px;margin-bottom:4px"></div>`;
     return `<div class="sig-area">
       <div class="sig-sender">
-        <p>Sincerely,</p>
+        <p>${closing}</p>
         ${sigImgHtml}
         <div class="sig-sender-name">David Eufracio Jr</div>
-        <div class="sig-sender-title">Human Resources Manager</div>
+        <div class="sig-sender-title">${title}</div>
       </div>
-      <div class="sig-title">ACCEPTANCE AND AGREEMENT:</div>
+      <div class="sig-title">${agreementLabel}</div>
       <div class="sig-row">
         <div class="sig-block"><div class="sig-line"></div><div class="sig-label">${sig}</div></div>
         <div class="sig-block"><div class="sig-line" style="width:140px"></div><div class="sig-label">${date}</div></div>
