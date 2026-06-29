@@ -72,6 +72,8 @@
     .btn-secondary:hover { background: var(--gray-50); border-color: var(--green); }
     .btn-danger { background: var(--error-bg); color: var(--error); border: 1.5px solid #FFCDD2; }
     .btn-danger:hover { background: #FFCDD2; }
+    .btn-letter { background: #EEF6E8; color: var(--green); border: 1.5px solid #B8D4A8; }
+    .btn-letter:hover { background: #D4ECC8; }
     .btn-icon { padding: 0.4rem 0.6rem; font-size: 0.85rem; }
     .btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
 
@@ -755,6 +757,7 @@
           <td>
             <div class="actions">
               <button class="btn btn-secondary btn-icon" onclick="openEdit('${e.id}')" title="Edit">✏️</button>
+              <button class="btn btn-letter btn-icon" onclick="generateLetter('${e.id}')" title="Generate Letter">📄</button>
               <button class="btn btn-danger btn-icon" onclick="openDelete('${e.id}')" title="Delete">🗑</button>
             </div>
           </td>
@@ -852,6 +855,14 @@
     populateExecutiveSelect();
     openModal();
   });
+
+  // ── Generate Letter ────────────────────────────────────────────
+  window.generateLetter = function(id) {
+    const emp = allEmployees.find(e => e.id === id);
+    if (!emp) return;
+    const type = emp.payType === 'salary' ? 'salary' : 'hourly-en';
+    window.open(`letters.html?empId=${id}&type=${type}`, '_blank');
+  };
 
   // ── Open Edit (global so inline onclick works) ─────────────────
   window.openEdit = function(id) {
