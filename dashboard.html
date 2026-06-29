@@ -46,13 +46,7 @@
       box-shadow: 0 2px 12px rgba(7,40,24,0.35);
     }
     .brand { display: flex; align-items: center; gap: 0.65rem; text-decoration: none; flex-shrink: 0; }
-    .brand-logo {
-      width: 32px; height: 32px;
-      background: rgba(211,222,215,0.15);
-      border-radius: 7px;
-      border: 1px solid rgba(211,222,215,0.2);
-      display: flex; align-items: center; justify-content: center;
-    }
+    .brand-logo { height: 36px; width: auto; display: block; }
     .brand-name { font-size: 1.0rem; font-weight: 800; color: var(--white); letter-spacing: -0.01em; }
     .nav-links { display: flex; align-items: center; gap: 0.15rem; flex: 1; }
     .nav-link {
@@ -252,12 +246,7 @@
 <!-- ── Top Nav ── -->
 <header class="topnav">
   <a href="dashboard.html" class="brand">
-    <div class="brand-logo">
-      <svg viewBox="0 0 60 72" fill="none" xmlns="http://www.w3.org/2000/svg" width="18" height="22">
-        <path d="M30 4 C10 4 1 22 3 40 C5 54 15 65 30 70 C42 56 47 36 30 4Z" fill="#D3DED7" opacity="0.9"/>
-        <path d="M33 7 C48 1 60 16 58 38 C56 54 44 65 28 72 C25 56 36 34 33 7Z" fill="#D3DED7" opacity="0.65"/>
-      </svg>
-    </div>
+    <img src="logo2.png" alt="SouthWest Landscape" class="brand-logo" onerror="this.style.display='none'"/>
     <span class="brand-name">SWL PMS</span>
   </a>
 
@@ -265,7 +254,7 @@
     <a class="nav-link active" href="dashboard.html">Dashboard</a>
     <a class="nav-link" href="reviews.html">Reviews</a>
     <a class="nav-link" href="reports.html">Reports</a>
-    <a class="nav-link" id="nav-admin" href="admin-employees.html" style="display:none">Administration</a>
+    <a class="nav-link" id="nav-admin" href="adminemployees.html" style="display:none">Administration</a>
   </nav>
 
   <div class="nav-right">
@@ -285,7 +274,7 @@
   <a class="nav-link active" href="dashboard.html">Dashboard</a>
   <a class="nav-link" href="reviews.html">Reviews</a>
   <a class="nav-link" href="reports.html">Reports</a>
-  <a class="nav-link" id="mobile-nav-admin" href="admin-employees.html" style="display:none">Administration</a>
+  <a class="nav-link" id="mobile-nav-admin" href="adminemployees.html" style="display:none">Administration</a>
   <div class="mobile-divider"></div>
   <button class="btn-logout" id="logout-btn-mobile">Sign out</button>
 </nav>
@@ -378,7 +367,7 @@
             <a class="quick-btn" href="reports.html">
               <span class="quick-btn-icon">📊</span> Open Reports
             </a>
-            <a class="quick-btn" id="qa-admin" href="admin-employees.html" style="display:none">
+            <a class="quick-btn" id="qa-admin" href="adminemployees.html" style="display:none">
               <span class="quick-btn-icon">👥</span> Manage Employees
             </a>
           </div>
