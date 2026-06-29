@@ -376,7 +376,7 @@
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
   import { getAuth, signOut, onAuthStateChanged }
     from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-  import { getFirestore, collection, getDocs, query, where, orderBy, limit }
+  import { getFirestore, collection, getDocs, query, where, orderBy, limit, doc }
     from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
   const firebaseConfig = {
@@ -415,7 +415,17 @@
     const firstName   = displayName.split(' ')[0];
     document.getElementById('user-name').textContent  = displayName;
     document.getElementById('first-name').textContent = firstName;
-    document.getElementById('hero-sub').textContent   = `${greetingTime()} · 2025 Annual Review Cycle`;
+    // Load active cycle name
+    try {
+      const cycleSnap = await getDocs(query(collection(db, 'cycles'), orderBy('openedAt', 'desc')));
+      let activeCycle = null;
+      cycleSnap.forEach(d => { if (!activeCycle && d.data().status === 'open') activeCycle = d.data(); });
+      const cycleName = activeCycle ? activeCycle.name : 'No Active Cycle';
+      const deadlineStr = activeCycle?.deadline ? ' · Due ' + new Date(activeCycle.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+      document.getElementById('hero-sub').textContent = `${greetingTime()} · ${cycleName}${deadlineStr}`;
+    } catch(e) {
+      document.getElementById('hero-sub').textContent = `${greetingTime()} · 2025 Annual Review Cycle`;
+    }
     // initials for avatar
     const initials = displayName.split(' ').map(p => p[0]).join('').slice(0,2).toUpperCase();
     document.getElementById('user-avatar').textContent = initials;
