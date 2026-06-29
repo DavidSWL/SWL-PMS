@@ -118,6 +118,8 @@
     /* Action btn */
     .btn-action { padding: 0.35rem 0.75rem; border-radius: 7px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--white); color: var(--gray-900); transition: background 0.15s; }
     .btn-action:hover { background: var(--green-light); border-color: var(--green); color: var(--green-dark); }
+    .btn-delete-review { padding: 0.35rem 0.6rem; border-radius: 7px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid #FFCDD2; background: var(--error-bg); color: var(--error); transition: background 0.15s; margin-left: 0.35rem; }
+    .btn-delete-review:hover { background: #FFCDD2; }
 
     /* ── Buttons ── */
     .btn { padding: 0.5rem 1.125rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; cursor: pointer; border: none; transition: background 0.15s, opacity 0.15s; }
@@ -1036,7 +1038,7 @@
   import { initializeApp }    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
   import { getAuth, signOut, onAuthStateChanged }
                                from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-  import { getFirestore, collection, doc, getDocs, addDoc, updateDoc,
+  import { getFirestore, collection, doc, getDocs, addDoc, updateDoc, deleteDoc,
            query, orderBy, where, serverTimestamp }
                                from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
@@ -1434,13 +1436,35 @@
           <td>${selfStatus}</td>
           <td>${mgrStatus}</td>
           <td>${score}</td>
-          <td><button class="btn-action" data-id="${review.id}">Open</button></td>
+          <td style="white-space:nowrap">
+            <button class="btn-action" data-id="${review.id}">Open</button>
+            ${isAdmin ? `<button class="btn-delete-review" data-del-id="${review.id}" data-del-name="${emp.firstName} ${emp.lastName}" title="Delete review">🗑</button>` : ''}
+          </td>
         </tr>`;
     }).join('');
 
     tbody.querySelectorAll('.btn-action').forEach(btn => {
       btn.addEventListener('click', () => openReview(btn.dataset.id));
     });
+    tbody.querySelectorAll('.btn-delete-review').forEach(btn => {
+      btn.addEventListener('click', () => confirmDeleteReview(btn.dataset.delId, btn.dataset.delName));
+    });
+  }
+
+  function confirmDeleteReview(reviewId, empName) {
+    if (!confirm(`Delete the review for ${empName}? This cannot be undone.`)) return;
+    deleteReview(reviewId);
+  }
+
+  async function deleteReview(reviewId) {
+    try {
+      await deleteDoc(doc(db, 'reviews', reviewId));
+      delete allReviews[reviewId];
+      renderTable();
+      toast('Review deleted.', 'success');
+    } catch (err) {
+      toast('Delete failed: ' + err.message, 'error');
+    }
   }
 
   function getSelfStatus(r) {
