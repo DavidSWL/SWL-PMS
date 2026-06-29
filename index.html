@@ -10,12 +10,12 @@
     :root {
       --green:      #0E4C2D;
       --green-dark: #0A3B22;
-      --green-deep: #072818;
       --sage:       #D3DED7;
-      --burgundy:   #7A1C2E;
+      --sage-light: #EDF2EF;
       --white:      #ffffff;
-      --border:     #C4D5CC;
       --text:       #0D1F16;
+      --text-muted: #5A7A6A;
+      --border:     #C4D5CC;
     }
 
     body {
@@ -25,7 +25,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(160deg, var(--green-deep) 0%, var(--green-dark) 50%, var(--green) 100%);
+      background: #EEF3EF;
       position: relative;
       overflow: hidden;
       padding: 1.5rem;
@@ -36,197 +36,154 @@
       content: '';
       position: fixed;
       inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 120' width='100' height='120'%3E%3Cpath d='M50 8 C22 8 6 30 8 56 C10 76 24 92 44 100 C58 84 64 58 50 8Z' fill='%23D3DED7' opacity='0.07'/%3E%3Cpath d='M54 12 C72 4 90 20 88 48 C86 68 70 82 48 92 C44 74 56 48 54 12Z' fill='%23D3DED7' opacity='0.07'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 120' width='100' height='120'%3E%3Cpath d='M50 8 C22 8 6 30 8 56 C10 76 24 92 44 100 C58 84 64 58 50 8Z' fill='%230E4C2D' opacity='0.06'/%3E%3Cpath d='M54 12 C72 4 90 20 88 48 C86 68 70 82 48 92 C44 74 56 48 54 12Z' fill='%230E4C2D' opacity='0.06'/%3E%3C/svg%3E");
       background-repeat: repeat;
       background-size: 100px 120px;
       pointer-events: none;
     }
 
-    /* Brand header above card */
-    .brand-header {
+    /* White login card */
+    .login-card {
+      position: relative; z-index: 10;
+      width: 100%; max-width: 400px;
+      background: var(--white);
+      border-radius: 20px;
+      padding: 2.5rem 2rem 2rem;
+      box-shadow: 0 8px 40px rgba(14,76,45,0.12), 0 2px 8px rgba(14,76,45,0.06);
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 1.75rem;
-      position: relative;
-      z-index: 10;
       text-align: center;
     }
-    .brand-logo-wrap {
-      width: 64px; height: 64px;
-      background: rgba(211,222,215,0.15);
-      border: 1.5px solid rgba(211,222,215,0.3);
-      border-radius: 16px;
+
+    /* Logo circle */
+    .logo-circle {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: var(--sage-light);
+      border: 2px solid var(--border);
       display: flex; align-items: center; justify-content: center;
-      backdrop-filter: blur(8px);
+      margin-bottom: 1.25rem;
+      overflow: hidden;
     }
+    .logo-circle img {
+      width: 64px; height: 64px;
+      object-fit: contain;
+    }
+
     .brand-name {
-      font-size: 1.125rem; font-weight: 800; color: #fff; letter-spacing: -0.01em;
+      font-size: 1.25rem; font-weight: 800; color: var(--text);
+      letter-spacing: -0.02em; margin-bottom: 0.15rem;
     }
     .brand-sub {
-      font-size: 0.75rem; color: rgba(211,222,215,0.55); font-weight: 500;
-      letter-spacing: 0.03em; margin-top: -0.25rem;
-    }
-    .brand-wordmark { line-height: 1.15; text-align: center; }
-    .brand-sw { font-size: 1.1rem; font-weight: 900; color: #C4556A; letter-spacing: -0.01em; }
-    .brand-landscape { font-size: 1.1rem; font-weight: 900; color: #fff; letter-spacing: -0.01em; }
-
-    /* Tagline */
-    .tagline {
-      font-size: 1.5rem; font-weight: 800; color: #fff;
-      letter-spacing: -0.02em; line-height: 1.2;
-      margin-bottom: 0.35rem;
-    }
-    .tagline-sub {
-      font-size: 0.8125rem; color: rgba(211,222,215,0.5);
-      max-width: 360px; line-height: 1.5; text-align: center;
+      font-size: 0.7rem; font-weight: 700; color: var(--text-muted);
+      letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1.75rem;
     }
 
-    /* Glass login card */
-    .login-card {
-      position: relative; z-index: 10;
-      width: 100%; max-width: 380px;
-      background: rgba(255,255,255,0.10);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(211,222,215,0.25);
-      border-radius: 20px;
-      padding: 2rem 2rem 1.75rem;
-      box-shadow: 0 24px 60px rgba(7,40,24,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
-      margin-top: 1.25rem;
-    }
-
-    .card-title {
-      font-size: 1.25rem; font-weight: 800; color: #fff;
-      margin-bottom: 0.2rem; letter-spacing: -0.02em;
-    }
-    .card-sub {
-      font-size: 0.8125rem; color: rgba(211,222,215,0.55);
-      margin-bottom: 1.5rem;
-    }
+    .form-wrap { width: 100%; text-align: left; }
 
     .form-field { margin-bottom: 0.875rem; }
     .form-field label {
       display: block; font-size: 0.7rem; font-weight: 700;
-      color: rgba(211,222,215,0.7); letter-spacing: 0.07em;
+      color: var(--text-muted); letter-spacing: 0.07em;
       text-transform: uppercase; margin-bottom: 0.4rem;
     }
     .form-field input {
       width: 100%; padding: 0.75rem 1rem;
       border-radius: 10px;
-      border: 1px solid rgba(211,222,215,0.25);
-      background: rgba(255,255,255,0.10);
-      color: #fff;
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      color: var(--text);
       font-size: 0.9375rem; font-family: inherit; outline: none;
-      transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
-      backdrop-filter: blur(4px);
+      transition: border-color 0.18s, box-shadow 0.18s;
     }
-    .form-field input::placeholder { color: rgba(211,222,215,0.35); }
+    .form-field input::placeholder { color: #A8BFB4; }
     .form-field input:focus {
-      border-color: rgba(211,222,215,0.55);
-      background: rgba(255,255,255,0.15);
-      box-shadow: 0 0 0 3px rgba(211,222,215,0.12);
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(14,76,45,0.1);
     }
 
     .error-msg {
-      display: none; background: rgba(185,28,28,0.2);
-      border: 1px solid rgba(248,113,113,0.35);
-      border-radius: 8px; color: #FCA5A5;
+      display: none; background: #FEF2F2;
+      border: 1px solid #FECACA;
+      border-radius: 8px; color: #B91C1C;
       font-size: 0.8rem; font-weight: 500;
       padding: 0.6rem 0.875rem; margin-bottom: 1rem;
+      width: 100%; text-align: left;
     }
     .error-msg.show { display: block; }
 
     .btn-signin {
-      width: 100%; padding: 0.825rem; border-radius: 10px; border: none;
+      width: 100%; padding: 0.875rem; border-radius: 10px; border: none;
       cursor: pointer; background: var(--green); color: #fff;
       font-size: 0.9375rem; font-weight: 700; font-family: inherit;
       letter-spacing: 0.01em;
-      box-shadow: 0 4px 16px rgba(7,40,24,0.5);
+      box-shadow: 0 4px 14px rgba(14,76,45,0.3);
       transition: background 0.18s, box-shadow 0.18s, transform 0.1s;
-      margin-top: 0.5rem;
+      margin-top: 0.25rem;
     }
-    .btn-signin:hover { background: var(--green-dark); box-shadow: 0 6px 20px rgba(7,40,24,0.6); }
+    .btn-signin:hover { background: var(--green-dark); box-shadow: 0 6px 18px rgba(14,76,45,0.4); }
     .btn-signin:active { transform: scale(0.99); }
     .btn-signin:disabled { opacity: 0.6; cursor: not-allowed; }
 
     .footer-note {
       text-align: center; margin-top: 1.25rem;
-      font-size: 0.75rem; color: rgba(211,222,215,0.4);
+      font-size: 0.75rem; color: var(--text-muted);
     }
-    .footer-note a { color: rgba(211,222,215,0.7); font-weight: 600; text-decoration: none; }
-    .footer-note a:hover { color: #fff; }
+    .footer-note a { color: var(--green); font-weight: 600; text-decoration: none; }
+    .footer-note a:hover { text-decoration: underline; }
 
-    /* Page footer */
     .page-footer {
       position: relative; z-index: 10;
-      margin-top: 2rem;
-      font-size: 0.72rem; color: rgba(211,222,215,0.25);
+      margin-top: 1.75rem;
+      font-size: 0.72rem; color: #9DB5A6;
       text-align: center;
     }
 
     .spinner {
       display: inline-block; width: 15px; height: 15px;
-      border: 2px solid rgba(255,255,255,0.35); border-top-color: #fff;
+      border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff;
       border-radius: 50%; animation: spin 0.7s linear infinite;
       vertical-align: middle; margin-right: 0.4rem;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     @media (max-width: 480px) {
-      .tagline { font-size: 1.25rem; }
-      .login-card { padding: 1.5rem; }
+      .login-card { padding: 2rem 1.5rem 1.5rem; }
     }
   </style>
 </head>
 <body>
 
-<!-- Brand header -->
-<div class="brand-header">
-  <div class="brand-logo-wrap">
-    <img src="logo.png" alt="SouthWest Landscape" style="width:52px;height:52px;object-fit:contain;border-radius:8px;" onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='block'"/>
-    <!-- Fallback SVG if logo.png not yet uploaded -->
-    <svg id="logo-fallback" viewBox="0 0 80 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="44" height="50" style="display:none">
-      <path d="M38 5 C12 5 1 26 3 48 C5 65 18 78 38 85 C52 70 58 48 38 5Z" fill="#D3DED7"/>
-      <path d="M44 8 C62 1 76 18 74 44 C72 62 58 76 36 84 C32 66 46 42 44 8Z" fill="#D3DED7" opacity="0.7"/>
-      <ellipse cx="41" cy="46" rx="6" ry="14" fill="rgba(7,40,24,0.25)" transform="rotate(-15 41 46)"/>
-    </svg>
-  </div>
-  <div class="brand-wordmark">
-    <span class="brand-sw">SouthWest</span><br>
-    <span class="brand-landscape">Landscape</span>
-  </div>
-  <div class="brand-sub">Performance Management System</div>
-</div>
-
-<div class="tagline">Improving landscapes through<br>managed care</div>
-<div class="tagline-sub">A streamlined performance management system built for the SouthWest Landscape team</div>
-
-<!-- Glass login card -->
 <div class="login-card">
-  <div class="card-title">Welcome back</div>
-  <div class="card-sub">Sign in to your account</div>
+  <div class="logo-circle">
+    <img src="logo.png" alt="SouthWest Landscape"/>
+  </div>
 
-  <div class="error-msg" id="error-msg"></div>
+  <div class="brand-name">SouthWest Landscape</div>
+  <div class="brand-sub">Performance Management System</div>
 
-  <form id="login-form" novalidate>
-    <div class="form-field">
-      <label for="email">Work Email</label>
-      <input type="email" id="email" name="email"
-             placeholder="you@southwestlandscape.com" autocomplete="email" required />
-    </div>
-    <div class="form-field">
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password"
-             placeholder="••••••••" autocomplete="current-password" required />
-    </div>
-    <button type="submit" class="btn-signin" id="signin-btn">Sign in</button>
-  </form>
+  <div class="form-wrap">
+    <div class="error-msg" id="error-msg"></div>
 
-  <p class="footer-note">
-    Need access? <a href="mailto:admin@southwestlandscape.com">Contact your administrator</a>
-  </p>
+    <form id="login-form" novalidate>
+      <div class="form-field">
+        <label for="email">Work Email</label>
+        <input type="email" id="email" name="email"
+               placeholder="you@southwestlandscape.com" autocomplete="email" required />
+      </div>
+      <div class="form-field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password"
+               placeholder="••••••••" autocomplete="current-password" required />
+      </div>
+      <button type="submit" class="btn-signin" id="signin-btn">Sign In →</button>
+    </form>
+
+    <p class="footer-note">
+      Need access? <a href="mailto:admin@southwestlandscape.com">Contact your administrator.</a>
+    </p>
+  </div>
 </div>
 
 <div class="page-footer">© 2025 SouthWest Landscape</div>
@@ -261,7 +218,7 @@
 
   function setLoading(on) {
     btn.disabled = on;
-    btn.innerHTML = on ? '<span class="spinner"></span>Signing in…' : 'Sign in';
+    btn.innerHTML = on ? '<span class="spinner"></span>Signing in…' : 'Sign In →';
   }
 
   form.addEventListener('submit', async e => {
