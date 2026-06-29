@@ -8,187 +8,271 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --green:        #3D6B2C;
-      --green-dark:   #2A4D1E;
-      --green-deeper: #1a3d18;
+      --green:        #0E4C2D;
+      --green-dark:   #0A3B22;
+      --green-deep:   #072818;
+      --green-light:  #EDF2EF;
+      --sage:         #D3DED7;
+      --burgundy:     #7A1C2E;
       --accent:       #8B6914;
-      --bg:           #F4F6F2;
-      --border:       #B8CCB0;
+      --bg:           #F6F4F0;
+      --border:       #C4D5CC;
       --white:        #ffffff;
-      --gray-400:     #8FA889;
-      --gray-600:     #4A5E45;
-      --success:      #2E7D32;
-      --warning:      #E65100;
-      --error:        #C62828;
+      --gray-50:      #F9FAF8;
+      --gray-100:     #EEF1EB;
+      --gray-400:     #7A9485;
+      --gray-600:     #456055;
+      --gray-900:     #0D1F16;
+      --success:      #0E4C2D;
+      --success-bg:   #EDF2EF;
+      --warning:      #D97706;
+      --warning-bg:   #FEF3C7;
+      --error:        #B91C1C;
+      --error-bg:     #FEF2F2;
     }
 
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      background: var(--bg);
-      color: #1A2618;
-      min-height: 100vh;
+      background: var(--bg); color: var(--gray-900); min-height: 100vh;
     }
 
     /* ── Top Nav ── */
     .topnav {
-      position: fixed; top: 0; left: 0; right: 0; height: 64px;
+      position: fixed; top: 0; left: 0; right: 0; height: 60px;
       background: var(--green);
       display: flex; align-items: center;
       padding: 0 1.5rem; gap: 1.5rem;
       z-index: 100;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.20);
+      box-shadow: 0 2px 12px rgba(7,40,24,0.35);
     }
-    .brand {
-      display: flex; align-items: center; gap: 0.65rem;
-      text-decoration: none; flex-shrink: 0;
-    }
-    .brand svg {
+    .brand { display: flex; align-items: center; gap: 0.65rem; text-decoration: none; flex-shrink: 0; }
+    .brand-logo {
       width: 32px; height: 32px;
-      background: rgba(255,255,255,0.15);
-      border-radius: 6px; padding: 4px;
+      background: rgba(211,222,215,0.15);
+      border-radius: 7px;
+      border: 1px solid rgba(211,222,215,0.2);
+      display: flex; align-items: center; justify-content: center;
     }
-    .brand-name {
-      font-size: 1.05rem; font-weight: 700;
-      color: var(--white); letter-spacing: -0.02em;
-    }
-    .nav-links {
-      display: flex; align-items: center; gap: 0.25rem; flex: 1;
-    }
+    .brand-name { font-size: 1.0rem; font-weight: 800; color: var(--white); letter-spacing: -0.01em; }
+    .nav-links { display: flex; align-items: center; gap: 0.15rem; flex: 1; }
     .nav-link {
-      padding: 0.375rem 0.75rem;
-      border-radius: 8px;
+      padding: 0.35rem 0.75rem; border-radius: 7px;
       font-size: 0.875rem; font-weight: 500;
-      color: rgba(255,255,255,0.78);
-      text-decoration: none;
-      transition: background 0.15s, color 0.15s;
-      white-space: nowrap;
+      color: rgba(211,222,215,0.7);
+      text-decoration: none; transition: background 0.15s, color 0.15s; white-space: nowrap;
     }
     .nav-link:hover, .nav-link.active {
-      background: rgba(255,255,255,0.15);
-      color: var(--white);
+      background: rgba(211,222,215,0.15); color: var(--white);
     }
-    .nav-right {
-      display: flex; align-items: center; gap: 0.75rem; margin-left: auto;
+    .nav-link.active { font-weight: 600; }
+    .nav-right { display: flex; align-items: center; gap: 0.75rem; margin-left: auto; }
+    .user-chip {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.3rem 0.65rem 0.3rem 0.35rem;
+      background: rgba(211,222,215,0.12);
+      border: 1px solid rgba(211,222,215,0.18);
+      border-radius: 99px;
     }
-    .user-name { font-size: 0.875rem; color: rgba(255,255,255,0.88); font-weight: 500; }
+    .user-avatar {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--sage); color: var(--green-deep);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 800; flex-shrink: 0;
+    }
+    .user-name { font-size: 0.8125rem; color: rgba(255,255,255,0.85); font-weight: 500; }
     .btn-logout {
-      padding: 0.375rem 0.875rem;
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.25);
-      border-radius: 8px;
-      color: rgba(255,255,255,0.85);
-      font-size: 0.8125rem; font-weight: 600;
-      cursor: pointer; transition: background 0.15s;
+      padding: 0.35rem 0.875rem;
+      background: rgba(211,222,215,0.1);
+      border: 1px solid rgba(211,222,215,0.22);
+      border-radius: 7px; color: rgba(211,222,215,0.8);
+      font-size: 0.8rem; font-weight: 600; cursor: pointer;
+      transition: background 0.15s;
     }
-    .btn-logout:hover { background: rgba(255,255,255,0.22); }
+    .btn-logout:hover { background: rgba(211,222,215,0.2); color: #fff; }
 
     /* Hamburger */
-    .hamburger {
-      display: none; flex-direction: column; gap: 5px;
-      background: none; border: none; cursor: pointer;
-      padding: 0.5rem; margin-left: auto;
-    }
-    .hamburger span {
-      display: block; width: 22px; height: 2px;
-      background: var(--white); border-radius: 99px;
-    }
-    .mobile-menu {
-      display: none; position: fixed;
-      top: 64px; left: 0; right: 0;
-      background: var(--green-dark);
-      padding: 0.75rem; flex-direction: column; gap: 0.25rem;
-      z-index: 99; box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-    }
+    .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; margin-left: auto; }
+    .hamburger span { display: block; width: 22px; height: 2px; background: var(--white); border-radius: 99px; }
+    .mobile-menu { display: none; position: fixed; top: 60px; left: 0; right: 0; background: var(--green-dark); padding: 0.75rem; flex-direction: column; gap: 0.25rem; z-index: 99; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
     .mobile-menu.open { display: flex; }
-    .mobile-menu .nav-link { display: block; padding: 0.65rem 0.875rem; }
-    .mobile-divider { height: 1px; background: rgba(255,255,255,0.15); margin: 0.35rem 0; }
+    .mobile-menu .nav-link { display: block; padding: 0.65rem 0.875rem; color: rgba(211,222,215,0.75); }
+    .mobile-menu .nav-link:hover, .mobile-menu .nav-link.active { background: rgba(211,222,215,0.12); color: #fff; }
+    .mobile-divider { height: 1px; background: rgba(211,222,215,0.12); margin: 0.35rem 0; }
 
-    /* ── Page ── */
-    .page { padding-top: 64px; min-height: 100vh; }
-    .content { max-width: 1280px; margin: 0 auto; padding: 2rem 1.5rem; }
+    /* ── Page shell ── */
+    .page { padding-top: 60px; min-height: 100vh; }
+    .content { max-width: 1280px; margin: 0 auto; padding: 0; }
 
-    .welcome h1 {
-      font-size: 1.875rem; font-weight: 700;
-      color: var(--green-dark);
+    /* ── Hero banner ── */
+    .hero-banner {
+      background: linear-gradient(120deg, var(--green-deep) 0%, var(--green-dark) 45%, var(--green) 100%);
+      padding: 2rem 1.75rem 2.5rem;
+      position: relative; overflow: hidden;
     }
-    .welcome p { color: var(--gray-600); margin-top: 0.25rem; }
+    .hero-banner::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 120' width='100' height='120'%3E%3Cpath d='M50 8 C22 8 6 30 8 56 C10 76 24 92 44 100 C58 84 64 58 50 8Z' fill='%23D3DED7' opacity='0.05'/%3E%3Cpath d='M54 12 C72 4 90 20 88 48 C86 68 70 82 48 92 C44 74 56 48 54 12Z' fill='%23D3DED7' opacity='0.05'/%3E%3C/svg%3E");
+      background-repeat: repeat; background-size: 100px 120px;
+    }
+    .hero-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1.5rem; position: relative;
+    }
+    .hero-text h1 { font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 0.3rem; }
+    .hero-text p { font-size: 0.875rem; color: rgba(211,222,215,0.6); }
+    .hero-cycle {
+      background: rgba(211,222,215,0.12);
+      border: 1px solid rgba(211,222,215,0.2);
+      border-radius: 12px; padding: 1rem 1.5rem; text-align: center; flex-shrink: 0;
+    }
+    .hero-cycle-pct { font-size: 2rem; font-weight: 800; color: #fff; line-height: 1; }
+    .hero-cycle-label { font-size: 0.72rem; color: rgba(211,222,215,0.55); font-weight: 500; margin-top: 0.2rem; }
+    .hero-cycle-bar { width: 120px; height: 4px; background: rgba(211,222,215,0.2); border-radius: 99px; margin-top: 0.6rem; }
+    .hero-cycle-fill { height: 100%; background: var(--sage); border-radius: 99px; transition: width 0.6s ease; }
 
-    /* ── KPI Grid ── */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.5rem;
-      margin-top: 2rem;
+    /* ── Page content area ── */
+    .page-body { max-width: 1280px; margin: 0 auto; padding: 1.75rem 1.75rem 2.5rem; }
+
+    /* ── KPI row ── */
+    .kpi-row {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 1rem; margin-bottom: 1.5rem;
     }
     .kpi-card {
-      background: var(--white);
-      border-radius: 12px;
+      background: var(--white); border-radius: 12px;
       border: 1px solid var(--border);
-      box-shadow: 0 2px 8px rgba(61,107,44,0.10);
-      padding: 1.5rem;
-      display: flex; flex-direction: column; gap: 0.65rem;
-      transition: box-shadow 0.2s, transform 0.2s;
+      box-shadow: 0 1px 4px rgba(7,40,24,0.06);
+      padding: 1.25rem; position: relative; overflow: hidden;
     }
-    .kpi-card:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.12); transform: translateY(-2px); }
-    .kpi-icon  { font-size: 1.6rem; line-height: 1; }
-    .kpi-label { font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.05em; }
-    .kpi-value { font-size: 2.25rem; font-weight: 700; color: var(--green); line-height: 1; }
-    .kpi-meta  { font-size: 0.75rem; color: var(--gray-400); }
-    .kpi-card.completed .kpi-value { color: var(--success); }
-    .kpi-card.progress  .kpi-value { color: var(--accent); }
-    .kpi-card.overdue   .kpi-value { color: var(--error); }
+    .kpi-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: var(--sage);
+    }
+    .kpi-card.k-green::before { background: var(--green); }
+    .kpi-card.k-amber::before { background: var(--warning); }
+    .kpi-card.k-red::before   { background: var(--error); }
 
-    /* Placeholder card */
-    .placeholder-card {
-      background: var(--white);
-      border-radius: 12px;
+    .kpi-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 0.75rem; }
+    .kpi-badge { font-size: 0.65rem; font-weight: 700; padding: 0.18rem 0.5rem; border-radius: 99px; }
+    .kpi-badge.green  { background: var(--success-bg); color: var(--green); }
+    .kpi-badge.amber  { background: var(--warning-bg); color: #92400E; }
+    .kpi-badge.red    { background: var(--error-bg);   color: var(--error); }
+    .kpi-badge.neutral { background: var(--gray-100); color: var(--gray-600); }
+    .kpi-icon { font-size: 1.25rem; }
+    .kpi-value { font-size: 2.5rem; font-weight: 800; color: var(--gray-900); line-height: 1; }
+    .kpi-label { font-size: 0.72rem; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.3rem; }
+
+    /* ── Bottom grid ── */
+    .bottom-grid {
+      display: grid; grid-template-columns: 2fr 1fr;
+      gap: 1rem;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--white); border-radius: 12px;
       border: 1px solid var(--border);
-      box-shadow: 0 2px 8px rgba(61,107,44,0.10);
-      padding: 1.5rem;
-      margin-top: 2rem;
+      box-shadow: 0 1px 4px rgba(7,40,24,0.06);
     }
-    .placeholder-card h2 {
-      font-size: 1.05rem; font-weight: 600;
-      color: var(--green-dark); margin-bottom: 0.5rem;
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--gray-100);
     }
-    .placeholder-card p { font-size: 0.875rem; color: var(--gray-400); }
+    .card-title { font-size: 0.8125rem; font-weight: 700; color: var(--gray-900); text-transform: uppercase; letter-spacing: 0.05em; }
+    .card-link { font-size: 0.78rem; color: var(--green); font-weight: 600; text-decoration: none; }
+    .card-link:hover { text-decoration: underline; }
+    .card-body { padding: 0.5rem 0; }
 
-    @media (max-width: 1024px) { .kpi-grid { grid-template-columns: repeat(2,1fr); } }
+    /* Review list rows */
+    .review-row {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.7rem 1.25rem;
+      border-bottom: 1px solid var(--gray-100);
+      transition: background 0.1s;
+    }
+    .review-row:last-child { border-bottom: none; }
+    .review-row:hover { background: var(--gray-50); }
+    .r-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--green); color: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.68rem; font-weight: 800; flex-shrink: 0;
+    }
+    .r-name { font-size: 0.875rem; font-weight: 600; color: var(--gray-900); }
+    .r-dept { font-size: 0.75rem; color: var(--gray-400); margin-top: 0.05rem; }
+    .r-status {
+      margin-left: auto; font-size: 0.68rem; font-weight: 700;
+      padding: 0.22rem 0.6rem; border-radius: 99px; white-space: nowrap; flex-shrink: 0;
+    }
+    .r-status.done    { background: var(--success-bg); color: var(--green); }
+    .r-status.review  { background: #EEF2FF; color: #3730A3; }
+    .r-status.pending { background: var(--warning-bg); color: #92400E; }
+    .r-status.draft   { background: var(--gray-100);   color: var(--gray-600); }
+
+    /* Quick actions */
+    .quick-body { padding: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .quick-btn {
+      display: flex; align-items: center; gap: 0.65rem;
+      width: 100%; padding: 0.75rem 1rem; border-radius: 10px;
+      border: 1.5px solid var(--border); background: var(--white);
+      color: var(--green-dark); font-size: 0.8125rem; font-weight: 600;
+      font-family: inherit; cursor: pointer; text-align: left;
+      text-decoration: none;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .quick-btn:hover { background: var(--green-light); border-color: var(--green); }
+    .quick-btn.primary {
+      background: var(--green); border-color: var(--green); color: #fff;
+      box-shadow: 0 2px 8px rgba(14,76,45,0.25);
+    }
+    .quick-btn.primary:hover { background: var(--green-dark); }
+    .quick-btn-icon { font-size: 1rem; flex-shrink: 0; }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .kpi-row { grid-template-columns: repeat(2,1fr); }
+      .bottom-grid { grid-template-columns: 1fr; }
+    }
     @media (max-width: 768px) {
       .nav-links, .nav-right { display: none; }
       .hamburger { display: flex; }
-      .content { padding: 1.5rem 1rem; }
-      .kpi-grid { grid-template-columns: repeat(2,1fr); gap: 1rem; }
+      .hero-cycle { display: none; }
+      .kpi-row { grid-template-columns: repeat(2,1fr); gap: 0.75rem; }
+      .page-body { padding: 1.25rem 1rem; }
     }
-    @media (max-width: 480px) { .kpi-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 480px) {
+      .kpi-row { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
 
+<!-- ── Top Nav ── -->
 <header class="topnav">
   <a href="dashboard.html" class="brand">
-    <svg viewBox="0 0 48 48" fill="none" stroke="white" stroke-width="1.5"
-         stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
-      <path d="M6 36 Q24 26 42 36"/>
-      <path d="M14 36 L14 24 M10 28 L14 24 L18 28"/>
-      <path d="M24 36 L24 18 M19 24 L24 18 L29 24"/>
-      <path d="M34 36 L34 25 M30 29 L34 25 L38 29"/>
-      <path d="M8 18 Q24 8 40 18" stroke-dasharray="2 3"/>
-    </svg>
+    <div class="brand-logo">
+      <svg viewBox="0 0 60 72" fill="none" xmlns="http://www.w3.org/2000/svg" width="18" height="22">
+        <path d="M30 4 C10 4 1 22 3 40 C5 54 15 65 30 70 C42 56 47 36 30 4Z" fill="#D3DED7" opacity="0.9"/>
+        <path d="M33 7 C48 1 60 16 58 38 C56 54 44 65 28 72 C25 56 36 34 33 7Z" fill="#D3DED7" opacity="0.65"/>
+      </svg>
+    </div>
     <span class="brand-name">SWL PMS</span>
   </a>
 
   <nav class="nav-links">
     <a class="nav-link active" href="dashboard.html">Dashboard</a>
     <a class="nav-link" href="reviews.html">Reviews</a>
-    <a class="nav-link" href="goals.html">Goals</a>
-    <a class="nav-link" href="compensation.html">Compensation</a>
     <a class="nav-link" href="reports.html">Reports</a>
-    <a class="nav-link" href="adminemployees.html">Administration</a>
+    <a class="nav-link" id="nav-admin" href="admin-employees.html" style="display:none">Administration</a>
   </nav>
 
   <div class="nav-right">
-    <span class="user-name" id="user-name"></span>
+    <div class="user-chip">
+      <div class="user-avatar" id="user-avatar">—</div>
+      <span class="user-name" id="user-name"></span>
+    </div>
     <button class="btn-logout" id="logout-btn">Sign out</button>
   </div>
 
@@ -198,56 +282,110 @@
 </header>
 
 <nav class="mobile-menu" id="mobile-menu">
-  <a class="nav-link" href="dashboard.html">Dashboard</a>
+  <a class="nav-link active" href="dashboard.html">Dashboard</a>
   <a class="nav-link" href="reviews.html">Reviews</a>
-  <a class="nav-link" href="goals.html">Goals</a>
-  <a class="nav-link" href="compensation.html">Compensation</a>
   <a class="nav-link" href="reports.html">Reports</a>
-  <a class="nav-link" href="adminemployees.html">Administration</a>
+  <a class="nav-link" id="mobile-nav-admin" href="admin-employees.html" style="display:none">Administration</a>
   <div class="mobile-divider"></div>
   <button class="btn-logout" id="logout-btn-mobile">Sign out</button>
 </nav>
 
+<!-- ── Page ── -->
 <div class="page">
   <div class="content">
 
-    <div class="welcome">
-      <h1>Welcome, <span id="first-name">—</span></h1>
-      <p>Here's a snapshot of your team's performance activity.</p>
-    </div>
-
-    <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-icon">📋</div>
-        <div class="kpi-label">Total Reviews</div>
-        <div class="kpi-value" id="kpi-total">0</div>
-        <div class="kpi-meta">Current review cycle</div>
-      </div>
-      <div class="kpi-card completed">
-        <div class="kpi-icon">✅</div>
-        <div class="kpi-label">Completed</div>
-        <div class="kpi-value" id="kpi-completed">0</div>
-        <div class="kpi-meta">Finalized &amp; signed off</div>
-      </div>
-      <div class="kpi-card progress">
-        <div class="kpi-icon">🔄</div>
-        <div class="kpi-label">In Progress</div>
-        <div class="kpi-value" id="kpi-progress">0</div>
-        <div class="kpi-meta">Awaiting submission</div>
-      </div>
-      <div class="kpi-card overdue">
-        <div class="kpi-icon">⚠️</div>
-        <div class="kpi-label">Overdue</div>
-        <div class="kpi-value" id="kpi-overdue">0</div>
-        <div class="kpi-meta">Not yet started</div>
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+      <div class="hero-inner">
+        <div class="hero-text">
+          <h1>Good morning, <span id="first-name">—</span> 👋</h1>
+          <p id="hero-sub">2025 Annual Review Cycle</p>
+        </div>
+        <div class="hero-cycle">
+          <div class="hero-cycle-pct" id="cycle-pct">—%</div>
+          <div class="hero-cycle-label">Cycle complete</div>
+          <div class="hero-cycle-bar">
+            <div class="hero-cycle-fill" id="cycle-fill" style="width:0%"></div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="placeholder-card">
-      <h2>Recent Activity</h2>
-      <p>Activity feed coming in Phase 2 — reviews submitted, goals updated, and approvals pending will appear here.</p>
-    </div>
+    <!-- Page body -->
+    <div class="page-body">
 
+      <!-- KPI row -->
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <div class="kpi-icon">📋</div>
+            <div class="kpi-badge neutral">2025</div>
+          </div>
+          <div class="kpi-value" id="kpi-total">—</div>
+          <div class="kpi-label">Total Reviews</div>
+        </div>
+        <div class="kpi-card k-green">
+          <div class="kpi-top">
+            <div class="kpi-icon">✅</div>
+            <div class="kpi-badge green">Completed</div>
+          </div>
+          <div class="kpi-value" id="kpi-completed">—</div>
+          <div class="kpi-label">Completed</div>
+        </div>
+        <div class="kpi-card k-amber">
+          <div class="kpi-top">
+            <div class="kpi-icon">🔄</div>
+            <div class="kpi-badge amber">Active</div>
+          </div>
+          <div class="kpi-value" id="kpi-progress">—</div>
+          <div class="kpi-label">In Progress</div>
+        </div>
+        <div class="kpi-card k-red">
+          <div class="kpi-top">
+            <div class="kpi-icon">⚠️</div>
+            <div class="kpi-badge red">Action</div>
+          </div>
+          <div class="kpi-value" id="kpi-overdue">—</div>
+          <div class="kpi-label">Not Started</div>
+        </div>
+      </div>
+
+      <!-- Bottom grid -->
+      <div class="bottom-grid">
+
+        <!-- Recent reviews -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Recent Reviews</div>
+            <a class="card-link" href="reviews.html">View all →</a>
+          </div>
+          <div class="card-body" id="recent-reviews-body">
+            <div class="review-row">
+              <div style="color:#9DB5A6;font-size:0.875rem;padding:1rem 0.25rem">Loading…</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Quick Actions</div>
+          </div>
+          <div class="quick-body">
+            <a class="quick-btn primary" href="reviews.html">
+              <span class="quick-btn-icon">📋</span> View Reviews
+            </a>
+            <a class="quick-btn" href="reports.html">
+              <span class="quick-btn-icon">📊</span> Open Reports
+            </a>
+            <a class="quick-btn" id="qa-admin" href="admin-employees.html" style="display:none">
+              <span class="quick-btn-icon">👥</span> Manage Employees
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
   </div>
 </div>
 
@@ -255,7 +393,7 @@
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
   import { getAuth, signOut, onAuthStateChanged }
     from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-  import { getFirestore, collection, getDocs }
+  import { getFirestore, collection, getDocs, query, where, orderBy, limit }
     from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
   const firebaseConfig = {
@@ -271,48 +409,122 @@
   const auth = getAuth(app);
   const db   = getFirestore(app);
 
-  // Auth guard
-  onAuthStateChanged(auth, async user => {
-    if (!user) {
-      window.location.href = 'index.html';
-      return;
+  let currentEmployee = null;
+
+  function greetingTime() {
+    const h = new Date().getHours();
+    return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  }
+
+  function renderNav() {
+    const isAdmin = currentEmployee?.role === 'admin';
+    if (isAdmin) {
+      document.getElementById('nav-admin')?.style.setProperty('display', '');
+      document.getElementById('mobile-nav-admin')?.style.setProperty('display', '');
+      document.getElementById('qa-admin')?.style.setProperty('display', '');
     }
+  }
+
+  onAuthStateChanged(auth, async user => {
+    if (!user) { window.location.href = 'index.html'; return; }
+
     const displayName = user.displayName || user.email.split('@')[0];
+    const firstName   = displayName.split(' ')[0];
     document.getElementById('user-name').textContent  = displayName;
-    document.getElementById('first-name').textContent = displayName.split(' ')[0];
-    await loadKPIs();
+    document.getElementById('first-name').textContent = firstName;
+    document.getElementById('hero-sub').textContent   = `${greetingTime()} · 2025 Annual Review Cycle`;
+    // initials for avatar
+    const initials = displayName.split(' ').map(p => p[0]).join('').slice(0,2).toUpperCase();
+    document.getElementById('user-avatar').textContent = initials;
+
+    try {
+      const empSnap = await getDocs(query(collection(db, 'employees'), where('email', '==', user.email)));
+      if (!empSnap.empty) currentEmployee = { id: empSnap.docs[0].id, ...empSnap.docs[0].data() };
+    } catch(e) { console.warn('Employee lookup:', e); }
+
+    renderNav();
+    await loadDashboard();
   });
 
-  async function loadKPIs() {
+  async function loadDashboard() {
     try {
       const year = new Date().getFullYear();
       const snap = await getDocs(collection(db, 'reviews'));
-      const reviews = [];
+      let reviews = [];
       snap.forEach(d => { const r = { id: d.id, ...d.data() }; if (r.year === year) reviews.push(r); });
+
+      // Filter to assigned employees if manager/executive
+      if (currentEmployee && (currentEmployee.role === 'manager' || currentEmployee.role === 'executive')) {
+        const empSnap = await getDocs(query(collection(db, 'employees'), where('managerId', '==', currentEmployee.id)));
+        const assignedIds = new Set(empSnap.docs.map(d => d.id));
+        reviews = reviews.filter(r => assignedIds.has(r.employeeId));
+      }
 
       const total      = reviews.length;
       const completed  = reviews.filter(r => r.status === 'completed').length;
       const inProg     = reviews.filter(r => ['draft','submitted','in-review'].includes(r.status)).length;
       const notStarted = reviews.filter(r => r.status === 'not-started').length;
+      const pct        = total > 0 ? Math.round((completed / total) * 100) : 0;
 
       document.getElementById('kpi-total').textContent     = total;
       document.getElementById('kpi-completed').textContent = completed;
       document.getElementById('kpi-progress').textContent  = inProg;
       document.getElementById('kpi-overdue').textContent   = notStarted;
-    } catch(e) {
-      console.warn('KPI load failed:', e);
-    }
+      document.getElementById('cycle-pct').textContent     = pct + '%';
+      document.getElementById('cycle-fill').style.width    = pct + '%';
+
+      // Recent reviews — last 5 by updatedAt
+      const empSnap2 = await getDocs(collection(db, 'employees'));
+      const empMap   = {};
+      empSnap2.forEach(d => { empMap[d.id] = d.data(); });
+
+      const recent = [...reviews]
+        .filter(r => r.employeeId && empMap[r.employeeId])
+        .sort((a, b) => {
+          const ta = a.updatedAt?.seconds || a.createdAt?.seconds || 0;
+          const tb = b.updatedAt?.seconds || b.createdAt?.seconds || 0;
+          return tb - ta;
+        })
+        .slice(0, 5);
+
+      const statusMap = {
+        completed:   ['Completed',   'done'],
+        'in-review': ['In Review',   'review'],
+        submitted:   ['Submitted',   'review'],
+        draft:       ['Draft',       'draft'],
+        'not-started':['Not Started','draft'],
+      };
+
+      const body = document.getElementById('recent-reviews-body');
+      if (recent.length === 0) {
+        body.innerHTML = '<div style="padding:1.5rem 1.25rem;color:#9DB5A6;font-size:0.875rem">No reviews yet for this cycle.</div>';
+        return;
+      }
+
+      body.innerHTML = recent.map(r => {
+        const emp  = empMap[r.employeeId];
+        const name = emp ? `${emp.firstName} ${emp.lastName}` : 'Unknown';
+        const dept = emp ? `${emp.department || ''}${emp.branch ? ' · ' + emp.branch : ''}` : '';
+        const initials = emp ? `${(emp.firstName||'?')[0]}${(emp.lastName||'?')[0]}`.toUpperCase() : '?';
+        const [label, cls] = statusMap[r.status] || ['Unknown', 'draft'];
+        return `
+          <div class="review-row">
+            <div class="r-avatar">${initials}</div>
+            <div>
+              <div class="r-name">${name}</div>
+              <div class="r-dept">${dept}</div>
+            </div>
+            <div class="r-status ${cls}">${label}</div>
+          </div>`;
+      }).join('');
+
+    } catch(e) { console.warn('Dashboard load failed:', e); }
   }
 
-  async function logout() {
-    await signOut(auth);
-    window.location.href = 'index.html';
-  }
-
+  async function logout() { await signOut(auth); window.location.href = 'index.html'; }
   document.getElementById('logout-btn').addEventListener('click', logout);
   document.getElementById('logout-btn-mobile').addEventListener('click', logout);
 
-  // Hamburger
   const hamburger  = document.getElementById('hamburger');
   const mobileMenu = document.getElementById('mobile-menu');
   hamburger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
@@ -321,6 +533,5 @@
       mobileMenu.classList.remove('open');
   });
 </script>
-
 </body>
 </html>
