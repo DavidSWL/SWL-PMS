@@ -8,22 +8,22 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --green:        #3D6B2C;
-      --green-dark:   #2A4D1E;
-      --green-deeper: #1a3d18;
-      --green-light:  #EEF4EB;
+      --green:        #0E4C2D;
+      --green-dark:   #0A3B22;
+      --green-deeper: #072818;
+      --green-light:  #EDF2EF;
       --accent:       #8B6914;
       --accent-bg:    #FDF6E3;
       --bg:           #F4F6F2;
-      --border:       #B8CCB0;
+      --border:       #C4D5CC;
       --white:        #ffffff;
       --gray-50:      #F9FAF8;
       --gray-100:     #EEF1EB;
-      --gray-400:     #8FA889;
-      --gray-600:     #4A5E45;
-      --gray-900:     #1A2618;
-      --success:      #2E7D32;
-      --success-bg:   #E8F5E9;
+      --gray-400:     #7A9485;
+      --gray-600:     #456055;
+      --gray-900:     #0D1F16;
+      --success:      #0E4C2D;
+      --success-bg:   #EDF2EF;
       --error:        #C62828;
       --error-bg:     #FFEBEE;
       --warning:      #E65100;
@@ -40,7 +40,7 @@
     .brand svg { width: 32px; height: 32px; background: rgba(255,255,255,0.15); border-radius: 6px; padding: 4px; }
     .brand-name { font-size: 1.05rem; font-weight: 700; color: var(--white); letter-spacing: -0.02em; }
     .nav-links { display: flex; align-items: center; gap: 0.25rem; flex: 1; }
-    .nav-link { padding: 0.375rem 0.75rem; border-radius: 8px; font-size: 0.875rem; font-weight: 500; color: rgba(255,255,255,0.78); text-decoration: none; transition: background 0.15s, color 0.15s; white-space: nowrap; }
+    .nav-link { padding: 0.375rem 0.75rem; border-radius: 8px; font-size: 0.875rem; font-weight: 500; color: rgba(211,222,215,0.72); text-decoration: none; transition: background 0.15s, color 0.15s; white-space: nowrap; }
     .nav-link:hover, .nav-link.active { background: rgba(255,255,255,0.15); color: var(--white); }
     .nav-right { display: flex; align-items: center; gap: 0.75rem; margin-left: auto; }
     .user-name { font-size: 0.875rem; color: rgba(255,255,255,0.88); font-weight: 500; }
@@ -69,7 +69,7 @@
 
     /* ── KPI Row ── */
     .kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 1.75rem; }
-    .kpi-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; box-shadow: 0 2px 8px rgba(61,107,44,0.08); display: flex; flex-direction: column; gap: 0.4rem; }
+    .kpi-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; box-shadow: 0 2px 8px rgba(14,76,45,0.08); display: flex; flex-direction: column; gap: 0.4rem; }
     .kpi-icon { font-size: 1.4rem; line-height: 1; }
     .kpi-label { font-size: 0.7rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.05em; }
     .kpi-value { font-size: 2rem; font-weight: 800; color: var(--green); line-height: 1; }
@@ -84,7 +84,7 @@
 
     /* ── Two-col Grid ── */
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
-    .report-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 8px rgba(61,107,44,0.08); }
+    .report-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 8px rgba(14,76,45,0.08); }
     .report-card h2 { font-size: 0.9375rem; font-weight: 700; color: var(--green-dark); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
 
     /* ── Horizontal Bar Chart ── */
@@ -191,20 +191,17 @@
 
 <header class="topnav">
   <a href="dashboard.html" class="brand">
-    <svg viewBox="0 0 48 48" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M6 36 Q24 26 42 36"/><path d="M14 36 L14 24 M10 28 L14 24 L18 28"/>
-      <path d="M24 36 L24 18 M19 24 L24 18 L29 24"/><path d="M34 36 L34 25 M30 29 L34 25 L38 29"/>
-      <path d="M8 18 Q24 8 40 18" stroke-dasharray="2 3"/>
+    <svg viewBox="0 0 60 72" fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="24">
+      <path d="M30 4 C10 4 1 22 3 40 C5 54 15 65 30 70 C42 56 47 36 30 4Z" fill="#D3DED7" opacity="0.9"/>
+      <path d="M33 7 C48 1 60 16 58 38 C56 54 44 65 28 72 C25 56 36 34 33 7Z" fill="#D3DED7" opacity="0.65"/>
     </svg>
     <span class="brand-name">SWL PMS</span>
   </a>
   <nav class="nav-links">
-    <a class="nav-link" href="dashboard.html">Dashboard</a>
+    <a class="nav-link" id="nav-dashboard" href="dashboard.html">Dashboard</a>
     <a class="nav-link" href="reviews.html">Reviews</a>
-    <a class="nav-link" href="goals.html">Goals</a>
-    <a class="nav-link" href="compensation.html">Compensation</a>
     <a class="nav-link active" href="reports.html">Reports</a>
-    <a class="nav-link" href="adminemployees.html">Administration</a>
+    <a class="nav-link" id="nav-admin" href="admin-employees.html" style="display:none">Administration</a>
   </nav>
   <div class="nav-right">
     <span class="user-name" id="user-name"></span>
@@ -218,10 +215,8 @@
 <nav class="mobile-menu" id="mobile-menu">
   <a class="nav-link" href="dashboard.html">Dashboard</a>
   <a class="nav-link" href="reviews.html">Reviews</a>
-  <a class="nav-link" href="goals.html">Goals</a>
-  <a class="nav-link" href="compensation.html">Compensation</a>
   <a class="nav-link active" href="reports.html">Reports</a>
-  <a class="nav-link" href="adminemployees.html">Administration</a>
+  <a class="nav-link" id="mobile-nav-admin" href="admin-employees.html" style="display:none">Administration</a>
   <div class="mobile-divider"></div>
   <button class="btn-logout" id="logout-btn-mobile">Sign out</button>
 </nav>
@@ -232,7 +227,7 @@
     <div class="page-header">
       <div class="page-title">
         <h1>Performance Reports</h1>
-        <p>Cycle-level analytics across reviews, goals, and compensation.</p>
+        <p id="reports-scope-note">Cycle-level analytics across reviews and goals.</p>
       </div>
       <div class="header-actions">
         <select class="year-select" id="year-select"></select>
@@ -402,7 +397,7 @@
   import { initializeApp }    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
   import { getAuth, signOut, onAuthStateChanged }
                                from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-  import { getFirestore, collection, getDocs }
+  import { getFirestore, collection, getDocs, query, where }
                                from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
   const firebaseConfig = {
@@ -418,12 +413,21 @@
   const auth = getAuth(app);
   const db   = getFirestore(app);
 
-  let selectedYear = new Date().getFullYear();
+  let selectedYear    = new Date().getFullYear();
+  let currentEmployee = null;
 
   // ── Auth Guard ──
   onAuthStateChanged(auth, async user => {
     if (!user) { window.location.href = 'index.html'; return; }
     document.getElementById('user-name').textContent = user.displayName || user.email.split('@')[0];
+    const snap = await getDocs(query(collection(db, 'employees'), where('email', '==', user.email)));
+    if (!snap.empty) currentEmployee = { id: snap.docs[0].id, ...snap.docs[0].data() };
+    // Role-based nav
+    const isAdmin = !currentEmployee || currentEmployee.role === 'admin';
+    if (isAdmin) {
+      const el = document.getElementById('nav-admin'); if (el) el.style.display = '';
+      const el2 = document.getElementById('mobile-nav-admin'); if (el2) el2.style.display = '';
+    }
     setupYearSelect();
     await loadReport();
   });
@@ -476,6 +480,17 @@
   }
 
   function renderReport(employees, reviews, compRecords, goals) {
+    // Scope data to assigned employees for managers/executives; admin sees all
+    const isAdmin = !currentEmployee || currentEmployee.role === 'admin';
+    const isMgr   = currentEmployee?.role === 'manager' || currentEmployee?.role === 'executive';
+    if (!isAdmin && isMgr && currentEmployee) {
+      const assignedIds = new Set(
+        Object.values(employees).filter(e => e.managerId === currentEmployee.id).map(e => e.id)
+      );
+      reviews    = reviews.filter(r => assignedIds.has(r.employeeId));
+      compRecords = compRecords.filter(c => assignedIds.has(c.employeeId));
+      goals       = goals.filter(g => assignedIds.has(g.employeeId));
+    }
     const activeEmps = Object.values(employees).filter(e => e.status === 'active');
     const completed  = reviews.filter(r => r.status === 'completed');
     const inProgress = reviews.filter(r => ['draft','submitted','in-review'].includes(r.status));
