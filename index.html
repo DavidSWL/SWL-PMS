@@ -68,6 +68,9 @@
       font-size: 0.75rem; color: rgba(211,222,215,0.55); font-weight: 500;
       letter-spacing: 0.03em; margin-top: -0.25rem;
     }
+    .brand-wordmark { line-height: 1.15; text-align: center; }
+    .brand-sw { font-size: 1.1rem; font-weight: 900; color: #C4556A; letter-spacing: -0.01em; }
+    .brand-landscape { font-size: 1.1rem; font-weight: 900; color: #fff; letter-spacing: -0.01em; }
 
     /* Tagline */
     .tagline {
@@ -182,14 +185,19 @@
 <!-- Brand header -->
 <div class="brand-header">
   <div class="brand-logo-wrap">
-    <!-- SWL two-leaf logo mark -->
-    <svg viewBox="0 0 60 72" fill="none" xmlns="http://www.w3.org/2000/svg" width="34" height="40">
-      <path d="M30 4 C10 4 1 22 3 40 C5 54 15 65 30 70 C42 56 47 36 30 4Z" fill="#D3DED7" opacity="0.95"/>
-      <path d="M33 7 C48 1 60 16 58 38 C56 54 44 65 28 72 C25 56 36 34 33 7Z" fill="#D3DED7" opacity="0.65"/>
+    <img src="logo.png" alt="SouthWest Landscape" style="width:52px;height:52px;object-fit:contain;border-radius:8px;" onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='block'"/>
+    <!-- Fallback SVG if logo.png not yet uploaded -->
+    <svg id="logo-fallback" viewBox="0 0 80 90" fill="none" xmlns="http://www.w3.org/2000/svg" width="44" height="50" style="display:none">
+      <path d="M38 5 C12 5 1 26 3 48 C5 65 18 78 38 85 C52 70 58 48 38 5Z" fill="#D3DED7"/>
+      <path d="M44 8 C62 1 76 18 74 44 C72 62 58 76 36 84 C32 66 46 42 44 8Z" fill="#D3DED7" opacity="0.7"/>
+      <ellipse cx="41" cy="46" rx="6" ry="14" fill="rgba(7,40,24,0.25)" transform="rotate(-15 41 46)"/>
     </svg>
   </div>
-  <div class="brand-name">SWL PMS</div>
-  <div class="brand-sub">Performance Management</div>
+  <div class="brand-wordmark">
+    <span class="brand-sw">SouthWest</span><br>
+    <span class="brand-landscape">Landscape</span>
+  </div>
+  <div class="brand-sub">Performance Management System</div>
 </div>
 
 <div class="tagline">Improving landscapes through<br>managed care</div>
