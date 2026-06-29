@@ -46,7 +46,7 @@
       box-shadow: 0 2px 12px rgba(7,40,24,0.35);
     }
     .brand { display: flex; align-items: center; gap: 0.65rem; text-decoration: none; flex-shrink: 0; }
-    .brand-logo { height: 36px; width: auto; display: block; }
+    .brand-logo { height: 40px; max-height: 40px; width: auto; display: block; object-fit: contain; }
     .brand-name { font-size: 1.0rem; font-weight: 800; color: var(--white); letter-spacing: -0.01em; }
     .nav-links { display: flex; align-items: center; gap: 0.15rem; flex: 1; }
     .nav-link {
@@ -246,8 +246,8 @@
 <!-- ── Top Nav ── -->
 <header class="topnav">
   <a href="dashboard.html" class="brand">
-    <img src="logo2.png" alt="SouthWest Landscape" class="brand-logo" onerror="this.style.display='none'"/>
-    <span class="brand-name">SWL PMS</span>
+    <img src="logo2.png" alt="SouthWest Landscape" class="brand-logo" />
+
   </a>
 
   <nav class="nav-links">
