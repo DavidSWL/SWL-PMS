@@ -406,7 +406,7 @@
   }
 
   function renderNav() {
-    const isAdmin = currentEmployee?.role === 'admin';
+    const isAdmin = !currentEmployee || currentEmployee.role === 'admin';
     if (isAdmin) {
       document.getElementById('nav-admin')?.style.setProperty('display', '');
       document.getElementById('mobile-nav-admin')?.style.setProperty('display', '');
