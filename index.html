@@ -12,162 +12,156 @@
       --green-dark: #0A3B22;
       --green-deep: #072818;
       --sage:       #D3DED7;
-      --sage-light: #EDF2EF;
       --burgundy:   #7A1C2E;
-      --cream:      #F6F4F0;
       --white:      #ffffff;
       --border:     #C4D5CC;
       --text:       #0D1F16;
-      --muted:      #5A7060;
     }
 
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       min-height: 100vh;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      background: var(--cream);
-    }
-
-    /* ── Left branding panel ── */
-    .left-panel {
-      background: linear-gradient(160deg, var(--green-deep) 0%, var(--green-dark) 50%, var(--green) 100%);
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      padding: 3rem;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(160deg, var(--green-deep) 0%, var(--green-dark) 50%, var(--green) 100%);
       position: relative;
       overflow: hidden;
-      min-height: 100vh;
+      padding: 1.5rem;
     }
 
     /* Tiled sage leaf watermark */
-    .left-panel::before {
+    body::before {
       content: '';
-      position: absolute;
+      position: fixed;
       inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 120' width='100' height='120'%3E%3Cpath d='M50 8 C22 8 6 30 8 56 C10 76 24 92 44 100 C58 84 64 58 50 8Z' fill='%23D3DED7' opacity='0.08'/%3E%3Cpath d='M54 12 C72 4 90 20 88 48 C86 68 70 82 48 92 C44 74 56 48 54 12Z' fill='%23D3DED7' opacity='0.08'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 120' width='100' height='120'%3E%3Cpath d='M50 8 C22 8 6 30 8 56 C10 76 24 92 44 100 C58 84 64 58 50 8Z' fill='%23D3DED7' opacity='0.07'/%3E%3Cpath d='M54 12 C72 4 90 20 88 48 C86 68 70 82 48 92 C44 74 56 48 54 12Z' fill='%23D3DED7' opacity='0.07'/%3E%3C/svg%3E");
       background-repeat: repeat;
       background-size: 100px 120px;
+      pointer-events: none;
     }
 
-    .left-brand {
+    /* Brand header above card */
+    .brand-header {
       display: flex;
+      flex-direction: column;
       align-items: center;
       gap: 0.75rem;
+      margin-bottom: 1.75rem;
       position: relative;
+      z-index: 10;
+      text-align: center;
     }
-    .left-brand-icon {
-      width: 44px; height: 44px;
+    .brand-logo-wrap {
+      width: 64px; height: 64px;
       background: rgba(211,222,215,0.15);
-      border-radius: 10px;
-      border: 1px solid rgba(211,222,215,0.25);
+      border: 1.5px solid rgba(211,222,215,0.3);
+      border-radius: 16px;
       display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
+      backdrop-filter: blur(8px);
     }
-    .left-brand-name {
-      font-size: 1.0625rem; font-weight: 800;
-      color: #fff; letter-spacing: -0.01em; line-height: 1;
+    .brand-name {
+      font-size: 1.125rem; font-weight: 800; color: #fff; letter-spacing: -0.01em;
     }
-    .left-brand-sub {
-      font-size: 0.6875rem; color: rgba(211,222,215,0.5);
-      font-weight: 500; letter-spacing: 0.04em; margin-top: 2px;
-    }
-
-    .left-hero { position: relative; }
-    .left-hero h1 {
-      font-size: 2.75rem; font-weight: 800; color: #fff;
-      line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 1rem;
-    }
-    .left-hero p {
-      font-size: 1rem; color: rgba(211,222,215,0.55);
-      line-height: 1.6; max-width: 340px;
+    .brand-sub {
+      font-size: 0.75rem; color: rgba(211,222,215,0.55); font-weight: 500;
+      letter-spacing: 0.03em; margin-top: -0.25rem;
     }
 
-    .feature-list {
-      display: flex; flex-direction: column; gap: 0.75rem;
-      margin-top: 2rem; position: relative;
+    /* Tagline */
+    .tagline {
+      font-size: 1.5rem; font-weight: 800; color: #fff;
+      letter-spacing: -0.02em; line-height: 1.2;
+      margin-bottom: 0.35rem;
     }
-    .feature-item {
-      display: flex; align-items: center; gap: 0.75rem;
-      font-size: 0.875rem; color: rgba(211,222,215,0.65);
-    }
-    .feature-dot {
-      width: 6px; height: 6px;
-      background: rgba(211,222,215,0.5);
-      border-radius: 50%; flex-shrink: 0;
+    .tagline-sub {
+      font-size: 0.8125rem; color: rgba(211,222,215,0.5);
+      max-width: 360px; line-height: 1.5; text-align: center;
     }
 
-    .left-footer {
-      font-size: 0.75rem;
-      color: rgba(211,222,215,0.3);
-      position: relative;
+    /* Glass login card */
+    .login-card {
+      position: relative; z-index: 10;
+      width: 100%; max-width: 380px;
+      background: rgba(255,255,255,0.10);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(211,222,215,0.25);
+      border-radius: 20px;
+      padding: 2rem 2rem 1.75rem;
+      box-shadow: 0 24px 60px rgba(7,40,24,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+      margin-top: 1.25rem;
     }
 
-    /* ── Right form panel ── */
-    .right-panel {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-      background: var(--cream);
+    .card-title {
+      font-size: 1.25rem; font-weight: 800; color: #fff;
+      margin-bottom: 0.2rem; letter-spacing: -0.02em;
+    }
+    .card-sub {
+      font-size: 0.8125rem; color: rgba(211,222,215,0.55);
+      margin-bottom: 1.5rem;
     }
 
-    .login-box { width: 100%; max-width: 400px; }
-
-    .login-box h2 {
-      font-size: 1.75rem; font-weight: 800;
-      color: var(--text); letter-spacing: -0.02em; margin-bottom: 0.35rem;
-    }
-    .login-box .subtitle {
-      font-size: 0.875rem; color: var(--muted); margin-bottom: 2rem;
-    }
-
-    .form-field { margin-bottom: 1.1rem; }
+    .form-field { margin-bottom: 0.875rem; }
     .form-field label {
-      display: block; font-size: 0.72rem; font-weight: 700;
-      color: var(--text); letter-spacing: 0.06em; text-transform: uppercase;
-      margin-bottom: 0.45rem;
+      display: block; font-size: 0.7rem; font-weight: 700;
+      color: rgba(211,222,215,0.7); letter-spacing: 0.07em;
+      text-transform: uppercase; margin-bottom: 0.4rem;
     }
     .form-field input {
-      width: 100%; padding: 0.8rem 1rem;
-      border-radius: 10px; border: 1.5px solid var(--border);
-      background: var(--white); color: var(--text);
+      width: 100%; padding: 0.75rem 1rem;
+      border-radius: 10px;
+      border: 1px solid rgba(211,222,215,0.25);
+      background: rgba(255,255,255,0.10);
+      color: #fff;
       font-size: 0.9375rem; font-family: inherit; outline: none;
-      transition: border-color 0.18s, box-shadow 0.18s;
+      transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+      backdrop-filter: blur(4px);
     }
+    .form-field input::placeholder { color: rgba(211,222,215,0.35); }
     .form-field input:focus {
-      border-color: var(--green);
-      box-shadow: 0 0 0 3px rgba(14,76,45,0.12);
+      border-color: rgba(211,222,215,0.55);
+      background: rgba(255,255,255,0.15);
+      box-shadow: 0 0 0 3px rgba(211,222,215,0.12);
     }
-    .form-field input::placeholder { color: #A8BDB4; }
 
     .error-msg {
-      display: none; background: #FEF2F2; border: 1px solid #FECACA;
-      border-radius: 8px; color: #B91C1C; font-size: 0.8125rem;
-      font-weight: 500; padding: 0.65rem 0.875rem; margin-bottom: 1.1rem;
+      display: none; background: rgba(185,28,28,0.2);
+      border: 1px solid rgba(248,113,113,0.35);
+      border-radius: 8px; color: #FCA5A5;
+      font-size: 0.8rem; font-weight: 500;
+      padding: 0.6rem 0.875rem; margin-bottom: 1rem;
     }
     .error-msg.show { display: block; }
 
     .btn-signin {
-      width: 100%; padding: 0.875rem; border-radius: 10px; border: none;
+      width: 100%; padding: 0.825rem; border-radius: 10px; border: none;
       cursor: pointer; background: var(--green); color: #fff;
       font-size: 0.9375rem; font-weight: 700; font-family: inherit;
       letter-spacing: 0.01em;
-      box-shadow: 0 4px 14px rgba(14,76,45,0.3);
+      box-shadow: 0 4px 16px rgba(7,40,24,0.5);
       transition: background 0.18s, box-shadow 0.18s, transform 0.1s;
-      margin-top: 0.25rem;
+      margin-top: 0.5rem;
     }
-    .btn-signin:hover { background: var(--green-dark); box-shadow: 0 6px 20px rgba(14,76,45,0.38); }
+    .btn-signin:hover { background: var(--green-dark); box-shadow: 0 6px 20px rgba(7,40,24,0.6); }
     .btn-signin:active { transform: scale(0.99); }
     .btn-signin:disabled { opacity: 0.6; cursor: not-allowed; }
 
     .footer-note {
-      text-align: center; margin-top: 1.5rem;
-      font-size: 0.78rem; color: var(--muted);
+      text-align: center; margin-top: 1.25rem;
+      font-size: 0.75rem; color: rgba(211,222,215,0.4);
     }
-    .footer-note a { color: var(--green); font-weight: 600; text-decoration: none; }
-    .footer-note a:hover { text-decoration: underline; }
+    .footer-note a { color: rgba(211,222,215,0.7); font-weight: 600; text-decoration: none; }
+    .footer-note a:hover { color: #fff; }
+
+    /* Page footer */
+    .page-footer {
+      position: relative; z-index: 10;
+      margin-top: 2rem;
+      font-size: 0.72rem; color: rgba(211,222,215,0.25);
+      text-align: center;
+    }
 
     .spinner {
       display: inline-block; width: 15px; height: 15px;
@@ -177,74 +171,57 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    @media (max-width: 768px) {
-      body { grid-template-columns: 1fr; }
-      .left-panel { min-height: auto; padding: 2rem 1.5rem; }
-      .left-hero h1 { font-size: 2rem; }
-      .feature-list { display: none; }
-      .right-panel { padding: 2rem 1.25rem; }
+    @media (max-width: 480px) {
+      .tagline { font-size: 1.25rem; }
+      .login-card { padding: 1.5rem; }
     }
   </style>
 </head>
 <body>
 
-<!-- ── Left branding panel ── -->
-<div class="left-panel">
-  <div class="left-brand">
-    <div class="left-brand-icon">
-      <!-- SWL two-leaf logo mark in sage -->
-      <svg viewBox="0 0 60 72" fill="none" xmlns="http://www.w3.org/2000/svg" width="28" height="34">
-        <path d="M30 4 C10 4 1 22 3 40 C5 54 15 65 30 70 C42 56 47 36 30 4Z" fill="#D3DED7" opacity="0.9"/>
-        <path d="M33 7 C48 1 60 16 58 38 C56 54 44 65 28 72 C25 56 36 34 33 7Z" fill="#D3DED7" opacity="0.65"/>
-      </svg>
-    </div>
-    <div>
-      <div class="left-brand-name">SWL PMS</div>
-      <div class="left-brand-sub">Performance Management</div>
-    </div>
+<!-- Brand header -->
+<div class="brand-header">
+  <div class="brand-logo-wrap">
+    <!-- SWL two-leaf logo mark -->
+    <svg viewBox="0 0 60 72" fill="none" xmlns="http://www.w3.org/2000/svg" width="34" height="40">
+      <path d="M30 4 C10 4 1 22 3 40 C5 54 15 65 30 70 C42 56 47 36 30 4Z" fill="#D3DED7" opacity="0.95"/>
+      <path d="M33 7 C48 1 60 16 58 38 C56 54 44 65 28 72 C25 56 36 34 33 7Z" fill="#D3DED7" opacity="0.65"/>
+    </svg>
   </div>
-
-  <div class="left-hero">
-    <h1>Grow your<br>people.<br>Grow your<br>business.</h1>
-    <p>A streamlined performance management system built for the SouthWest Landscape team.</p>
-    <div class="feature-list">
-      <div class="feature-item"><div class="feature-dot"></div>Annual & mid-year performance reviews</div>
-      <div class="feature-item"><div class="feature-dot"></div>Competency ratings & overall scoring</div>
-      <div class="feature-item"><div class="feature-dot"></div>Goal setting & manager coaching</div>
-      <div class="feature-item"><div class="feature-dot"></div>Compensation benchmarking & reports</div>
-    </div>
-  </div>
-
-  <div class="left-footer">© 2025 SouthWest Landscape</div>
+  <div class="brand-name">SWL PMS</div>
+  <div class="brand-sub">Performance Management</div>
 </div>
 
-<!-- ── Right form panel ── -->
-<div class="right-panel">
-  <div class="login-box">
-    <h2>Welcome back</h2>
-    <p class="subtitle">Sign in to your account to continue</p>
+<div class="tagline">Improving landscapes through<br>managed care</div>
+<div class="tagline-sub">A streamlined performance management system built for the SouthWest Landscape team</div>
 
-    <div class="error-msg" id="error-msg"></div>
+<!-- Glass login card -->
+<div class="login-card">
+  <div class="card-title">Welcome back</div>
+  <div class="card-sub">Sign in to your account</div>
 
-    <form id="login-form" novalidate>
-      <div class="form-field">
-        <label for="email">Work Email</label>
-        <input type="email" id="email" name="email"
-               placeholder="you@southwestlandscape.com" autocomplete="email" required />
-      </div>
-      <div class="form-field">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password"
-               placeholder="••••••••" autocomplete="current-password" required />
-      </div>
-      <button type="submit" class="btn-signin" id="signin-btn">Sign in</button>
-    </form>
+  <div class="error-msg" id="error-msg"></div>
 
-    <p class="footer-note">
-      Need access? <a href="mailto:admin@southwestlandscape.com">Contact your administrator</a>
-    </p>
-  </div>
+  <form id="login-form" novalidate>
+    <div class="form-field">
+      <label for="email">Work Email</label>
+      <input type="email" id="email" name="email"
+             placeholder="you@southwestlandscape.com" autocomplete="email" required />
+    </div>
+    <div class="form-field">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password"
+             placeholder="••••••••" autocomplete="current-password" required />
+    </div>
+    <button type="submit" class="btn-signin" id="signin-btn">Sign in</button>
+  </form>
+
+  <p class="footer-note">
+    Need access? <a href="mailto:admin@southwestlandscape.com">Contact your administrator</a>
+  </p>
 </div>
+
+<div class="page-footer">© 2025 SouthWest Landscape</div>
 
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
