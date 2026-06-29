@@ -461,12 +461,19 @@
           <label for="f-hire-date">Hire Date</label>
           <input class="form-control" type="date" id="f-hire-date" />
         </div>
-        <div class="form-group span-2">
-          <label for="f-manager">Assigned Manager / Executive</label>
+        <div class="form-group">
+          <label for="f-manager">Assigned Manager</label>
           <select class="form-control" id="f-manager">
             <option value="">— Unassigned —</option>
           </select>
-          <span class="form-hint">Managers, executives, and admins are listed. Determines whose reports and reviews this employee appears in.</span>
+          <span class="form-hint">Managers and admins listed. Does competency ratings &amp; goals.</span>
+        </div>
+        <div class="form-group">
+          <label for="f-executive">Assigned Executive</label>
+          <select class="form-control" id="f-executive">
+            <option value="">— Unassigned —</option>
+          </select>
+          <span class="form-hint">Executives and admins listed. Sets final score &amp; raise decision.</span>
         </div>
 
         <!-- Compensation -->
@@ -755,18 +762,36 @@
     }).join('');
   }
 
-  // ── Manager dropdown ───────────────────────────────────────────
+  // ── Manager dropdown (managers + admins) ──────────────────────
   function populateManagerSelect(excludeId = null) {
     const sel = document.getElementById('f-manager');
     const current = sel.value;
     sel.innerHTML = '<option value="">— Unassigned —</option>';
     allEmployees
-      .filter(e => e.id !== excludeId && e.status !== 'inactive' && (e.role === 'manager' || e.role === 'executive' || e.role === 'admin'))
+      .filter(e => e.id !== excludeId && e.status !== 'inactive' && (e.role === 'manager' || e.role === 'admin'))
       .sort((a,b) => `${a.lastName}${a.firstName}`.localeCompare(`${b.lastName}${b.firstName}`))
       .forEach(e => {
         const opt = document.createElement('option');
         opt.value = e.id;
-        const roleLabel = e.role === 'executive' ? 'Executive' : e.role === 'admin' ? 'Admin' : 'Manager';
+        const roleLabel = e.role === 'admin' ? 'Admin' : 'Manager';
+        opt.textContent = `${e.firstName} ${e.lastName} — ${roleLabel}${e.position ? ' / ' + e.position : ''}`;
+        sel.appendChild(opt);
+      });
+    if (current) sel.value = current;
+  }
+
+  // ── Executive dropdown (executives + admins) ───────────────────
+  function populateExecutiveSelect(excludeId = null) {
+    const sel = document.getElementById('f-executive');
+    const current = sel.value;
+    sel.innerHTML = '<option value="">— Unassigned —</option>';
+    allEmployees
+      .filter(e => e.id !== excludeId && e.status !== 'inactive' && (e.role === 'executive' || e.role === 'admin'))
+      .sort((a,b) => `${a.lastName}${a.firstName}`.localeCompare(`${b.lastName}${b.firstName}`))
+      .forEach(e => {
+        const opt = document.createElement('option');
+        opt.value = e.id;
+        const roleLabel = e.role === 'admin' ? 'Admin' : 'Executive';
         opt.textContent = `${e.firstName} ${e.lastName} — ${roleLabel}${e.position ? ' / ' + e.position : ''}`;
         sel.appendChild(opt);
       });
@@ -791,7 +816,8 @@
     ['f-dept','f-branch','f-pay-type','f-role'].forEach(id =>
       document.getElementById(id).value = '');
     document.getElementById('f-status').value = 'active';
-    document.getElementById('f-manager').value = '';
+    document.getElementById('f-manager').value   = '';
+    document.getElementById('f-executive').value = '';
     clearErrors();
     hideFormAlert();
   }
@@ -823,6 +849,7 @@
     document.getElementById('modal-save-btn').textContent = 'Save Employee';
     clearForm();
     populateManagerSelect();
+    populateExecutiveSelect();
     openModal();
   });
 
@@ -835,15 +862,17 @@
     document.getElementById('modal-save-btn').textContent = 'Update Employee';
     clearForm();
     populateManagerSelect(id);
+    populateExecutiveSelect(id);
 
-    document.getElementById('f-first').value    = emp.firstName   || '';
-    document.getElementById('f-last').value     = emp.lastName    || '';
-    document.getElementById('f-email').value    = emp.email       || '';
-    document.getElementById('f-position').value = emp.position    || '';
-    document.getElementById('f-dept').value     = emp.department  || '';
-    document.getElementById('f-branch').value   = emp.branch      || '';
-    document.getElementById('f-hire-date').value= emp.hireDate    || '';
-    document.getElementById('f-manager').value  = emp.managerId   || '';
+    document.getElementById('f-first').value     = emp.firstName   || '';
+    document.getElementById('f-last').value      = emp.lastName    || '';
+    document.getElementById('f-email').value     = emp.email       || '';
+    document.getElementById('f-position').value  = emp.position    || '';
+    document.getElementById('f-dept').value      = emp.department  || '';
+    document.getElementById('f-branch').value    = emp.branch      || '';
+    document.getElementById('f-hire-date').value = emp.hireDate    || '';
+    document.getElementById('f-manager').value   = emp.managerId   || '';
+    document.getElementById('f-executive').value = emp.executiveId || '';
     document.getElementById('f-pay-type').value = emp.payType     || '';
     document.getElementById('f-rate').value     = emp.currentRate || '';
     document.getElementById('f-role').value     = emp.role        || '';
@@ -878,6 +907,7 @@
     const branch      = document.getElementById('f-branch').value;
     const hireDate    = document.getElementById('f-hire-date').value;
     const managerId   = document.getElementById('f-manager').value;
+    const executiveId = document.getElementById('f-executive').value;
     const payType     = document.getElementById('f-pay-type').value;
     const currentRate = document.getElementById('f-rate').value;
     const role        = document.getElementById('f-role').value;
@@ -904,8 +934,9 @@
     try {
       await saveEmployee({
         firstName, lastName, email, position, department, branch,
-        hireDate: hireDate || null,
-        managerId: managerId || null,
+        hireDate:    hireDate    || null,
+        managerId:   managerId   || null,
+        executiveId: executiveId || null,
         payType, currentRate: parseFloat(currentRate),
         role, status,
       });
