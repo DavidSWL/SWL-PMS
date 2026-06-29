@@ -70,22 +70,41 @@
     /* ── Letter ── */
     .letter {
       max-width: 680px; margin: 0 auto; font-family: 'Times New Roman', Times, serif;
-      font-size: 11.5pt; line-height: 1.65; color: #111;
-      padding: 0.5rem;
+      font-size: 11.5pt; line-height: 1.65; color: #111; padding: 0.5rem;
     }
-    .letter-header { text-align: center; margin-bottom: 1.75rem; padding-bottom: 1rem; border-bottom: 3px solid var(--green); }
-    .letter-company { font-family: 'Segoe UI', sans-serif; font-size: 1.6rem; font-weight: 900; color: var(--green); letter-spacing: -0.02em; line-height: 1.1; }
-    .letter-company-sub { font-family: 'Segoe UI', sans-serif; font-size: 0.8rem; color: var(--gray-500); margin-top: 0.2rem; letter-spacing: 0.08em; text-transform: uppercase; }
-    .letter-tagline { font-family: 'Segoe UI', sans-serif; font-size: 0.75rem; color: var(--green); margin-top: 0.3rem; font-style: italic; }
+    /* Option D header */
+    .ltr-hdr-top { background: #083520; padding: 0.8rem 1.5rem; display: flex; align-items: center; gap: 1rem; }
+    .ltr-hdr-logo { height: 48px; width: auto; max-width: 120px; object-fit: contain; flex-shrink: 0; }
+    .ltr-hdr-logo-placeholder { height: 48px; width: 48px; background: rgba(255,255,255,0.12); border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .ltr-hdr-company { font-family: 'Segoe UI', sans-serif; font-size: 1.25rem; font-weight: 900; color: #fff; letter-spacing: -0.01em; line-height: 1.1; }
+    .ltr-hdr-tagline { font-family: 'Segoe UI', sans-serif; font-size: 0.65rem; color: rgba(255,255,255,0.6); letter-spacing: 0.03em; margin-top: 0.2rem; }
+    .ltr-hdr-bot { background: #0E4C2D; padding: 0.45rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .ltr-hdr-doctype { font-family: 'Segoe UI', sans-serif; font-size: 0.68rem; font-weight: 700; color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 0.12em; }
+    .ltr-hdr-address { font-family: 'Segoe UI', sans-serif; font-size: 0.65rem; color: rgba(255,255,255,0.65); }
+    .ltr-hdr-wrap { margin: -0.5rem -0.5rem 1.5rem; border-radius: 6px 6px 0 0; overflow: hidden; }
+
     .letter p { margin-bottom: 0.85rem; }
     .letter .section-bold { font-weight: 700; }
     .letter .sig-area { margin-top: 2rem; }
-    .letter .sig-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .letter .sig-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 0.5rem; }
+    .letter .sig-sender { margin-bottom: 1.5rem; }
+    .letter .sig-sender-img { display: block; height: 56px; width: auto; max-width: 200px; object-fit: contain; margin-bottom: 0.2rem; }
+    .letter .sig-sender-name { font-family: 'Segoe UI', sans-serif; font-weight: 700; font-size: 0.875rem; }
+    .letter .sig-sender-title { font-family: 'Segoe UI', sans-serif; font-size: 0.8rem; color: var(--gray-500); }
     .letter .sig-row { display: flex; gap: 3rem; margin-top: 1.5rem; flex-wrap: wrap; }
     .letter .sig-block { flex: 1; min-width: 160px; }
     .letter .sig-line { border-bottom: 1.5px solid #333; height: 30px; margin-bottom: 0.2rem; }
     .letter .sig-label { font-family: 'Segoe UI', sans-serif; font-size: 0.75rem; color: var(--gray-500); }
     .letter-placeholder { color: var(--gray-400); font-style: italic; }
+
+    /* ── Upload slots ── */
+    .upload-slot { border: 2px dashed var(--border); border-radius: 8px; padding: 0.75rem; text-align: center; cursor: pointer; transition: border-color 0.15s; }
+    .upload-slot:hover { border-color: var(--green); }
+    .upload-slot input[type=file] { display: none; }
+    .upload-slot-label { font-size: 0.75rem; color: var(--gray-500); }
+    .upload-preview { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.4rem; }
+    .upload-preview img { height: 36px; width: auto; max-width: 100px; object-fit: contain; border-radius: 4px; border: 1px solid var(--border); }
+    .upload-clear { font-size: 0.7rem; color: var(--error); cursor: pointer; text-decoration: underline; background: none; border: none; padding: 0; }
 
     /* ── Empty state ── */
     .empty-preview { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 2rem; text-align: center; color: var(--gray-400); }
@@ -157,6 +176,34 @@
   <div class="gen-layout">
     <!-- ── Config Column ── -->
     <div class="config-panel">
+
+      <div class="config-section">
+        <div class="config-section-title">Branding</div>
+        <div class="form-group">
+          <label class="form-label">Company Logo</label>
+          <div class="upload-slot" onclick="document.getElementById('logo-upload').click()">
+            <input type="file" id="logo-upload" accept="image/*">
+            <div class="upload-slot-label" id="logo-slot-label">Click to upload logo (PNG, JPG, SVG)</div>
+            <div class="upload-preview" id="logo-preview" style="display:none;justify-content:center">
+              <img id="logo-preview-img" src="" alt="Logo">
+              <button class="upload-clear" id="logo-clear">Remove</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Your Signature Image</label>
+          <div class="upload-slot" onclick="document.getElementById('sig-upload').click()">
+            <input type="file" id="sig-upload" accept="image/*">
+            <div class="upload-slot-label" id="sig-slot-label">Click to upload signature (PNG with transparent bg ideal)</div>
+            <div class="upload-preview" id="sig-preview" style="display:none;justify-content:center">
+              <img id="sig-preview-img" src="" alt="Signature">
+              <button class="upload-clear" id="sig-clear">Remove</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
 
       <div class="config-section">
         <div class="config-section-title">Letter Type</div>
@@ -457,6 +504,7 @@
     currentUser = user;
     document.getElementById('user-chip').textContent = user.displayName || user.email;
     await loadData();
+    initUploads();
   });
 
   document.getElementById('btn-logout').addEventListener('click', () => signOut(auth));
@@ -744,16 +792,80 @@
     </div>`;
   }
 
-  function letterHead(subtitle) {
-    return `<div class="letter-header">
-      <div class="letter-company">Southwest Landscape</div>
-      <div class="letter-company-sub">${subtitle}</div>
-      <div class="letter-tagline">Creating Beautiful Environments · Orange County · Los Angeles · Inland Empire</div>
+  // ── Stored logo / signature (localStorage) ──
+  let logoDataUrl = localStorage.getItem('swl_logo') || '';
+  let sigDataUrl  = localStorage.getItem('swl_sig')  || '';
+
+  function initUploads() {
+    if (logoDataUrl) showLogoPreview(logoDataUrl);
+    if (sigDataUrl)  showSigPreview(sigDataUrl);
+
+    document.getElementById('logo-upload').addEventListener('change', e => {
+      const file = e.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => { logoDataUrl = ev.target.result; localStorage.setItem('swl_logo', logoDataUrl); showLogoPreview(logoDataUrl); };
+      reader.readAsDataURL(file);
+    });
+    document.getElementById('sig-upload').addEventListener('change', e => {
+      const file = e.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => { sigDataUrl = ev.target.result; localStorage.setItem('swl_sig', sigDataUrl); showSigPreview(sigDataUrl); };
+      reader.readAsDataURL(file);
+    });
+    document.getElementById('logo-clear').addEventListener('click', e => {
+      e.stopPropagation(); logoDataUrl = ''; localStorage.removeItem('swl_logo');
+      document.getElementById('logo-preview').style.display = 'none';
+      document.getElementById('logo-slot-label').style.display = 'block';
+      document.getElementById('logo-upload').value = '';
+    });
+    document.getElementById('sig-clear').addEventListener('click', e => {
+      e.stopPropagation(); sigDataUrl = ''; localStorage.removeItem('swl_sig');
+      document.getElementById('sig-preview').style.display = 'none';
+      document.getElementById('sig-slot-label').style.display = 'block';
+      document.getElementById('sig-upload').value = '';
+    });
+  }
+  function showLogoPreview(url) {
+    document.getElementById('logo-preview-img').src = url;
+    document.getElementById('logo-preview').style.display = 'flex';
+    document.getElementById('logo-slot-label').style.display = 'none';
+  }
+  function showSigPreview(url) {
+    document.getElementById('sig-preview-img').src = url;
+    document.getElementById('sig-preview').style.display = 'flex';
+    document.getElementById('sig-slot-label').style.display = 'none';
+  }
+
+  function letterHead(doctype) {
+    const logoHtml = logoDataUrl
+      ? `<img class="ltr-hdr-logo" src="${logoDataUrl}" alt="Southwest Landscape">`
+      : `<div class="ltr-hdr-logo-placeholder"><svg width="24" height="24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`;
+    return `<div class="ltr-hdr-wrap">
+      <div class="ltr-hdr-top">
+        ${logoHtml}
+        <div>
+          <div class="ltr-hdr-company">Southwest Landscape</div>
+          <div class="ltr-hdr-tagline">Improving Landscapes Through Managed Care</div>
+        </div>
+      </div>
+      <div class="ltr-hdr-bot">
+        <span class="ltr-hdr-doctype">${doctype}</span>
+        <span class="ltr-hdr-address">410 West Grove Ave., Ste 180 · Orange, CA 92865 · Corporate</span>
+      </div>
     </div>`;
   }
 
   function sigBlock(sig, date, print) {
+    const sigImgHtml = sigDataUrl
+      ? `<img class="sig-sender-img" src="${sigDataUrl}" alt="Signature">`
+      : `<div style="height:56px;border-bottom:1px solid #ccc;width:200px;margin-bottom:4px"></div>`;
     return `<div class="sig-area">
+      <div class="sig-sender">
+        <p>Sincerely,</p>
+        ${sigImgHtml}
+        <div class="sig-sender-name">David Eufracio Jr</div>
+        <div class="sig-sender-title">Human Resources Manager</div>
+      </div>
       <div class="sig-title">ACCEPTANCE AND AGREEMENT:</div>
       <div class="sig-row">
         <div class="sig-block"><div class="sig-line"></div><div class="sig-label">${sig}</div></div>
