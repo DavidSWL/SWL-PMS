@@ -86,6 +86,30 @@
     .toolbar-right { display: flex; align-items: center; gap: 0.5rem; margin-left: auto; }
     .count-badge { font-size: 0.8125rem; color: var(--gray-600); white-space: nowrap; }
 
+    /* ── Cycle management card ── */
+    .cycle-card { background: var(--white); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(14,76,45,0.08); padding: 1.25rem 1.5rem; margin-bottom: 1.75rem; }
+    .cycle-card-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem; }
+    .cycle-card-title { font-size: 0.75rem; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.08em; }
+    .cycle-status-badge { font-size: 0.72rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 99px; }
+    .cycle-status-badge.open   { background: #EDF2EF; color: var(--green); }
+    .cycle-status-badge.closed { background: #FEF2F2; color: var(--error); }
+    .cycle-status-badge.none   { background: var(--gray-100); color: var(--gray-600); }
+    .cycle-fields { display: flex; align-items: flex-end; gap: 1rem; flex-wrap: wrap; }
+    .cycle-field { display: flex; flex-direction: column; gap: 0.35rem; }
+    .cycle-field label { font-size: 0.78rem; font-weight: 600; color: var(--gray-600); }
+    .cycle-field input, .cycle-field select { padding: 0.55rem 0.875rem; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.875rem; font-family: inherit; background: var(--white); color: var(--gray-900); outline: none; transition: border-color 0.15s; }
+    .cycle-field input:focus, .cycle-field select:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(14,76,45,0.1); }
+    .cycle-field input[type="date"] { min-width: 160px; }
+    .cycle-name-input { min-width: 220px; }
+    .cycle-info { display: flex; gap: 2rem; flex-wrap: wrap; }
+    .cycle-info-item { display: flex; flex-direction: column; gap: 0.2rem; }
+    .cycle-info-label { font-size: 0.72rem; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.05em; }
+    .cycle-info-value { font-size: 0.9375rem; font-weight: 700; color: var(--gray-900); }
+    .btn-open-cycle  { background: var(--green); color: #fff; }
+    .btn-open-cycle:hover  { background: var(--green-dark); }
+    .btn-close-cycle { background: var(--error-bg); color: var(--error); border: 1.5px solid #FFCDD2; }
+    .btn-close-cycle:hover { background: #FFCDD2; }
+
     /* ── Employee table ── */
     .table-card { background: var(--white); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(14,76,45,0.08); overflow: hidden; }
     .table-wrap { overflow-x: auto; }
@@ -243,8 +267,58 @@
 
     <div class="page-header">
       <div>
-        <h1>Employee Management</h1>
-        <p>Add, edit, and manage all SWL employees and their system access.</p>
+        <h1>Administration</h1>
+        <p>Manage employees, review cycles, and system settings.</p>
+      </div>
+    </div>
+
+    <!-- ── Review Cycle Management ── -->
+    <div class="cycle-card">
+      <div class="cycle-card-header">
+        <div class="cycle-card-title">📅 Review Cycle</div>
+        <span class="cycle-status-badge none" id="cycle-status-badge">No Active Cycle</span>
+      </div>
+
+      <!-- Active cycle info (shown when open) -->
+      <div id="cycle-active-view" style="display:none">
+        <div class="cycle-info" style="margin-bottom:1rem">
+          <div class="cycle-info-item">
+            <span class="cycle-info-label">Cycle Name</span>
+            <span class="cycle-info-value" id="cycle-active-name">—</span>
+          </div>
+          <div class="cycle-info-item">
+            <span class="cycle-info-label">Deadline</span>
+            <span class="cycle-info-value" id="cycle-active-deadline">—</span>
+          </div>
+          <div class="cycle-info-item">
+            <span class="cycle-info-label">Opened</span>
+            <span class="cycle-info-value" id="cycle-active-opened">—</span>
+          </div>
+        </div>
+        <button class="btn btn-close-cycle" id="close-cycle-btn">⏹ Close Cycle</button>
+      </div>
+
+      <!-- New cycle form (shown when no active cycle) -->
+      <div id="cycle-new-view">
+        <div class="cycle-fields">
+          <div class="cycle-field">
+            <label for="cycle-name-input">Cycle Name</label>
+            <input type="text" id="cycle-name-input" class="cycle-name-input" placeholder="e.g. 2025 Annual Review" />
+          </div>
+          <div class="cycle-field">
+            <label for="cycle-deadline-input">Deadline</label>
+            <input type="date" id="cycle-deadline-input" />
+          </div>
+          <button class="btn btn-open-cycle" id="open-cycle-btn">▶ Open Cycle</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Employee Management ── -->
+    <div class="page-header" style="margin-bottom:1rem">
+      <div>
+        <h2 style="font-size:1.125rem;font-weight:700;color:var(--green-dark)">Employee Management</h2>
+        <p style="font-size:0.875rem;color:var(--gray-600);margin-top:0.2rem">Add, edit, and manage all SWL employees and their system access.</p>
       </div>
       <button class="btn btn-primary" id="add-employee-btn">＋ Add Employee</button>
     </div>
@@ -499,6 +573,71 @@
   });
 
   async function logout() { await signOut(auth); window.location.href = 'index.html'; }
+
+  // ── Cycle Management ───────────────────────────────────────────
+  let activeCycleId = null;
+
+  async function loadActiveCycle() {
+    const snap = await getDocs(query(collection(db, 'cycles'), orderBy('openedAt', 'desc')));
+    let active = null;
+    snap.forEach(d => { if (!active && d.data().status === 'open') active = { id: d.id, ...d.data() }; });
+
+    const badge      = document.getElementById('cycle-status-badge');
+    const activeView = document.getElementById('cycle-active-view');
+    const newView    = document.getElementById('cycle-new-view');
+
+    if (active) {
+      activeCycleId = active.id;
+      badge.textContent = 'Open';
+      badge.className = 'cycle-status-badge open';
+      document.getElementById('cycle-active-name').textContent = active.name || '—';
+      const dl = active.deadline ? new Date(active.deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '—';
+      document.getElementById('cycle-active-deadline').textContent = dl;
+      const op = active.openedAt?.toDate ? active.openedAt.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+      document.getElementById('cycle-active-opened').textContent = op;
+      activeView.style.display = '';
+      newView.style.display = 'none';
+    } else {
+      activeCycleId = null;
+      badge.textContent = 'No Active Cycle';
+      badge.className = 'cycle-status-badge none';
+      activeView.style.display = 'none';
+      newView.style.display = '';
+    }
+  }
+
+  document.getElementById('open-cycle-btn').addEventListener('click', async () => {
+    const name     = document.getElementById('cycle-name-input').value.trim();
+    const deadline = document.getElementById('cycle-deadline-input').value;
+    if (!name) { alert('Please enter a cycle name.'); return; }
+    if (!deadline) { alert('Please select a deadline date.'); return; }
+    const btn = document.getElementById('open-cycle-btn');
+    btn.disabled = true; btn.textContent = 'Opening…';
+    try {
+      await addDoc(collection(db, 'cycles'), {
+        name, deadline, status: 'open',
+        openedAt: serverTimestamp(), closedAt: null
+      });
+      document.getElementById('cycle-name-input').value = '';
+      document.getElementById('cycle-deadline-input').value = '';
+      await loadActiveCycle();
+    } catch(e) { alert('Error opening cycle: ' + e.message); }
+    btn.disabled = false; btn.textContent = '▶ Open Cycle';
+  });
+
+  document.getElementById('close-cycle-btn').addEventListener('click', async () => {
+    if (!activeCycleId) return;
+    if (!confirm('Close the active review cycle? Employees will no longer be able to submit reviews.')) return;
+    const btn = document.getElementById('close-cycle-btn');
+    btn.disabled = true; btn.textContent = 'Closing…';
+    try {
+      await updateDoc(doc(db, 'cycles', activeCycleId), { status: 'closed', closedAt: serverTimestamp() });
+      await loadActiveCycle();
+    } catch(e) { alert('Error closing cycle: ' + e.message); }
+    btn.disabled = false; btn.textContent = '⏹ Close Cycle';
+  });
+
+  loadActiveCycle();
   document.getElementById('logout-btn').addEventListener('click', logout);
   document.getElementById('logout-btn-mobile').addEventListener('click', logout);
 
