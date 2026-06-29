@@ -509,6 +509,36 @@
     .score-suggest-text strong { font-weight: 700; }
     .score-suggest-text small { display: block; font-size: 0.75rem; color: var(--gray-600); margin-top: 0.1rem; }
 
+    /* ── Score Choice Buttons ── */
+    .score-choice-row { display: flex; gap: 0.625rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .score-choice-btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.55rem 1.1rem; border-radius: 8px; font-size: 0.8125rem; font-weight: 600;
+      cursor: pointer; transition: all 0.15s; border: 2px solid var(--green);
+      background: var(--green); color: var(--white);
+    }
+    .score-choice-btn:hover { background: var(--green-dark); border-color: var(--green-dark); }
+    .score-choice-btn.outline { background: transparent; color: var(--green-dark); }
+    .score-choice-btn.outline:hover { background: var(--green-light); }
+    .score-choice-btn.active-choice { background: var(--green-dark); border-color: var(--green-dark); color: var(--white); box-shadow: 0 0 0 3px rgba(14,76,45,0.18); }
+    .score-chosen-display {
+      display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+      background: #E8F5E9; border: 1px solid #A5D6A7; border-radius: 8px;
+      padding: 0.6rem 1rem; margin-bottom: 1rem; font-size: 0.8125rem; color: var(--green-dark);
+    }
+    .score-chosen-badge { font-size: 1.4rem; font-weight: 900; color: var(--green); line-height: 1; }
+    .score-chosen-label { font-weight: 700; }
+    .score-chosen-type { color: var(--gray-500); font-size: 0.75rem; }
+    .score-change-link { background: none; border: none; color: var(--green-dark); font-size: 0.75rem; font-weight: 600; cursor: pointer; text-decoration: underline; padding: 0; margin-left: auto; }
+    .mgr-rec-box {
+      background: #F4F6F2; border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 0.8125rem;
+    }
+    .mgr-rec-box-title { font-weight: 700; color: var(--gray-700); margin-bottom: 0.35rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .mgr-rec-box-score { font-size: 1.5rem; font-weight: 900; color: var(--green-dark); }
+    .mgr-rec-box-label { font-weight: 600; color: var(--green-dark); }
+    .mgr-rec-box-reason { color: var(--gray-600); font-style: italic; margin-top: 0.3rem; font-size: 0.8rem; }
+
     .score-summary-card {
       display: none; margin-bottom: 1.25rem;
       border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
@@ -755,6 +785,48 @@
         <div class="section-title">Competency Ratings <span style="font-weight:400;color:var(--gray-400);text-transform:none;letter-spacing:0">(1 = Needs Improvement · 5 = Exceptional)</span></div>
         <div class="competency-grid" id="mgr-competencies"></div>
 
+        <!-- Score Recommendation (shows once all competencies are rated) -->
+        <div id="mgr-score-rec-wrap" style="display:none;margin-top:1.5rem">
+          <div class="section-title">Score Recommendation</div>
+          <div class="score-suggest-banner" id="mgr-score-suggest-banner">
+            <div class="score-suggest-num" id="mgr-score-suggest-num">—</div>
+            <div class="score-suggest-text">
+              <strong id="mgr-score-suggest-label">—</strong>
+              <small id="mgr-score-suggest-sub">Average competency rating</small>
+            </div>
+          </div>
+          <p style="font-size:0.8125rem;color:var(--gray-600);margin:0 0 0.75rem">Based on your ratings, the system calculated the score above. You can accept it or enter your own recommendation for the executive.</p>
+          <div class="score-choice-row" id="mgr-choice-row">
+            <button class="score-choice-btn" id="mgr-accept-suggested-btn" type="button">✓ Go with suggested score</button>
+            <button class="score-choice-btn outline" id="mgr-set-own-btn" type="button">✏ Set my own recommendation</button>
+          </div>
+          <div id="mgr-own-score-wrap" style="display:none">
+            <div class="form-group" style="margin-bottom:.75rem">
+              <label class="form-label">My Recommended Score <span class="req">*</span></label>
+              <select class="form-control" id="mgr-score-recommendation" style="max-width:320px">
+                <option value="">— Select —</option>
+                <option value="1">1 — Unsatisfactory</option>
+                <option value="2">2 — Needs Improvement</option>
+                <option value="3">3 — Meets Expectations</option>
+                <option value="4">4 — Exceeds Expectations</option>
+                <option value="5">5 — Exceptional</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:.5rem">
+              <label class="form-label">Reason for Different Recommendation <span class="req">*</span></label>
+              <textarea class="form-control" id="mgr-score-override-reason" rows="3" placeholder="Explain why your recommendation differs from the calculated score…"></textarea>
+            </div>
+          </div>
+          <div class="score-chosen-display" id="mgr-chosen-display" style="display:none">
+            <div class="score-chosen-badge" id="mgr-chosen-badge">—</div>
+            <div>
+              <div class="score-chosen-label" id="mgr-chosen-label">—</div>
+              <div class="score-chosen-type" id="mgr-chosen-type">—</div>
+            </div>
+            <button class="score-change-link" id="mgr-change-choice-btn" type="button">Change</button>
+          </div>
+        </div>
+
         <div class="section-title" style="margin-top:1.5rem">Manager Assessment</div>
         <div class="form-group">
           <label class="form-label">Manager Comments <span class="req">*</span></label>
@@ -832,27 +904,58 @@
         </div>
 
         <div class="section-title" style="margin-top:1.5rem">Executive Decision</div>
-        <div class="overall-score-row">
-          <div class="form-group" style="margin-bottom:0">
-            <label class="form-label">Overall Performance Score <span class="req">*</span></label>
-            <select class="form-control" id="exec-overall-score">
-              <option value="">— Select —</option>
-              <option value="1">1 — Unsatisfactory</option>
-              <option value="2">2 — Needs Improvement</option>
-              <option value="3">3 — Meets Expectations</option>
-              <option value="4">4 — Exceeds Expectations</option>
-              <option value="5">5 — Exceptional</option>
-            </select>
+
+        <!-- Manager's score recommendation (read-only) -->
+        <div class="mgr-rec-box" id="exec-mgr-rec-box" style="display:none">
+          <div class="mgr-rec-box-title">Manager's Score Recommendation</div>
+          <div style="display:flex;align-items:baseline;gap:.5rem">
+            <span class="mgr-rec-box-score" id="exec-mgr-rec-score">—</span>
+            <span class="mgr-rec-box-label" id="exec-mgr-rec-label">—</span>
           </div>
-          <div class="form-group" style="margin-bottom:0">
-            <label class="form-label">Recommended Action <span class="req">*</span></label>
-            <select class="form-control" id="exec-action">
-              <option value="no-change">No Change</option>
-              <option value="merit-increase">Merit Increase</option>
-              <option value="promotion">Promotion</option>
-              <option value="performance-plan">Performance Improvement Plan</option>
-            </select>
+          <div class="mgr-rec-box-reason" id="exec-mgr-rec-reason" style="display:none"></div>
+        </div>
+
+        <!-- Exec score choice -->
+        <div id="exec-score-choice-wrap">
+          <div class="score-choice-row" id="exec-choice-row">
+            <button class="score-choice-btn" id="exec-accept-suggested-btn" type="button">✓ Go with suggested score</button>
+            <button class="score-choice-btn outline" id="exec-set-own-btn" type="button">✏ Set my own score</button>
           </div>
+          <div class="score-chosen-display" id="exec-chosen-display" style="display:none">
+            <div class="score-chosen-badge" id="exec-chosen-badge">—</div>
+            <div>
+              <div class="score-chosen-label" id="exec-chosen-label">—</div>
+              <div class="score-chosen-type" id="exec-chosen-type">—</div>
+            </div>
+            <button class="score-change-link" id="exec-change-choice-btn" type="button">Change</button>
+          </div>
+          <div id="exec-own-score-wrap" style="display:none">
+            <div class="form-group" style="margin-bottom:.75rem">
+              <label class="form-label">Overall Performance Score <span class="req">*</span></label>
+              <select class="form-control" id="exec-overall-score" style="max-width:320px">
+                <option value="">— Select —</option>
+                <option value="1">1 — Unsatisfactory</option>
+                <option value="2">2 — Needs Improvement</option>
+                <option value="3">3 — Meets Expectations</option>
+                <option value="4">4 — Exceeds Expectations</option>
+                <option value="5">5 — Exceptional</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:.5rem">
+              <label class="form-label">Reason for Different Score <span class="req">*</span></label>
+              <textarea class="form-control" id="exec-score-override-reason" rows="2" placeholder="Explain why you're choosing a score different from the suggestion…"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:.75rem">
+          <label class="form-label">Recommended Action <span class="req">*</span></label>
+          <select class="form-control" id="exec-action" style="max-width:320px">
+            <option value="no-change">No Change</option>
+            <option value="merit-increase">Merit Increase</option>
+            <option value="promotion">Promotion</option>
+            <option value="performance-plan">Performance Improvement Plan</option>
+          </select>
         </div>
 
         <div class="form-group">
@@ -1593,6 +1696,10 @@
     const canEditMgr = (isMgrOfEmp || isAdmin) && !completed;
     setField('mgr-comments',      currentReview.managerEval?.comments || '', !canEditMgr);
     setField('mgr-support',       currentReview.managerEval?.managerSupport || '', !canEditMgr);
+    setField('mgr-score-recommendation', currentReview.managerEval?.scoreRecommendation || '', !canEditMgr, true);
+    setField('mgr-score-override-reason', currentReview.managerEval?.scoreOverrideReason || '', !canEditMgr);
+    const mgrScoreRecWrap = document.getElementById('mgr-score-rec-wrap');
+    if (mgrScoreRecWrap && !canEditMgr) mgrScoreRecWrap.style.pointerEvents = 'none';
 
     const mn = document.getElementById('mgr-status-note');
     if (currentReview.managerEval?.completedAt) {
@@ -1611,6 +1718,10 @@
     setField('exec-overall-score', currentReview.executiveEval?.overallScore || '', !canEditExec, true);
     setField('exec-action',        currentReview.executiveEval?.recommendedAction || 'no-change', !canEditExec, true);
     setField('exec-comments',      currentReview.executiveEval?.comments || '', !canEditExec);
+    setField('exec-score-override-reason', currentReview.executiveEval?.scoreOverrideReason || '', !canEditExec);
+    // Hide choice buttons when read-only
+    const scoreChoiceWrap = document.getElementById('exec-score-choice-wrap');
+    if (scoreChoiceWrap) scoreChoiceWrap.style.display = canEditExec ? 'block' : 'none';
     setField('exec-view-mgr-comments', currentReview.managerEval?.comments || '(Manager has not submitted yet)', true);
     setField('exec-view-q1', currentReview.selfEval?.q1 || '(Not submitted yet)', true);
     setField('exec-view-q2', currentReview.selfEval?.q2 || '(Not submitted yet)', true);
@@ -1634,8 +1745,12 @@
     document.getElementById('modal-footer-status').textContent =
       `Status: ${statusLabel(currentReview.status)}`;
 
-    // Initialize score summary for existing reviews that already have ratings/score
+    // Initialize score summary + restore choice UI
+    resetScoreChoiceUI();
     updateMgrScoreSuggestion();
+    restoreMgrScoreChoice(currentReview.managerEval);
+    restoreExecScoreChoice(currentReview.executiveEval);
+    showMgrRecOnExecTab(currentReview.managerEval);
     updateScoreSummaryCard();
 
     // Determine which tab to open
@@ -1709,28 +1824,44 @@
     5: { label: 'Exceptional',          desc: 'Outstanding performance in all areas. Employee is a top performer and key asset to the team.',           cls: 's5' },
   };
 
+  let suggestedScore = 0; // computed from mgr competency ratings
+
   function updateMgrScoreSuggestion() {
     const rated = COMPETENCIES.filter(c => mgrRatings[c.key]);
-    const banner  = document.getElementById('score-suggest-banner');
+
+    // ── Exec tab banner (existing) ──
+    const execBanner = document.getElementById('score-suggest-banner');
+
+    // ── Manager tab banner + rec section ──
+    const mgrBanner  = document.getElementById('mgr-score-suggest-banner');
+    const mgrRecWrap = document.getElementById('mgr-score-rec-wrap');
+
     if (rated.length === COMPETENCIES.length) {
       const avg  = rated.reduce((s, c) => s + mgrRatings[c.key], 0) / rated.length;
       const sug  = Math.min(5, Math.max(1, Math.round(avg)));
+      suggestedScore = sug;
       const meta = SCORE_META[sug];
+
+      // Update exec tab banner
       document.getElementById('score-suggest-num').textContent = sug;
       document.getElementById('score-suggest-label').textContent = `Suggested score: ${sug} — ${meta.label}`;
-      document.getElementById('score-suggest-sub').textContent = `Average competency rating: ${avg.toFixed(1)} / 5 — click to apply`;
-      banner.classList.add('show');
-      // Auto-populate the dropdown if not already set
-      const sel = document.getElementById('exec-overall-score');
-      if (sel && !sel.disabled && !sel.value) sel.value = sug;
-      updateScoreSummaryCard();
-      // Clicking banner applies the suggestion
-      banner.onclick = () => {
-        const sel2 = document.getElementById('exec-overall-score');
-        if (sel2 && !sel2.disabled) { sel2.value = sug; updateScoreSummaryCard(); }
-      };
+      document.getElementById('score-suggest-sub').textContent = `Average competency rating: ${avg.toFixed(1)} / 5`;
+      execBanner.classList.add('show');
+      execBanner.onclick = null;
+
+      // Update manager tab banner + show rec section
+      if (mgrBanner) {
+        document.getElementById('mgr-score-suggest-num').textContent = sug;
+        document.getElementById('mgr-score-suggest-label').textContent = `Suggested: ${sug} — ${meta.label}`;
+        document.getElementById('mgr-score-suggest-sub').textContent = `Average competency rating: ${avg.toFixed(1)} / 5`;
+        mgrBanner.classList.add('show');
+      }
+      if (mgrRecWrap) mgrRecWrap.style.display = 'block';
     } else {
-      banner.classList.remove('show');
+      suggestedScore = 0;
+      execBanner.classList.remove('show');
+      if (mgrBanner) mgrBanner.classList.remove('show');
+      if (mgrRecWrap) mgrRecWrap.style.display = 'none';
     }
     updateScoreSummaryCard();
   }
@@ -1764,6 +1895,193 @@
     iList.innerHTML = improve.length
       ? improve.map(c => `<li class="score-comp-item"><span class="score-comp-dot"></span>${c.label}<span class="score-comp-rating">${mgrRatings[c.key]}/5</span></li>`).join('')
       : `<li class="score-none">No critical gaps identified</li>`;
+  }
+
+  // ── Score Choice Logic ──
+  let mgrScoreChoice = null; // 'suggested' | 'own' | null
+  let execScoreChoice = null;
+
+  function applyMgrScoreChoice(choice) {
+    mgrScoreChoice = choice;
+    const choiceRow    = document.getElementById('mgr-choice-row');
+    const ownWrap      = document.getElementById('mgr-own-score-wrap');
+    const chosenDisplay= document.getElementById('mgr-chosen-display');
+
+    if (!choice) {
+      choiceRow.style.display = 'flex';
+      ownWrap.style.display = 'none';
+      chosenDisplay.style.display = 'none';
+      return;
+    }
+
+    const score = choice === 'suggested' ? suggestedScore : +document.getElementById('mgr-score-recommendation').value;
+    const meta  = SCORE_META[score] || {};
+
+    choiceRow.style.display = 'none';
+    ownWrap.style.display   = choice === 'own' ? 'block' : 'none';
+
+    if (choice === 'suggested' && score) {
+      document.getElementById('mgr-chosen-badge').textContent = score;
+      document.getElementById('mgr-chosen-label').textContent = `${score} — ${meta.label}`;
+      document.getElementById('mgr-chosen-type').textContent  = 'Accepted suggested score';
+      chosenDisplay.style.display = 'flex';
+    } else {
+      chosenDisplay.style.display = 'none';
+    }
+  }
+
+  function confirmMgrOwnScore() {
+    const score = document.getElementById('mgr-score-recommendation').value;
+    const reason= document.getElementById('mgr-score-override-reason').value.trim();
+    if (!score)  { toast('Please select your recommended score.', 'error'); return; }
+    if (!reason) { toast('Please provide a reason for your different recommendation.', 'error'); return; }
+    const meta = SCORE_META[+score] || {};
+    const chosenDisplay = document.getElementById('mgr-chosen-display');
+    document.getElementById('mgr-chosen-badge').textContent = score;
+    document.getElementById('mgr-chosen-label').textContent = `${score} — ${meta.label}`;
+    document.getElementById('mgr-chosen-type').textContent  = 'Your own recommendation';
+    document.getElementById('mgr-choice-row').style.display = 'none';
+    document.getElementById('mgr-own-score-wrap').style.display = 'none';
+    chosenDisplay.style.display = 'flex';
+    mgrScoreChoice = 'own';
+  }
+
+  function applyExecScoreChoice(choice) {
+    execScoreChoice = choice;
+    const choiceRow    = document.getElementById('exec-choice-row');
+    const ownWrap      = document.getElementById('exec-own-score-wrap');
+    const chosenDisplay= document.getElementById('exec-chosen-display');
+
+    if (!choice) {
+      choiceRow.style.display = 'flex';
+      ownWrap.style.display = 'none';
+      chosenDisplay.style.display = 'none';
+      return;
+    }
+
+    if (choice === 'suggested') {
+      const score = suggestedScore;
+      const meta  = SCORE_META[score] || {};
+      // auto-set the hidden exec score select
+      const sel = document.getElementById('exec-overall-score');
+      if (sel) sel.value = score;
+      updateScoreSummaryCard();
+      choiceRow.style.display = 'none';
+      ownWrap.style.display   = 'none';
+      if (score) {
+        document.getElementById('exec-chosen-badge').textContent = score;
+        document.getElementById('exec-chosen-label').textContent = `${score} — ${meta.label}`;
+        document.getElementById('exec-chosen-type').textContent  = 'Accepted suggested score';
+        chosenDisplay.style.display = 'flex';
+      }
+    } else {
+      choiceRow.style.display = 'none';
+      ownWrap.style.display   = 'block';
+      chosenDisplay.style.display = 'none';
+    }
+  }
+
+  function confirmExecOwnScore() {
+    const score = document.getElementById('exec-overall-score').value;
+    const reason= document.getElementById('exec-score-override-reason').value.trim();
+    if (!score)  { toast('Please select an overall performance score.', 'error'); return; }
+    if (!reason) { toast('Please provide a reason for your different score.', 'error'); return; }
+    const meta = SCORE_META[+score] || {};
+    const chosenDisplay = document.getElementById('exec-chosen-display');
+    document.getElementById('exec-chosen-badge').textContent = score;
+    document.getElementById('exec-chosen-label').textContent = `${score} — ${meta.label}`;
+    document.getElementById('exec-chosen-type').textContent  = 'Your own score';
+    document.getElementById('exec-choice-row').style.display = 'none';
+    document.getElementById('exec-own-score-wrap').style.display = 'none';
+    chosenDisplay.style.display = 'flex';
+    execScoreChoice = 'own_confirmed';
+    updateScoreSummaryCard();
+    updateCompPanel();
+  }
+
+  // Wire up choice buttons (after DOM ready)
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('mgr-accept-suggested-btn').addEventListener('click', () => applyMgrScoreChoice('suggested'));
+    document.getElementById('mgr-set-own-btn').addEventListener('click', () => {
+      mgrScoreChoice = 'own';
+      document.getElementById('mgr-choice-row').style.display = 'none';
+      document.getElementById('mgr-own-score-wrap').style.display = 'block';
+    });
+    document.getElementById('mgr-change-choice-btn').addEventListener('click', () => applyMgrScoreChoice(null));
+
+    // "Confirm" own mgr score when they blur or we can add a confirm button — wired on blur
+    document.getElementById('mgr-score-override-reason').addEventListener('blur', () => {
+      if (mgrScoreChoice === 'own' && document.getElementById('mgr-score-recommendation').value) {
+        confirmMgrOwnScore();
+      }
+    });
+
+    document.getElementById('exec-accept-suggested-btn').addEventListener('click', () => applyExecScoreChoice('suggested'));
+    document.getElementById('exec-set-own-btn').addEventListener('click', () => applyExecScoreChoice('own'));
+    document.getElementById('exec-change-choice-btn').addEventListener('click', () => applyExecScoreChoice(null));
+
+    document.getElementById('exec-score-override-reason').addEventListener('blur', () => {
+      if (execScoreChoice === 'own' && document.getElementById('exec-overall-score').value) {
+        confirmExecOwnScore();
+      }
+    });
+  });
+
+  function resetScoreChoiceUI() {
+    mgrScoreChoice  = null;
+    execScoreChoice = null;
+    suggestedScore  = 0;
+    applyMgrScoreChoice(null);
+    applyExecScoreChoice(null);
+    const mgrRecWrap = document.getElementById('mgr-score-rec-wrap');
+    if (mgrRecWrap) mgrRecWrap.style.display = 'none';
+    const mgrBanner = document.getElementById('mgr-score-suggest-banner');
+    if (mgrBanner) mgrBanner.classList.remove('show');
+    document.getElementById('mgr-score-recommendation').value = '';
+    document.getElementById('mgr-score-override-reason').value = '';
+    document.getElementById('exec-score-override-reason').value = '';
+  }
+
+  function restoreMgrScoreChoice(mgrEval) {
+    if (!mgrEval?.scoreChoice) return;
+    if (mgrEval.scoreChoice === 'suggested') {
+      applyMgrScoreChoice('suggested');
+    } else if (mgrEval.scoreChoice === 'own') {
+      mgrScoreChoice = 'own';
+      document.getElementById('mgr-choice-row').style.display = 'none';
+      const recSel = document.getElementById('mgr-score-recommendation');
+      if (recSel) recSel.value = mgrEval.scoreRecommendation || '';
+      const reasonEl = document.getElementById('mgr-score-override-reason');
+      if (reasonEl) reasonEl.value = mgrEval.scoreOverrideReason || '';
+      confirmMgrOwnScore();
+    }
+  }
+
+  function restoreExecScoreChoice(execEval) {
+    if (!execEval?.scoreChoice) return;
+    if (execEval.scoreChoice === 'suggested') {
+      applyExecScoreChoice('suggested');
+    } else if (execEval.scoreChoice === 'own') {
+      execScoreChoice = 'own';
+      document.getElementById('exec-choice-row').style.display = 'none';
+      document.getElementById('exec-own-score-wrap').style.display = 'block';
+    }
+  }
+
+  function showMgrRecOnExecTab(mgrEval) {
+    const box = document.getElementById('exec-mgr-rec-box');
+    if (!mgrEval?.scoreRecommendation) { if (box) box.style.display = 'none'; return; }
+    const meta = SCORE_META[mgrEval.scoreRecommendation] || {};
+    document.getElementById('exec-mgr-rec-score').textContent = mgrEval.scoreRecommendation;
+    document.getElementById('exec-mgr-rec-label').textContent = `— ${meta.label || ''}`;
+    const reasonEl = document.getElementById('exec-mgr-rec-reason');
+    if (mgrEval.scoreOverrideReason) {
+      reasonEl.textContent = `Manager's note: "${mgrEval.scoreOverrideReason}"`;
+      reasonEl.style.display = 'block';
+    } else {
+      reasonEl.style.display = 'none';
+    }
+    box.style.display = 'block';
   }
 
   // ── Tab Switching ──
@@ -1839,6 +2157,14 @@
     renderTable();
   }
 
+  function getMgrScoreRecPayload() {
+    if (!mgrScoreChoice) return {};
+    const isSuggested = mgrScoreChoice === 'suggested';
+    const score = isSuggested ? suggestedScore : +document.getElementById('mgr-score-recommendation').value;
+    const reason = isSuggested ? null : document.getElementById('mgr-score-override-reason').value.trim();
+    return { scoreChoice: mgrScoreChoice, scoreRecommendation: score || null, scoreOverrideReason: reason || null };
+  }
+
   async function saveMgrDraft() {
     const payload = {
       managerEval: {
@@ -1846,6 +2172,7 @@
         comments: document.getElementById('mgr-comments').value.trim(),
         goals: mgrGoals,
         managerSupport: document.getElementById('mgr-support').value.trim(),
+        ...getMgrScoreRecPayload(),
         savedAt: serverTimestamp()
       },
       status: 'in-review',
@@ -1858,10 +2185,20 @@
     renderTable();
   }
 
+  function getExecScorePayload() {
+    const score = document.getElementById('exec-overall-score').value;
+    const reason = document.getElementById('exec-score-override-reason').value.trim();
+    return {
+      overallScore: score ? +score : null,
+      scoreChoice: execScoreChoice || null,
+      scoreOverrideReason: (execScoreChoice === 'own' || execScoreChoice === 'own_confirmed') ? (reason || null) : null,
+    };
+  }
+
   async function saveExecDraft() {
     const payload = {
       executiveEval: {
-        overallScore: document.getElementById('exec-overall-score').value,
+        ...getExecScorePayload(),
         recommendedAction: document.getElementById('exec-action').value,
         comments: document.getElementById('exec-comments').value.trim(),
         savedAt: serverTimestamp()
@@ -1914,6 +2251,11 @@
     if (!comments) { toast('Please add manager comments before completing.', 'error'); return; }
     const allRated = COMPETENCIES.every(c => mgrRatings[c.key]);
     if (!allRated) { toast('Please rate all competencies.', 'error'); return; }
+    if (!mgrScoreChoice) { toast('Please make a score recommendation before completing.', 'error'); return; }
+    if (mgrScoreChoice === 'own') {
+      if (!document.getElementById('mgr-score-recommendation').value) { toast('Please select your recommended score.', 'error'); return; }
+      if (!document.getElementById('mgr-score-override-reason').value.trim()) { toast('Please provide a reason for your score recommendation.', 'error'); return; }
+    }
 
     const payload = {
       managerEval: {
@@ -1921,6 +2263,7 @@
         comments,
         goals: mgrGoals,
         managerSupport: document.getElementById('mgr-support').value.trim(),
+        ...getMgrScoreRecPayload(),
         completedAt: serverTimestamp()
       },
       status: 'mgr-complete',
@@ -1935,13 +2278,18 @@
   }
 
   async function completeExecutiveAssessment() {
+    if (!execScoreChoice) { toast('Please make a score choice before completing.', 'error'); return; }
     const score    = document.getElementById('exec-overall-score').value;
     const comments = document.getElementById('exec-comments').value.trim();
     if (!score)    { toast('Please select an overall performance score.', 'error'); return; }
+    if ((execScoreChoice === 'own' || execScoreChoice === 'own_confirmed') && !document.getElementById('exec-score-override-reason').value.trim()) {
+      toast('Please provide a reason for your score choice.', 'error'); return;
+    }
     if (!comments) { toast('Please add executive comments before completing.', 'error'); return; }
 
     const payload = {
       executiveEval: {
+        ...getExecScorePayload(),
         overallScore: +score,
         recommendedAction: document.getElementById('exec-action').value,
         comments,
@@ -2025,6 +2373,7 @@
     document.getElementById('comp-pct-input').value = '';
     document.getElementById('score-suggest-banner').classList.remove('show');
     document.getElementById('score-summary-card').classList.remove('show');
+    resetScoreChoiceUI();
     selfGoals = []; mgrGoals = [];
     currentReview = null;
     activeTab = 'self';
