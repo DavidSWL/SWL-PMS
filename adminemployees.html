@@ -466,7 +466,7 @@
           <select class="form-control" id="f-manager">
             <option value="">— Unassigned —</option>
           </select>
-          <span class="form-hint">Only managers and executives are listed. Determines whose reports and reviews this employee appears in.</span>
+          <span class="form-hint">Managers, executives, and admins are listed. Determines whose reports and reviews this employee appears in.</span>
         </div>
 
         <!-- Compensation -->
@@ -761,12 +761,13 @@
     const current = sel.value;
     sel.innerHTML = '<option value="">— Unassigned —</option>';
     allEmployees
-      .filter(e => e.id !== excludeId && e.status !== 'inactive' && (e.role === 'manager' || e.role === 'executive'))
+      .filter(e => e.id !== excludeId && e.status !== 'inactive' && (e.role === 'manager' || e.role === 'executive' || e.role === 'admin'))
       .sort((a,b) => `${a.lastName}${a.firstName}`.localeCompare(`${b.lastName}${b.firstName}`))
       .forEach(e => {
         const opt = document.createElement('option');
         opt.value = e.id;
-        opt.textContent = `${e.firstName} ${e.lastName} — ${e.role === 'executive' ? 'Executive' : 'Manager'}${e.position ? ' / ' + e.position : ''}`;
+        const roleLabel = e.role === 'executive' ? 'Executive' : e.role === 'admin' ? 'Admin' : 'Manager';
+        opt.textContent = `${e.firstName} ${e.lastName} — ${roleLabel}${e.position ? ' / ' + e.position : ''}`;
         sel.appendChild(opt);
       });
     if (current) sel.value = current;
