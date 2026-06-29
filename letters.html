@@ -289,6 +289,7 @@
           <label class="form-label">Branch / Location <span class="badge badge-pick">Required</span></label>
           <select class="form-control" id="branch-select">
             <option value="">— Select —</option>
+            <option value="corporate">Corporate Office</option>
             <option value="oc">Orange County (OC)</option>
             <option value="la">Los Angeles (LA)</option>
             <option value="ie">Inland Empire (IE)</option>
@@ -390,6 +391,7 @@
           <label class="form-label">Filter by Branch</label>
           <select class="form-control" id="batch-branch">
             <option value="">All branches</option>
+            <option value="Corporate">Corporate Office</option>
             <option value="OC">Orange County</option>
             <option value="LA">Los Angeles</option>
             <option value="IE">Inland Empire</option>
@@ -472,6 +474,12 @@
 
   // ── Location / schedule data ──
   const BRANCHES = {
+    corporate: {
+      label:    'Corporate Office',
+      address:  '410 West Grove Ave., Ste 180, Orange, California 92865',
+      schedule: 'Monday – Friday, 8:00am – 5:00pm',
+      schedule_es: 'lunes a viernes, de 8:00 a.m. a 5:00 p.m.',
+    },
     oc: {
       label:    'Orange County (OC)',
       address:  '410 West Grove Ave., Ste 180, Orange, California 92865',
@@ -877,6 +885,35 @@
     </div>`;
   }
 
+  // ── Shared print/export CSS ──
+  function letterCss() {
+    return `
+  @page { margin: 1in; size: letter; }
+  body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.65; color: #111; }
+  p { margin-bottom: 0.7rem; }
+  .section-bold { font-weight: bold; }
+  /* Option-D header */
+  .ltr-hdr-wrap { margin: -1in -1in 1.25rem; }
+  .ltr-hdr-top { background: #083520; padding: 0.75rem 1in; display: flex; align-items: center; gap: 0.9rem; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .ltr-hdr-logo { height: 44px; width: auto; max-width: 110px; object-fit: contain; flex-shrink: 0; }
+  .ltr-hdr-logo-placeholder { height: 44px; width: 44px; }
+  .ltr-hdr-company { font-family: Arial, sans-serif; font-size: 16pt; font-weight: 900; color: #fff; line-height: 1.1; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .ltr-hdr-tagline { font-family: Arial, sans-serif; font-size: 7.5pt; color: rgba(255,255,255,0.65); margin-top: 2px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .ltr-hdr-bot { background: #0E4C2D; padding: 0.35rem 1in; display: flex; align-items: center; justify-content: space-between; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .ltr-hdr-doctype { font-family: Arial, sans-serif; font-size: 7.5pt; font-weight: 700; color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 0.12em; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .ltr-hdr-address { font-family: Arial, sans-serif; font-size: 7pt; color: rgba(255,255,255,0.65); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  /* Signature */
+  .sig-sender { margin-bottom: 1.25rem; }
+  .sig-sender-img { display: block; height: 52px; width: auto; max-width: 190px; object-fit: contain; margin-bottom: 2px; }
+  .sig-sender-name { font-family: Arial, sans-serif; font-weight: 700; font-size: 10pt; }
+  .sig-sender-title { font-family: Arial, sans-serif; font-size: 9pt; color: #555; }
+  .sig-area { margin-top: 1.5rem; }
+  .sig-title { font-weight: bold; margin-bottom: 1rem; }
+  .sig-row { display: flex; gap: 2.5rem; margin-top: 1.25rem; }
+  .sig-line { border-bottom: 1.5px solid #333; height: 28px; min-width: 200px; margin-bottom: 3px; }
+  .sig-label { font-family: Arial, sans-serif; font-size: 8pt; color: #666; }`;
+  }
+
   // ── Print ──
   document.getElementById('print-btn').addEventListener('click', printLetter);
   function printLetter() {
@@ -884,22 +921,7 @@
     const w = window.open('', '_blank');
     w.document.write(`<!DOCTYPE html>
 <html><head><meta charset="UTF-8"><title>Southwest Landscape — Letter</title>
-<style>
-  @page { margin: 1in; size: letter; }
-  body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.65; color: #111; }
-  .letter-header { text-align: center; margin-bottom: 1.5rem; padding-bottom: 0.875rem; border-bottom: 3px solid #0E4C2D; }
-  .letter-company { font-family: Arial, sans-serif; font-size: 22pt; font-weight: 900; color: #0E4C2D; letter-spacing: -0.02em; }
-  .letter-company-sub { font-family: Arial, sans-serif; font-size: 9pt; color: #666; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.08em; }
-  .letter-tagline { font-family: Arial, sans-serif; font-size: 8pt; color: #0E4C2D; margin-top: 3px; font-style: italic; }
-  p { margin-bottom: 0.7rem; }
-  .section-bold { font-weight: bold; }
-  .sig-area { margin-top: 1.5rem; }
-  .sig-title { font-weight: bold; margin-bottom: 1rem; }
-  .sig-row { display: flex; gap: 2.5rem; margin-top: 1.25rem; }
-  .sig-block { }
-  .sig-line { border-bottom: 1.5px solid #333; height: 28px; min-width: 200px; margin-bottom: 3px; }
-  .sig-label { font-family: Arial, sans-serif; font-size: 8pt; color: #666; }
-</style>
+<style>${letterCss()}</style>
 </head><body>${inner}</body></html>`);
     w.document.close();
     w.focus();
@@ -926,14 +948,22 @@
   @page WordSection1 { mso-page-orientation: portrait; margin: 1in; }
   div.WordSection1 { page: WordSection1; }
   body { font-family: 'Times New Roman', serif; font-size: 12pt; line-height: 1.65; }
-  .letter-header { text-align: center; border-bottom: 3px solid #0E4C2D; padding-bottom: 10pt; margin-bottom: 14pt; }
-  .letter-company { font-family: Arial; font-size: 22pt; font-weight: bold; color: #0E4C2D; }
-  .letter-company-sub { font-family: Arial; font-size: 9pt; color: #666; text-transform: uppercase; }
-  .letter-tagline { font-family: Arial; font-size: 8pt; color: #0E4C2D; font-style: italic; }
   p { margin-bottom: 8pt; }
   .section-bold { font-weight: bold; }
+  .ltr-hdr-wrap { margin: -1in -1in 14pt; }
+  .ltr-hdr-top { background: #083520; padding: 10pt 1in; display: flex; align-items: center; gap: 10pt; }
+  .ltr-hdr-logo { height: 40pt; width: auto; }
+  .ltr-hdr-logo-placeholder { height: 40pt; width: 40pt; }
+  .ltr-hdr-company { font-family: Arial; font-size: 16pt; font-weight: bold; color: #ffffff; }
+  .ltr-hdr-tagline { font-family: Arial; font-size: 7.5pt; color: #aaccbb; }
+  .ltr-hdr-bot { background: #0E4C2D; padding: 4pt 1in; }
+  .ltr-hdr-doctype { font-family: Arial; font-size: 7.5pt; font-weight: bold; color: #ffffff; text-transform: uppercase; }
+  .ltr-hdr-address { font-family: Arial; font-size: 7pt; color: #aaccbb; float: right; }
+  .sig-sender { margin-bottom: 14pt; }
+  .sig-sender-img { height: 48pt; width: auto; }
+  .sig-sender-name { font-family: Arial; font-weight: bold; font-size: 10pt; }
+  .sig-sender-title { font-family: Arial; font-size: 9pt; color: #555; }
   .sig-title { font-weight: bold; }
-  .sig-row { }
   .sig-block { display: inline-block; margin-right: 40pt; min-width: 180pt; }
   .sig-line { border-bottom: 1pt solid #333; height: 24pt; display: block; }
   .sig-label { font-family: Arial; font-size: 8pt; color: #666; }
@@ -1049,20 +1079,8 @@
     const w = window.open('', '_blank');
     w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Batch Letters</title>
 <style>
-  @page { margin: 1in; size: letter; }
-  body { font-family: 'Times New Roman', serif; font-size: 12pt; line-height: 1.65; }
   .letter { page-break-after: always; padding: 0; }
-  .letter-header { text-align: center; border-bottom: 3px solid #0E4C2D; padding-bottom: 10pt; margin-bottom: 14pt; }
-  .letter-company { font-family: Arial; font-size: 22pt; font-weight: bold; color: #0E4C2D; }
-  .letter-company-sub { font-family: Arial; font-size: 9pt; color: #666; text-transform: uppercase; }
-  .letter-tagline { font-family: Arial; font-size: 8pt; color: #0E4C2D; font-style: italic; }
-  p { margin-bottom: 8pt; }
-  .section-bold { font-weight: bold; }
-  .sig-area { margin-top: 1.5rem; }
-  .sig-title { font-weight: bold; margin-bottom: 1rem; }
-  .sig-row { display: flex; gap: 2.5rem; margin-top: 1.25rem; }
-  .sig-line { border-bottom: 1.5px solid #333; height: 28px; min-width: 200px; margin-bottom: 3px; }
-  .sig-label { font-family: Arial; font-size: 8pt; color: #666; }
+  ${letterCss()}
 </style>
 </head><body>${letters.join('')}</body></html>`);
     w.document.close();
@@ -1076,6 +1094,7 @@
     const b = branch.toLowerCase();
     if (b.includes('ie') || b.includes('inland') || b.includes('riverside')) return 'ie';
     if (b.includes('la') || b.includes('los angeles')) return 'la';
+    if (b.includes('corp')) return 'corporate';
     return 'oc';
   }
 
