@@ -134,7 +134,17 @@
     /* ── Modal ── */
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 500; align-items: flex-start; justify-content: center; padding: 2rem 1rem; overflow-y: auto; }
     .modal-overlay.open { display: flex; }
-    .modal { background: var(--white); border-radius: 16px; width: 100%; max-width: 780px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); margin: auto; }
+    .modal { background: var(--white); border-radius: 16px; width: 100%; max-width: 780px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); margin: auto; transition: max-width 0.2s ease; }
+    .modal.exec-wide { max-width: 1160px; }
+
+    /* Exec tab two-column layout */
+    .exec-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+    .exec-col-left { border-right: 1px solid var(--border); padding-right: 2rem; }
+    .exec-col-right {}
+    .exec-col-label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray-400); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--green-light); }
+    .ro-field { background: var(--gray-50); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.75rem; font-size: 0.8125rem; color: var(--gray-600); line-height: 1.5; min-height: 2.5rem; white-space: pre-wrap; word-break: break-word; margin-bottom: 1rem; }
+    .ro-field.empty { color: var(--gray-400); font-style: italic; }
+    @media (max-width: 900px) { .exec-two-col { grid-template-columns: 1fr; } .exec-col-left { border-right: none; padding-right: 0; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 1.5rem; } }
     .modal-header { padding: 1.5rem 1.75rem 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
     .modal-header h2 { font-size: 1.125rem; font-weight: 700; color: var(--gray-900); }
     .modal-header .sub { font-size: 0.8125rem; color: var(--gray-600); margin-top: 0.15rem; }
@@ -870,117 +880,140 @@
       <div class="tab-panel" id="tab-executive">
         <div id="exec-status-note"></div>
 
-        <div class="section-title">Manager's Competency Ratings <span style="font-weight:400;color:var(--gray-400);text-transform:none;letter-spacing:0">(Read Only)</span></div>
-        <div class="competency-grid" id="exec-view-mgr-competencies"></div>
+        <div class="exec-two-col">
 
-        <div class="section-title" style="margin-top:1.5rem">Your Executive Ratings <span style="font-weight:400;color:var(--gray-500);text-transform:none;letter-spacing:0;font-size:0.75rem">— Click to rate each competency</span></div>
-        <div class="competency-grid" id="exec-own-competencies"></div>
+          <!-- ── LEFT: Read-only context ── -->
+          <div class="exec-col-left">
+            <div class="exec-col-label">Employee &amp; Manager Context</div>
 
-        <!-- Auto-suggested score banner -->
-        <div class="score-suggest-banner" id="score-suggest-banner">
-          <div class="score-suggest-num" id="score-suggest-num">—</div>
-          <div class="score-suggest-text">
-            <strong id="score-suggest-label">—</strong>
-            <small id="score-suggest-sub">Based on average competency rating</small>
+            <div class="section-title">Employee Self-Evaluation</div>
+
+            <div class="form-label" style="margin-bottom:.35rem">Key Accomplishments</div>
+            <div class="ro-field" id="exec-view-q1"></div>
+
+            <div class="form-label" style="margin-bottom:.35rem">Challenges &amp; Approach</div>
+            <div class="ro-field" id="exec-view-q2"></div>
+
+            <div class="form-label" style="margin-bottom:.5rem">Employee Goals</div>
+            <div id="exec-view-self-goals" style="margin-bottom:1rem"></div>
+
+            <div class="form-label" style="margin-bottom:.35rem">Development Needs (Employee)</div>
+            <div class="ro-field" id="exec-view-q4"></div>
+
+            <div class="section-title" style="margin-top:1.5rem">Manager's Assessment</div>
+
+            <div class="form-label" style="margin-bottom:.35rem">Manager Comments</div>
+            <div class="ro-field" id="exec-view-mgr-comments"></div>
+
+            <div class="form-label" style="margin-bottom:.5rem">Goals Set by Manager</div>
+            <div id="exec-view-mgr-goals" style="margin-bottom:1rem"></div>
+
+            <div class="form-label" style="margin-bottom:.35rem">Manager's Support Plan</div>
+            <div class="ro-field" id="exec-view-mgr-support"></div>
+
+            <div class="section-title" style="margin-top:1.5rem">Manager's Competency Ratings</div>
+            <div class="competency-grid" id="exec-view-mgr-competencies"></div>
           </div>
-        </div>
 
-        <!-- Score summary card -->
-        <div class="score-summary-card" id="score-summary-card">
-          <div class="score-summary-header" id="score-summary-header">
-            <div class="score-summary-score" id="score-summary-score">—</div>
-            <div>
-              <div class="score-summary-label" id="score-summary-label-txt">—</div>
-              <div class="score-summary-desc" id="score-summary-desc">—</div>
+          <!-- ── RIGHT: Executive inputs ── -->
+          <div class="exec-col-right">
+            <div class="exec-col-label">Your Executive Assessment</div>
+
+            <div class="section-title">Your Competency Ratings <span style="font-weight:400;color:var(--gray-500);text-transform:none;letter-spacing:0;font-size:0.75rem">— Click to rate</span></div>
+            <div class="competency-grid" id="exec-own-competencies"></div>
+
+            <!-- Auto-suggested score banner -->
+            <div class="score-suggest-banner" id="score-suggest-banner">
+              <div class="score-suggest-num" id="score-suggest-num">—</div>
+              <div class="score-suggest-text">
+                <strong id="score-suggest-label">—</strong>
+                <small id="score-suggest-sub">Based on average competency rating</small>
+              </div>
             </div>
-          </div>
-          <div class="score-summary-body">
-            <div class="score-strengths">
-              <div class="score-section-title">Key Strengths</div>
-              <ul class="score-comp-list" id="score-strengths-list"></ul>
-            </div>
-            <div class="score-improve">
-              <div class="score-section-title">Areas to Develop</div>
-              <ul class="score-comp-list" id="score-improve-list"></ul>
-            </div>
-          </div>
-        </div>
 
-        <div class="section-title" style="margin-top:1.5rem">Executive Decision</div>
-
-        <!-- Manager's score recommendation (read-only) -->
-        <div class="mgr-rec-box" id="exec-mgr-rec-box" style="display:none">
-          <div class="mgr-rec-box-title">Manager's Score Recommendation</div>
-          <div style="display:flex;align-items:baseline;gap:.5rem">
-            <span class="mgr-rec-box-score" id="exec-mgr-rec-score">—</span>
-            <span class="mgr-rec-box-label" id="exec-mgr-rec-label">—</span>
-          </div>
-          <div class="mgr-rec-box-reason" id="exec-mgr-rec-reason" style="display:none"></div>
-        </div>
-
-        <!-- Exec score choice -->
-        <div id="exec-score-choice-wrap">
-          <div class="score-choice-row" id="exec-choice-row">
-            <button class="score-choice-btn" id="exec-accept-suggested-btn" type="button">✓ Go with suggested score</button>
-            <button class="score-choice-btn outline" id="exec-set-own-btn" type="button">✏ Set my own score</button>
-          </div>
-          <div class="score-chosen-display" id="exec-chosen-display" style="display:none">
-            <div class="score-chosen-badge" id="exec-chosen-badge">—</div>
-            <div>
-              <div class="score-chosen-label" id="exec-chosen-label">—</div>
-              <div class="score-chosen-type" id="exec-chosen-type">—</div>
+            <!-- Score summary card -->
+            <div class="score-summary-card" id="score-summary-card">
+              <div class="score-summary-header" id="score-summary-header">
+                <div class="score-summary-score" id="score-summary-score">—</div>
+                <div>
+                  <div class="score-summary-label" id="score-summary-label-txt">—</div>
+                  <div class="score-summary-desc" id="score-summary-desc">—</div>
+                </div>
+              </div>
+              <div class="score-summary-body">
+                <div class="score-strengths">
+                  <div class="score-section-title">Key Strengths</div>
+                  <ul class="score-comp-list" id="score-strengths-list"></ul>
+                </div>
+                <div class="score-improve">
+                  <div class="score-section-title">Areas to Develop</div>
+                  <ul class="score-comp-list" id="score-improve-list"></ul>
+                </div>
+              </div>
             </div>
-            <button class="score-change-link" id="exec-change-choice-btn" type="button">Change</button>
-          </div>
-          <div id="exec-own-score-wrap" style="display:none">
+
+            <div class="section-title" style="margin-top:1.5rem">Executive Decision</div>
+
+            <!-- Manager's score recommendation (read-only) -->
+            <div class="mgr-rec-box" id="exec-mgr-rec-box" style="display:none">
+              <div class="mgr-rec-box-title">Manager's Score Recommendation</div>
+              <div style="display:flex;align-items:baseline;gap:.5rem">
+                <span class="mgr-rec-box-score" id="exec-mgr-rec-score">—</span>
+                <span class="mgr-rec-box-label" id="exec-mgr-rec-label">—</span>
+              </div>
+              <div class="mgr-rec-box-reason" id="exec-mgr-rec-reason" style="display:none"></div>
+            </div>
+
+            <!-- Exec score choice -->
+            <div id="exec-score-choice-wrap">
+              <div class="score-choice-row" id="exec-choice-row">
+                <button class="score-choice-btn" id="exec-accept-suggested-btn" type="button">✓ Go with suggested score</button>
+                <button class="score-choice-btn outline" id="exec-set-own-btn" type="button">✏ Set my own score</button>
+              </div>
+              <div class="score-chosen-display" id="exec-chosen-display" style="display:none">
+                <div class="score-chosen-badge" id="exec-chosen-badge">—</div>
+                <div>
+                  <div class="score-chosen-label" id="exec-chosen-label">—</div>
+                  <div class="score-chosen-type" id="exec-chosen-type">—</div>
+                </div>
+                <button class="score-change-link" id="exec-change-choice-btn" type="button">Change</button>
+              </div>
+              <div id="exec-own-score-wrap" style="display:none">
+                <div class="form-group" style="margin-bottom:.75rem">
+                  <label class="form-label">Overall Performance Score <span class="req">*</span></label>
+                  <select class="form-control" id="exec-overall-score" style="max-width:320px">
+                    <option value="">— Select —</option>
+                    <option value="1">1 — Unsatisfactory</option>
+                    <option value="2">2 — Needs Improvement</option>
+                    <option value="3">3 — Meets Expectations</option>
+                    <option value="4">4 — Exceeds Expectations</option>
+                    <option value="5">5 — Exceptional</option>
+                  </select>
+                </div>
+                <div class="form-group" style="margin-bottom:.5rem">
+                  <label class="form-label">Reason for Different Score <span class="req">*</span></label>
+                  <textarea class="form-control" id="exec-score-override-reason" rows="2" placeholder="Explain why you're choosing a score different from the suggestion…"></textarea>
+                </div>
+              </div>
+            </div>
+
             <div class="form-group" style="margin-bottom:.75rem">
-              <label class="form-label">Overall Performance Score <span class="req">*</span></label>
-              <select class="form-control" id="exec-overall-score" style="max-width:320px">
-                <option value="">— Select —</option>
-                <option value="1">1 — Unsatisfactory</option>
-                <option value="2">2 — Needs Improvement</option>
-                <option value="3">3 — Meets Expectations</option>
-                <option value="4">4 — Exceeds Expectations</option>
-                <option value="5">5 — Exceptional</option>
+              <label class="form-label">Recommended Action <span class="req">*</span></label>
+              <select class="form-control" id="exec-action" style="max-width:320px">
+                <option value="no-change">No Change</option>
+                <option value="merit-increase">Merit Increase</option>
+                <option value="promotion">Promotion</option>
+                <option value="performance-plan">Performance Improvement Plan</option>
               </select>
             </div>
-            <div class="form-group" style="margin-bottom:.5rem">
-              <label class="form-label">Reason for Different Score <span class="req">*</span></label>
-              <textarea class="form-control" id="exec-score-override-reason" rows="2" placeholder="Explain why you're choosing a score different from the suggestion…"></textarea>
+
+            <div class="form-group">
+              <label class="form-label">Executive Comments <span class="req">*</span></label>
+              <textarea class="form-control" id="exec-comments" rows="4" placeholder="Provide executive-level feedback and justify the recommended action…"></textarea>
             </div>
-          </div>
-        </div>
 
-        <div class="form-group" style="margin-bottom:.75rem">
-          <label class="form-label">Recommended Action <span class="req">*</span></label>
-          <select class="form-control" id="exec-action" style="max-width:320px">
-            <option value="no-change">No Change</option>
-            <option value="merit-increase">Merit Increase</option>
-            <option value="promotion">Promotion</option>
-            <option value="performance-plan">Performance Improvement Plan</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Executive Comments <span class="req">*</span></label>
-          <textarea class="form-control" id="exec-comments" rows="4" placeholder="Provide executive-level feedback and justify the recommended action…"></textarea>
-        </div>
-
-        <div class="section-title" style="margin-top:1.5rem">Manager's Assessment (Read Only)</div>
-        <div class="form-group">
-          <label class="form-label">Manager Comments</label>
-          <textarea class="form-control readonly-field" id="exec-view-mgr-comments" rows="3" readonly placeholder="(Manager has not submitted yet)"></textarea>
-        </div>
-
-        <div class="section-title" style="margin-top:1.5rem">Employee Self-Evaluation (Read Only)</div>
-        <div class="form-group">
-          <label class="form-label">Key Accomplishments</label>
-          <textarea class="form-control readonly-field" id="exec-view-q1" rows="2" readonly placeholder="(Not submitted yet)"></textarea>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Challenges &amp; Approach</label>
-          <textarea class="form-control readonly-field" id="exec-view-q2" rows="2" readonly placeholder="(Not submitted yet)"></textarea>
-        </div>
+          </div><!-- end exec-col-right -->
+        </div><!-- end exec-two-col -->
 
         <!-- Compensation Analysis Panel (exec only) -->
         <div class="comp-panel" id="comp-panel" style="display:none">
@@ -1729,9 +1762,53 @@
     // Hide choice buttons when read-only
     const scoreChoiceWrap = document.getElementById('exec-score-choice-wrap');
     if (scoreChoiceWrap) scoreChoiceWrap.style.display = canEditExec ? 'block' : 'none';
-    setField('exec-view-mgr-comments', currentReview.managerEval?.comments || '(Manager has not submitted yet)', true);
-    setField('exec-view-q1', currentReview.selfEval?.q1 || '(Not submitted yet)', true);
-    setField('exec-view-q2', currentReview.selfEval?.q2 || '(Not submitted yet)', true);
+    // Populate exec read-only context fields
+    function roField(id, text) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const val = text || '';
+      el.textContent = val;
+      el.classList.toggle('empty', !val || val.startsWith('('));
+    }
+    roField('exec-view-q1',          currentReview.selfEval?.q1 || '(Not submitted yet)');
+    roField('exec-view-q2',          currentReview.selfEval?.q2 || '(Not submitted yet)');
+    roField('exec-view-q4',          currentReview.selfEval?.q4 || '(Not provided)');
+    roField('exec-view-mgr-comments',currentReview.managerEval?.comments || '(Manager has not submitted yet)');
+    roField('exec-view-mgr-support', currentReview.managerEval?.managerSupport || '(Not provided)');
+
+    // Employee self-goals (read-only in exec view)
+    const execSelfGoalEl = document.getElementById('exec-view-self-goals');
+    if (execSelfGoalEl) {
+      execSelfGoalEl.innerHTML = selfGoals.length === 0
+        ? '<div class="goal-empty-state" style="margin-bottom:1rem">Employee has not added goals yet.</div>'
+        : selfGoals.map(g => `<div class="goal-card">
+            <div class="goal-card-header"><div class="goal-card-title">${escHtml(g.title)}</div></div>
+            <div class="goal-badges">
+              ${g.category ? `<span class="goal-badge gb-cat">${escHtml(g.category)}</span>` : ''}
+              ${g.priority ? `<span class="goal-badge ${goalPriClass(g.priority)}">${escHtml(g.priority)} Priority</span>` : ''}
+              <span class="goal-badge ${goalStatusClass(g.status||'Not Started')}">${escHtml(g.status||'Not Started')}</span>
+            </div>
+            ${g.description ? `<div class="goal-desc">${escHtml(g.description)}</div>` : ''}
+            ${g.targetDate ? `<div class="goal-meta-row"><span>🗓 ${g.targetDate}</span></div>` : ''}
+          </div>`).join('');
+    }
+
+    // Manager goals (read-only in exec view)
+    const execMgrGoalEl = document.getElementById('exec-view-mgr-goals');
+    if (execMgrGoalEl) {
+      execMgrGoalEl.innerHTML = mgrGoals.length === 0
+        ? '<div class="goal-empty-state" style="margin-bottom:1rem">Manager has not set goals yet.</div>'
+        : mgrGoals.map(g => `<div class="goal-card">
+            <div class="goal-card-header"><div class="goal-card-title">${escHtml(g.title)}</div></div>
+            <div class="goal-badges">
+              ${g.category ? `<span class="goal-badge gb-cat">${escHtml(g.category)}</span>` : ''}
+              ${g.priority ? `<span class="goal-badge ${goalPriClass(g.priority)}">${escHtml(g.priority)} Priority</span>` : ''}
+              <span class="goal-badge ${goalStatusClass(g.status||'Not Started')}">${escHtml(g.status||'Not Started')}</span>
+            </div>
+            ${g.description ? `<div class="goal-desc">${escHtml(g.description)}</div>` : ''}
+            ${g.targetDate ? `<div class="goal-meta-row"><span>🗓 ${g.targetDate}</span></div>` : ''}
+          </div>`).join('');
+    }
 
     // Build read-only mgr competency grid in exec tab
     buildCompetencies('exec-view-mgr-competencies', mgrRatings, false, 'exec-mgr');
@@ -2127,6 +2204,7 @@
     document.getElementById('tab-self').classList.toggle('active', tab === 'self');
     document.getElementById('tab-manager').classList.toggle('active', tab === 'manager');
     document.getElementById('tab-executive').classList.toggle('active', tab === 'executive');
+    document.querySelector('.modal').classList.toggle('exec-wide', tab === 'executive');
 
     if (!currentReview) return;
     const emp = allEmployees[currentReview.employeeId];
@@ -2803,7 +2881,7 @@
 
     // Firestore competitor entries take priority; fall back to hardcoded
     const firestoreData = await getFirestoreCompData();
-    const roleKey = matchCompRole(position);
+    const roleKey = matchCompRole(position, firestoreData);
     const firestoreEntries = roleKey ? (firestoreData[roleKey] || []) : [];
     const comps = firestoreEntries.length > 0
       ? firestoreEntries.map(e => ({ name: e.company, low: e.low, mid: e.mid, high: e.high }))
@@ -2926,22 +3004,37 @@
 
   // Map position text → competitor data role key
   const COMP_ROLE_KEYWORDS = [
-    { key: 'crew_member',    kw: ['crew member','field tech','field worker','laborer','landscap','grounds'] },
-    { key: 'crew_leader',    kw: ['crew leader','crew lead','foreman','lead tech'] },
-    { key: 'branch_manager', kw: ['branch manager','branch mgr'] },
-    { key: 'account_manager',kw: ['account manager','account mgr','sales'] },
-    { key: 'office_admin',   kw: ['office','admin','coordinator','receptionist','clerk'] },
-    { key: 'finance',        kw: ['finance','accounting','accountant','payroll','controller'] },
-    { key: 'general_manager',kw: ['general manager','gm','director','operations manager'] },
+    { key: 'foreman',            kw: ['foreman'] },
+    { key: 'crew_leader',        kw: ['crew leader','crew lead','lead tech'] },
+    { key: 'crew_member',        kw: ['crew member','field tech','field worker','laborer','landscap','grounds'] },
+    { key: 'branch_manager',     kw: ['branch manager','branch mgr'] },
+    { key: 'division_manager',   kw: ['division manager','landscape division','area manager','regional manager','operations manager','ops manager'] },
+    { key: 'account_manager',    kw: ['account manager','account exec','client representative','client rep','sales'] },
+    { key: 'landscape_designer', kw: ['landscape designer','designer','horticulturist','landscape architect'] },
+    { key: 'office_manager',     kw: ['office manager'] },
+    { key: 'admin_assistant',    kw: ['admin assistant','administrative assistant','receptionist','coordinator','clerk','admin'] },
+    { key: 'procurement',        kw: ['procurement','purchasing','buyer','supply chain','inventory'] },
+    { key: 'hr_manager',         kw: ['hr manager','human resources manager','hr director'] },
+    { key: 'hr_specialist',      kw: ['hr specialist','recruiter','talent acquisition'] },
+    { key: 'hr_coordinator',     kw: ['hr coordinator','hr generalist','human resources','hr'] },
   ];
 
-  function matchCompRole(position) {
+  function matchCompRole(position, firestoreData) {
     if (!position) return null;
     const pos = position.toLowerCase();
     let bestKey = null, bestScore = 0;
+    // Check built-in keyword map first
     for (const r of COMP_ROLE_KEYWORDS) {
       let score = 0;
       for (const kw of r.kw) { if (pos.includes(kw)) score += kw.length; }
+      if (score > bestScore) { bestScore = score; bestKey = r.key; }
+    }
+    // Also check custom roles by label keyword match
+    const customRoles = firestoreData?._customRoles || [];
+    for (const r of customRoles) {
+      const labelWords = r.label.toLowerCase().split(/\s+/);
+      let score = 0;
+      for (const w of labelWords) { if (w.length > 2 && pos.includes(w)) score += w.length; }
       if (score > bestScore) { bestScore = score; bestKey = r.key; }
     }
     return bestKey;
