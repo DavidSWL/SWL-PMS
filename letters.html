@@ -69,8 +69,8 @@
 
     /* ── Letter ── */
     .letter {
-      max-width: 680px; margin: 0 auto; font-family: 'Times New Roman', Times, serif;
-      font-size: 11.5pt; line-height: 1.65; color: #111; padding: 0.5rem;
+      max-width: 680px; margin: 0 auto; font-family: Calibri, Arial, sans-serif;
+      font-size: 11pt; line-height: 1.4; color: #111; padding: 0.5rem;
     }
     /* Option D header */
     .ltr-hdr-top { background: #083520; padding: 0.8rem 1.5rem; display: flex; align-items: center; gap: 1rem; }
@@ -83,7 +83,10 @@
     .ltr-hdr-address { font-family: 'Segoe UI', sans-serif; font-size: 0.65rem; color: rgba(255,255,255,0.65); }
     .ltr-hdr-wrap { margin: -0.5rem -0.5rem 1.5rem; border-radius: 6px 6px 0 0; overflow: hidden; }
 
-    .letter p { margin-bottom: 0.85rem; }
+    .letter p { margin-bottom: 0.6rem; }
+    .letter p.spaced { margin-bottom: 1rem; }
+    .letter p.centered { text-align: center; }
+    .letter .section-head { font-weight: 700; margin-bottom: 0.1rem; }
     .letter .section-bold { font-weight: 700; }
     .letter .sig-area { margin-top: 2rem; }
     .letter .sig-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 0.5rem; }
@@ -107,10 +110,12 @@
       .gen-layout { display: block !important; gap: 0 !important; }
       .preview-panel { border: none !important; box-shadow: none !important; border-radius: 0 !important; }
       .preview-body { padding: 0 !important; }
-      .letter { max-width: 100% !important; padding: 0 1in !important; font-size: 12pt !important; margin: 0 !important; }
-      .letter > .ltr-hdr-wrap { margin: 0 -1in 1.25rem !important; border-radius: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .ltr-hdr-top { padding: 0.75rem 1in !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-      .ltr-hdr-bot { padding: 0.35rem 1in !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      .letter { max-width: 100% !important; padding: 0 1.25in !important; font-size: 11pt !important; font-family: Calibri, Arial, sans-serif !important; line-height: 1.4 !important; margin: 0 !important; }
+      .letter p.centered { text-align: center !important; }
+      .letter .section-head { font-weight: 700; margin-bottom: 0.1rem; }
+      .letter > .ltr-hdr-wrap { margin: 0 -1.25in 1.25rem !important; border-radius: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .ltr-hdr-top { padding: 0.75rem 1.25in !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      .ltr-hdr-bot { padding: 0.35rem 1.25in !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
       .letter .sig-area { padding-bottom: 0.5in; }
     }
 
@@ -741,22 +746,23 @@
     return `<div class="letter">
       ${letterHead('Wage Increase Notice')}
       <p>${date}</p>
-      <p><strong>Dear ${name}:</strong></p>
-      <p>Southwest Landscape is pleased to notify you of a wage increase in recognition of your continued contributions and commitment to our team.</p>
-      <p><span class="section-bold">Effective Date.</span>&nbsp; Your new rate of pay will go into effect on <strong>${effDate}</strong>.</p>
-      <p><span class="section-bold">Compensation.</span><br>
-      You will be paid a wage of <strong>$${rate} per hour</strong>.<br>
+      <p class="spaced"><strong>Dear ${name}:</strong></p>
+      <p class="spaced">Southwest Landscape is pleased to notify you of a wage increase in recognition of your continued contributions and commitment to our team.</p>
+      <p><strong>1. Effective Date.</strong>&nbsp; Your new rate of pay will go into effect on <strong>${effDate}</strong>.</p>
+      <p class="section-head">2. Compensation.</p>
+      <p>You will be paid a wage of <strong>$${rate} per hour</strong>.<br>
       Your overtime rate will be <strong>$${otRate} per hour</strong> in accordance with applicable laws.</p>
-      <p>You will be paid on a weekly basis, with each pay period covering work performed Sunday through Saturday. All forms of compensation referred to in this letter are subject to applicable withholding and payroll taxes.</p>
-      <p><span class="section-bold">Location and Supervisor:</span><br>
-      You will be headquartered in our facility located at <strong>${address}</strong>.<br>
+      <p class="spaced">You will be paid on a weekly basis, with each pay period covering work performed Sunday through Saturday. All forms of compensation referred to in this letter are subject to applicable withholding and payroll taxes.</p>
+      <p class="section-head">3. Location and Supervisor:</p>
+      <p>You will be headquartered in our facility located at <strong>${address}</strong>.<br>
       You will report to <strong>${supervisor}</strong>.<br>
       Your schedule is as follows: <strong>${schedule}</strong> – Schedule will vary as business needs dictate.</p>
-      <p>Your location and schedule may be subject to changes as the company's needs may require.</p>
-      <p><span class="section-bold">Benefits.</span>&nbsp; As a regular employee of Southwest Landscape, you will be eligible for paid vacation time and may elect to enroll in subsidized medical insurance coverage. Participating in the health plan is voluntary and available at your expense. Full details, including eligibility and enrollment, are provided in the Employee Benefits Guide.</p>
-      <p><span class="section-bold">Conditional Offer.</span> This offer of employment is contingent upon the successful completion of standard pre-employment verifications. These may include confirmation of employment history, reference checks, review of driving record (if applicable), and verification of any information or credentials provided during the hiring process. This offer is made with the understanding that all information disclosed by the candidate is accurate and complete.</p>
-      <p><span class="section-bold">Employment Relationship.</span>&nbsp; Notwithstanding any of the above, your employment with Southwest Landscape is "at will" meaning that you or Southwest Landscape can terminate the employment relationship at any time, with or without cause, and with or without notice.</p>
-      <p>If you wish to accept this offer, please sign and date this letter and return it to me by <strong>${returnDate}</strong>.</p>
+      <p class="spaced centered">Your location and schedule may be subject to changes as the company's needs may require.</p>
+      <p class="spaced"><strong>4. Benefits.</strong>&nbsp; As a regular employee of Southwest Landscape, you will be eligible for paid vacation time and may elect to enroll in subsidized medical insurance coverage. Participating in the health plan is voluntary and available at your expense. Full details, including eligibility and enrollment, are provided in the Employee Benefits Guide.</p>
+      <p class="spaced"><strong>5. Conditional Offer.</strong>&nbsp; This offer of employment is contingent upon the successful completion of standard pre-employment verifications. These may include confirmation of employment history, reference checks, review of driving record (if applicable), and verification of any information or credentials provided during the hiring process. This offer is made with the understanding that all information disclosed by the candidate is accurate and complete.</p>
+      <p class="section-head">6. Employment Relationship.</p>
+      <p class="spaced">Notwithstanding any of the above, your employment with Southwest Landscape is "at will" meaning that you or Southwest Landscape can terminate the employment relationship at any time, with or without cause, and with or without notice.</p>
+      <p class="spaced">If you wish to accept this offer, please sign and date this letter and return it to me by <strong>${returnDate}</strong>.</p>
       ${sigBlock('Signature', 'Date', 'Print Name')}
     </div>`;
   }
@@ -765,22 +771,23 @@
     return `<div class="letter">
       ${letterHead('Aviso de Aumento Salarial')}
       <p>${date}</p>
-      <p><strong>Estimado/a ${name}:</strong></p>
-      <p>Southwest Landscape se complace en notificarle un aumento salarial en reconocimiento a sus continuas contribuciones y compromiso con nuestro equipo.</p>
-      <p><span class="section-bold">Fecha de Vigencia.</span>&nbsp; Su nueva tasa de pago entrará en vigor el <strong>${effDate}</strong>.</p>
-      <p><span class="section-bold">Compensación.</span><br>
-      Se le pagará un salario de <strong>$${rate} por hora</strong>.<br>
+      <p class="spaced"><strong>Estimado/a ${name}:</strong></p>
+      <p class="spaced">Southwest Landscape se complace en notificarle un aumento salarial en reconocimiento a sus continuas contribuciones y compromiso con nuestro equipo.</p>
+      <p><strong>1. Fecha de Vigencia.</strong>&nbsp; Su nueva tasa de pago entrará en vigor el <strong>${effDate}</strong>.</p>
+      <p class="section-head">2. Compensación.</p>
+      <p>Se le pagará un salario de <strong>$${rate} por hora</strong>.<br>
       Su tasa de pago por horas extras será de <strong>$${otRate} por hora</strong>, de acuerdo con las leyes aplicables.</p>
-      <p>Usted será pagado(a) semanalmente, con cada periodo de pago cubriendo el trabajo realizado de domingo a sábado. Todas las formas de compensación mencionadas en esta carta están sujetas a las retenciones y los impuestos correspondientes.</p>
-      <p><span class="section-bold">Ubicación y Supervisor:</span><br>
-      Su lugar de trabajo principal será en nuestras instalaciones ubicadas en <strong>${address}</strong>.<br>
+      <p class="spaced">Usted será pagado(a) semanalmente, con cada periodo de pago cubriendo el trabajo realizado de domingo a sábado. Todas las formas de compensación mencionadas en esta carta están sujetas a las retenciones y los impuestos correspondientes.</p>
+      <p class="section-head">3. Ubicación y Supervisor:</p>
+      <p>Su lugar de trabajo principal será en nuestras instalaciones ubicadas en <strong>${address}</strong>.<br>
       Usted reportará a <strong>${supervisor}</strong>.<br>
       Su horario será el siguiente: <strong>${schedule}</strong>; el horario puede variar según las necesidades del negocio.</p>
-      <p>Su ubicación y horario pueden estar sujetos a cambios según lo requieran las necesidades de la empresa.</p>
-      <p><span class="section-bold">Beneficios.</span>&nbsp; Como empleado(a) regular de Southwest Landscape, usted será elegible para tiempo de vacaciones pagadas y podrá optar por inscribirse en un plan de seguro médico subsidiado. La participación en el plan médico es voluntaria y está disponible a su propio costo. Los detalles completos, incluyendo elegibilidad e inscripción, se encuentran en la Guía de Beneficios para Empleados.</p>
-      <p><span class="section-bold">Oferta Condicional.</span> Esta oferta de empleo está condicionada a la finalización exitosa de las verificaciones estándar previas al empleo. Estas pueden incluir confirmación de historial laboral, verificación de referencias, revisión del registro de manejo (si aplica) y verificación de cualquier información o credenciales proporcionadas durante el proceso de contratación. Esta oferta se realiza bajo el entendimiento de que toda la información proporcionada por el candidato es precisa y completa.</p>
-      <p><span class="section-bold">Relación Laboral.</span>&nbsp; Sin perjuicio de lo anterior, su empleo con Southwest Landscape es "a voluntad", lo que significa que usted o Southwest Landscape pueden terminar la relación laboral en cualquier momento, con o sin causa, y con o sin previo aviso.</p>
-      <p>Si desea aceptar esta oferta, firme y feche esta carta y regrésela a mí antes del <strong>${returnDate}</strong>.</p>
+      <p class="spaced centered">Su ubicación y horario pueden estar sujetos a cambios según lo requieran las necesidades de la empresa.</p>
+      <p class="spaced"><strong>4. Beneficios.</strong>&nbsp; Como empleado(a) regular de Southwest Landscape, usted será elegible para tiempo de vacaciones pagadas y podrá optar por inscribirse en un plan de seguro médico subsidiado. La participación en el plan médico es voluntaria y está disponible a su propio costo. Los detalles completos, incluyendo elegibilidad e inscripción, se encuentran en la Guía de Beneficios para Empleados.</p>
+      <p class="spaced"><strong>5. Oferta Condicional.</strong>&nbsp; Esta oferta de empleo está condicionada a la finalización exitosa de las verificaciones estándar previas al empleo. Estas pueden incluir confirmación de historial laboral, verificación de referencias, revisión del registro de manejo (si aplica) y verificación de cualquier información o credenciales proporcionadas durante el proceso de contratación. Esta oferta se realiza bajo el entendimiento de que toda la información proporcionada por el candidato es precisa y completa.</p>
+      <p class="section-head">6. Relación Laboral.</p>
+      <p class="spaced">Sin perjuicio de lo anterior, su empleo con Southwest Landscape es "a voluntad", lo que significa que usted o Southwest Landscape pueden terminar la relación laboral en cualquier momento, con o sin causa, y con o sin previo aviso.</p>
+      <p class="spaced">Si desea aceptar esta oferta, firme y feche esta carta y regrésela a mí antes del <strong>${returnDate}</strong>.</p>
       ${sigBlock('Firma del Empleado', 'Fecha', 'Nombre en letra de molde', 'Atentamente,', 'Gerente de Recursos Humanos', 'ACEPTACIÓN Y ACUERDO:')}
     </div>`;
   }
@@ -791,19 +798,20 @@
       <p>${date}</p>
       <p><strong>Dear ${name}:</strong></p>
       <p>On behalf of Southwest Landscape, I am pleased to offer you a <strong>${empType}</strong> position as <strong>${position}</strong>. If accepted, the terms of your employment with Southwest Landscape will be as follows:</p>
-      <p><span class="section-bold">Start Date.</span>&nbsp; Your anticipated start date is scheduled for <strong>${startDate}</strong>.</p>
-      <p><span class="section-bold">Compensation.</span><br>
-      You will be paid a starting salary of <strong>${salary} per annum</strong>.</p>
-      <p>You will be paid on a weekly basis, with each pay period covering work performed Sunday through Saturday. All forms of compensation referred to in this letter are subject to applicable withholding and payroll taxes.</p>
-      <p><span class="section-bold">Location and Supervisor:</span><br>
-      You will be headquartered in our facility located at <strong>${address}</strong>.<br>
+      <p><strong>1. Start Date.</strong>&nbsp; Your anticipated start date is scheduled for <strong>${startDate}</strong>.</p>
+      <p class="section-head">2. Compensation.</p>
+      <p>You will be paid a starting salary of <strong>${salary} per annum</strong>.</p>
+      <p class="spaced">You will be paid on a weekly basis, with each pay period covering work performed Sunday through Saturday. All forms of compensation referred to in this letter are subject to applicable withholding and payroll taxes.</p>
+      <p class="section-head">3. Location and Supervisor:</p>
+      <p>You will be headquartered in our facility located at <strong>${address}</strong>.<br>
       You will report to <strong>${supervisor}</strong>.<br>
       Your schedule is as follows: <strong>${schedule}</strong> – Schedule will vary as business needs dictate.</p>
-      <p>Your location and schedule may be subject to changes as the company's needs may require.</p>
-      <p><span class="section-bold">Benefits.</span>&nbsp; As a regular employee of Southwest Landscape, you will be eligible for paid vacation time and may elect to enroll in subsidized medical insurance coverage. Participating in the health plan is voluntary and available at your expense. Full details, including eligibility and enrollment, are provided in the Employee Benefits Guide.</p>
-      <p><span class="section-bold">Conditional Offer.</span> This offer of employment is contingent upon the successful completion of standard pre-employment verifications. These may include confirmation of employment history, reference checks, review of driving record (if applicable), and verification of any information or credentials provided during the hiring process. This offer is made with the understanding that all information disclosed by the candidate is accurate and complete.</p>
-      <p><span class="section-bold">Employment Relationship.</span>&nbsp; Notwithstanding any of the above, your employment with Southwest Landscape is "at will" meaning that you or Southwest Landscape can terminate the employment relationship at any time, with or without cause, and with or without notice.</p>
-      <p>If you wish to accept this offer, please sign and date this letter and return it to me by <strong>${returnDate}</strong>.</p>
+      <p class="spaced centered">Your location and schedule may be subject to changes as the company's needs may require.</p>
+      <p class="spaced"><strong>4. Benefits.</strong>&nbsp; As a regular employee of Southwest Landscape, you will be eligible for paid vacation time and may elect to enroll in subsidized medical insurance coverage. Participating in the health plan is voluntary and available at your expense. Full details, including eligibility and enrollment, are provided in the Employee Benefits Guide.</p>
+      <p class="spaced"><strong>5. Conditional Offer.</strong>&nbsp; This offer of employment is contingent upon the successful completion of standard pre-employment verifications. These may include confirmation of employment history, reference checks, review of driving record (if applicable), and verification of any information or credentials provided during the hiring process. This offer is made with the understanding that all information disclosed by the candidate is accurate and complete.</p>
+      <p class="section-head">6. Employment Relationship.</p>
+      <p class="spaced">Notwithstanding any of the above, your employment with Southwest Landscape is "at will" meaning that you or Southwest Landscape can terminate the employment relationship at any time, with or without cause, and with or without notice.</p>
+      <p class="spaced">If you wish to accept this offer, please sign and date this letter and return it to me by <strong>${returnDate}</strong>.</p>
       ${sigBlock('Signature', 'Date', 'Print Name')}
     </div>`;
   }
