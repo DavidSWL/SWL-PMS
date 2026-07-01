@@ -216,6 +216,30 @@
     .toast.error   { background: var(--error-bg);   color: var(--error);   border: 1px solid #FFCDD2; }
     @keyframes slideIn { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
 
+    /* ── Competitor Data Section ── */
+    .comp-data-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-top: 2rem; }
+    .comp-data-header { background: linear-gradient(135deg, var(--green-dark) 0%, #1a3d18 100%); padding: 1.1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+    .comp-data-header-title { color: var(--white); font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+    .comp-data-body { padding: 1.5rem; }
+    .comp-role-tabs { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.25rem; }
+    .comp-role-tab { padding: 0.35rem 0.85rem; border-radius: 99px; border: 1.5px solid var(--border); font-size: 0.8125rem; font-weight: 600; color: var(--gray-600); cursor: pointer; background: transparent; transition: all 0.15s; }
+    .comp-role-tab.active { background: var(--green-dark); color: var(--white); border-color: var(--green-dark); }
+    .comp-entry-form { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 0.6rem; align-items: end; margin-bottom: 1.25rem; }
+    .comp-entry-form label { font-size: 0.75rem; font-weight: 600; color: var(--gray-600); display: block; margin-bottom: 0.25rem; }
+    .comp-entry-form input { width: 100%; padding: 0.5rem 0.65rem; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.8125rem; outline: none; transition: border-color 0.15s; }
+    .comp-entry-form input:focus { border-color: var(--green); }
+    .comp-add-btn { padding: 0.5rem 1.1rem; background: var(--green-dark); color: var(--white); border: none; border-radius: 8px; font-size: 0.8125rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
+    .comp-add-btn:hover { background: var(--green); }
+    .comp-entries-table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
+    .comp-entries-table th { text-align: left; font-size: 0.75rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.05em; padding: 0.5rem 0.75rem; border-bottom: 2px solid var(--border); background: var(--gray-50); }
+    .comp-entries-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); color: var(--gray-900); vertical-align: middle; }
+    .comp-entries-table tr:last-child td { border-bottom: none; }
+    .comp-entries-table .avg-row td { background: var(--green-light); font-weight: 700; color: var(--green-dark); }
+    .comp-del-btn { padding: 0.25rem 0.6rem; background: var(--error-bg); color: var(--error); border: 1px solid #FFCDD2; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+    .comp-del-btn:hover { background: #FFCDD2; }
+    .comp-empty { color: var(--gray-400); font-size: 0.85rem; text-align: center; padding: 1.5rem 0; }
+    .comp-source-note { font-size: 0.75rem; color: var(--gray-400); margin-top: 0.75rem; }
+
     /* ── Responsive ── */
     @media (max-width: 768px) {
       .nav-links, .nav-right { display: none; }
@@ -381,6 +405,62 @@
             <tr class="loading-row"><td colspan="8"><span class="spin"></span></td></tr>
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- ── Competitor Salary Data ── -->
+    <div class="comp-data-card">
+      <div class="comp-data-header">
+        <div class="comp-data-header-title">
+          <svg width="18" height="18" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Competitor Salary Data
+        </div>
+        <span style="color:rgba(255,255,255,0.65);font-size:0.8rem">Research &amp; enter competitor pay ranges — visible to all executives</span>
+      </div>
+      <div class="comp-data-body">
+        <div class="comp-role-tabs" id="comp-role-tabs"></div>
+
+        <div class="comp-entry-form" id="comp-entry-form" style="grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr auto">
+          <div>
+            <label>Company Name</label>
+            <input type="text" id="cmp-company" placeholder="e.g. BrightView" />
+          </div>
+          <div>
+            <label>Source (where you found it)</label>
+            <input type="text" id="cmp-source" placeholder="e.g. Indeed — June 2025" />
+          </div>
+          <div>
+            <label>Low ($/yr)</label>
+            <input type="number" id="cmp-low" placeholder="36000" min="0" step="1000" />
+          </div>
+          <div>
+            <label>Average ($/yr)</label>
+            <input type="number" id="cmp-mid" placeholder="43000" min="0" step="1000" />
+          </div>
+          <div>
+            <label>High ($/yr)</label>
+            <input type="number" id="cmp-high" placeholder="59000" min="0" step="1000" />
+          </div>
+          <div>
+            <label>&nbsp;</label>
+            <button class="comp-add-btn" id="comp-add-btn">＋ Add</button>
+          </div>
+        </div>
+
+        <table class="comp-entries-table">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Low</th>
+              <th>Average</th>
+              <th>High</th>
+              <th>Source</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="comp-entries-tbody"></tbody>
+        </table>
+        <p class="comp-source-note">Add a note where you found the data (e.g. "Indeed — June 2025"). Data is shared across all executive users.</p>
       </div>
     </div>
 
@@ -557,7 +637,7 @@
     from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
   import {
     getFirestore, collection, doc,
-    getDocs, addDoc, updateDoc, deleteDoc,
+    getDocs, getDoc, addDoc, updateDoc, deleteDoc, setDoc,
     query, orderBy, serverTimestamp
   } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
@@ -1006,8 +1086,109 @@
     setTimeout(() => el.remove(), 3500);
   }
 
+  // ── Competitor Salary Data ─────────────────────────────────────
+  const COMP_ROLES = [
+    { key: 'crew_member',    label: 'Crew Member / Field Tech' },
+    { key: 'crew_leader',    label: 'Crew Leader / Foreman' },
+    { key: 'branch_manager', label: 'Branch Manager' },
+    { key: 'account_manager',label: 'Account Manager' },
+    { key: 'office_admin',   label: 'Office / Admin' },
+    { key: 'finance',        label: 'Finance / Accounting' },
+    { key: 'general_manager',label: 'General Manager' },
+  ];
+
+  let compData = {};      // { role_key: [ { company, low, mid, high, source, addedAt } ] }
+  let activeCompRole = COMP_ROLES[0].key;
+
+  async function loadCompData() {
+    const snap = await getDoc(doc(db, 'config', 'competitorData'));
+    compData = snap.exists() ? (snap.data() || {}) : {};
+    renderCompRoleTabs();
+    renderCompEntries();
+  }
+
+  function renderCompRoleTabs() {
+    const tabs = document.getElementById('comp-role-tabs');
+    tabs.innerHTML = COMP_ROLES.map(r =>
+      `<button class="comp-role-tab${r.key === activeCompRole ? ' active' : ''}" data-role="${r.key}">${r.label}</button>`
+    ).join('');
+    tabs.querySelectorAll('.comp-role-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeCompRole = btn.dataset.role;
+        renderCompRoleTabs();
+        renderCompEntries();
+      });
+    });
+  }
+
+  function fmtK(n) { return n >= 1000 ? '$' + (n / 1000).toFixed(0) + 'k' : '$' + n; }
+
+  function renderCompEntries() {
+    const tbody = document.getElementById('comp-entries-tbody');
+    const entries = compData[activeCompRole] || [];
+    if (!entries.length) {
+      tbody.innerHTML = `<tr><td colspan="6" class="comp-empty">No entries yet for this role. Add your first competitor above.</td></tr>`;
+      return;
+    }
+    let html = entries.map((e, i) => `
+      <tr>
+        <td><strong>${e.company}</strong></td>
+        <td>${fmtK(e.low)}</td>
+        <td>${fmtK(e.mid)}</td>
+        <td>${fmtK(e.high)}</td>
+        <td style="color:var(--gray-400);font-size:0.75rem">${e.source || '—'}</td>
+        <td><button class="comp-del-btn" data-idx="${i}">Remove</button></td>
+      </tr>`).join('');
+    // Average row
+    if (entries.length > 1) {
+      const avgLow  = Math.round(entries.reduce((s, e) => s + e.low,  0) / entries.length);
+      const avgMid  = Math.round(entries.reduce((s, e) => s + e.mid,  0) / entries.length);
+      const avgHigh = Math.round(entries.reduce((s, e) => s + e.high, 0) / entries.length);
+      html += `<tr class="avg-row">
+        <td>Average (${entries.length} cos.)</td>
+        <td>${fmtK(avgLow)}</td>
+        <td>${fmtK(avgMid)}</td>
+        <td>${fmtK(avgHigh)}</td>
+        <td></td><td></td>
+      </tr>`;
+    }
+    tbody.innerHTML = html;
+    tbody.querySelectorAll('.comp-del-btn').forEach(btn => {
+      btn.addEventListener('click', () => deleteCompEntry(+btn.dataset.idx));
+    });
+  }
+
+  async function deleteCompEntry(idx) {
+    const entries = compData[activeCompRole] || [];
+    entries.splice(idx, 1);
+    compData[activeCompRole] = entries;
+    await setDoc(doc(db, 'config', 'competitorData'), compData);
+    renderCompEntries();
+    toast('Entry removed.', 'success');
+  }
+
+  document.getElementById('comp-add-btn').addEventListener('click', async () => {
+    const company = document.getElementById('cmp-company').value.trim();
+    const low     = parseInt(document.getElementById('cmp-low').value)  || 0;
+    const mid     = parseInt(document.getElementById('cmp-mid').value)  || 0;
+    const high    = parseInt(document.getElementById('cmp-high').value) || 0;
+    const source  = document.getElementById('cmp-source') ? document.getElementById('cmp-source').value.trim() : '';
+    if (!company)     { toast('Please enter a company name.', 'error'); return; }
+    if (!mid)         { toast('Please enter at least an average salary.', 'error'); return; }
+    if (!compData[activeCompRole]) compData[activeCompRole] = [];
+    compData[activeCompRole].push({ company, low: low || mid, mid, high: high || mid, source, addedAt: new Date().toISOString() });
+    await setDoc(doc(db, 'config', 'competitorData'), compData);
+    document.getElementById('cmp-company').value = '';
+    document.getElementById('cmp-low').value     = '';
+    document.getElementById('cmp-mid').value     = '';
+    document.getElementById('cmp-high').value    = '';
+    renderCompEntries();
+    toast('Competitor entry saved!', 'success');
+  });
+
   // ── Init ───────────────────────────────────────────────────────
   fetchEmployees();
+  loadCompData();
 
 </script>
 </body>
