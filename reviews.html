@@ -240,14 +240,21 @@
 
     /* Form sections */
     .section-title { font-size: 0.875rem; font-weight: 700; color: var(--green-dark); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
-    .competency-grid { display: flex; flex-direction: column; gap: 1.25rem; margin-bottom: 1.5rem; }
-    .competency-row { display: grid; grid-template-columns: 1fr auto; align-items: start; gap: 1rem; }
+    .competency-grid { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; }
+    .competency-row { background: var(--gray-50); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .competency-row-top { display: grid; grid-template-columns: 1fr auto; align-items: start; gap: 1rem; padding: 0.75rem 1rem; }
     .comp-label { font-size: 0.875rem; font-weight: 600; color: var(--gray-900); }
     .comp-desc { font-size: 0.75rem; color: var(--gray-600); margin-top: 0.1rem; }
     .rating-group { display: flex; gap: 0.375rem; }
     .rating-btn { width: 36px; height: 36px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--white); font-size: 0.875rem; font-weight: 700; cursor: pointer; color: var(--gray-600); transition: all 0.12s; flex-shrink: 0; }
     .rating-btn:hover { border-color: var(--green); color: var(--green); }
     .rating-btn.selected { background: var(--green); border-color: var(--green); color: var(--white); }
+    .comp-note-wrap { border-top: 1px solid var(--border); padding: 0.625rem 1rem; background: var(--white); display: none; }
+    .comp-note-wrap.visible { display: block; }
+    .comp-note-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gray-500); margin-bottom: 0.3rem; }
+    .comp-note-input { width: 100%; padding: 0.4rem 0.65rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.8125rem; font-family: inherit; color: var(--gray-900); resize: none; min-height: 56px; line-height: 1.5; }
+    .comp-note-input:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 2px rgba(14,76,45,.1); }
+    .comp-note-readonly { font-size: 0.8125rem; color: var(--gray-600); line-height: 1.5; font-style: italic; padding: 0.1rem 0; }
 
     .form-group { margin-bottom: 1.25rem; }
     .form-label { display: block; font-size: 0.8125rem; font-weight: 600; color: var(--gray-700, #374151); margin-bottom: 0.35rem; }
@@ -1302,6 +1309,9 @@
   let selfRatings = {};
   let mgrRatings  = {};
   let execRatings = {};
+  let selfNotes   = {};
+  let mgrNotes    = {};
+  let execNotes   = {};
   let selfGoals   = [];
   let mgrGoals    = [];
   let execGoals   = [];
@@ -1764,6 +1774,8 @@
 
     selfRatings = { ...(currentReview.selfEval?.ratings || {}) };
     mgrRatings  = { ...(currentReview.managerEval?.ratings || {}) };
+    selfNotes   = { ...(currentReview.selfEval?.competencyNotes || {}) };
+    mgrNotes    = { ...(currentReview.managerEval?.competencyNotes || {}) };
     selfGoals   = JSON.parse(JSON.stringify(currentReview.selfEval?.goals || []));
     mgrGoals    = JSON.parse(JSON.stringify(currentReview.managerEval?.goals || []));
     execGoals   = JSON.parse(JSON.stringify(currentReview.executiveEval?.goals || []));
@@ -1902,6 +1914,7 @@
 
     // Build exec's own editable competency grid
     execRatings = { ...(currentReview.executiveEval?.competencyRatings || {}) };
+    execNotes   = { ...(currentReview.executiveEval?.competencyNotes || {}) };
     buildCompetencies('exec-own-competencies', execRatings, canEditExec, 'exec-own');
     updateExecScoreSuggestion();
     // Populate B2 score overview chips
@@ -1972,22 +1985,37 @@
 
   // ── Build Competency Rating Rows ──
   function buildCompetencies(containerId, ratingsObj, editable, prefix) {
+    const notesObj = prefix === 'self' ? selfNotes : (prefix === 'exec-own' ? execNotes : (prefix === 'mgr' ? mgrNotes : {}));
     const container = document.getElementById(containerId);
-    container.innerHTML = COMPETENCIES.map(c => `
-      <div class="competency-row">
-        <div>
-          <div class="comp-label">${c.label}</div>
-          <div class="comp-desc">${c.desc}</div>
+    container.innerHTML = COMPETENCIES.map(c => {
+      const hasRating = !!ratingsObj[c.key];
+      const noteVal   = escHtml(notesObj[c.key] || '');
+      const noteVisible = hasRating ? 'visible' : '';
+      return `
+      <div class="competency-row" id="${prefix}-comprow-${c.key}">
+        <div class="competency-row-top">
+          <div>
+            <div class="comp-label">${c.label}</div>
+            <div class="comp-desc">${c.desc}</div>
+          </div>
+          <div class="rating-group" id="${prefix}-rating-${c.key}">
+            ${[1,2,3,4,5].map(n => `
+              <button class="rating-btn ${ratingsObj[c.key] === n ? 'selected' : ''}"
+                data-key="${c.key}" data-val="${n}" data-prefix="${prefix}"
+                ${!editable ? 'disabled' : ''}>
+                ${n}
+              </button>`).join('')}
+          </div>
         </div>
-        <div class="rating-group" id="${prefix}-rating-${c.key}">
-          ${[1,2,3,4,5].map(n => `
-            <button class="rating-btn ${ratingsObj[c.key] === n ? 'selected' : ''}"
-              data-key="${c.key}" data-val="${n}" data-prefix="${prefix}"
-              ${!editable ? 'disabled' : ''}>
-              ${n}
-            </button>`).join('')}
+        <div class="comp-note-wrap ${noteVisible}" id="${prefix}-note-wrap-${c.key}">
+          <div class="comp-note-label">Explanation for this rating</div>
+          ${editable
+            ? `<textarea class="comp-note-input" id="${prefix}-note-${c.key}" data-key="${c.key}" data-prefix="${prefix}" placeholder="Briefly explain why you chose this rating…" rows="2">${noteVal}</textarea>`
+            : (notesObj[c.key] ? `<div class="comp-note-readonly">${noteVal}</div>` : '')
+          }
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
 
     if (editable) {
       container.querySelectorAll('.rating-btn').forEach(btn => {
@@ -1998,9 +2026,23 @@
           if (pre === 'self') selfRatings[key] = val;
           else if (pre === 'exec-own') { execRatings[key] = val; updateExecScoreSuggestion(); }
           else { mgrRatings[key] = val; updateMgrScoreSuggestion(); }
-          container.querySelectorAll(`[data-key="${key}"]`).forEach(b => {
+          container.querySelectorAll(`[data-key="${key}"].rating-btn`).forEach(b => {
             b.classList.toggle('selected', +b.dataset.val === val);
           });
+          // Show the note field once a rating is selected
+          const noteWrap = document.getElementById(`${pre}-note-wrap-${key}`);
+          if (noteWrap) noteWrap.classList.add('visible');
+        });
+      });
+
+      container.querySelectorAll('.comp-note-input').forEach(ta => {
+        ta.addEventListener('input', () => {
+          const key = ta.dataset.key;
+          const pre = ta.dataset.prefix;
+          const val = ta.value;
+          if (pre === 'self') selfNotes[key] = val;
+          else if (pre === 'exec-own') execNotes[key] = val;
+          else mgrNotes[key] = val;
         });
       });
     }
@@ -2361,6 +2403,7 @@
     const payload = {
       selfEval: {
         ratings: selfRatings,
+        competencyNotes: selfNotes,
         q1: document.getElementById('self-q1').value.trim(),
         q2: document.getElementById('self-q2').value.trim(),
         goals: selfGoals,
@@ -2390,6 +2433,7 @@
     const payload = {
       managerEval: {
         ratings: mgrRatings,
+        competencyNotes: mgrNotes,
         comments: document.getElementById('mgr-comments').value.trim(),
         goals: mgrGoals,
         managerSupport: document.getElementById('mgr-support').value.trim(),
@@ -2421,6 +2465,7 @@
       executiveEval: {
         ...getExecScorePayload(),
         competencyRatings: execRatings,
+        competencyNotes: execNotes,
         goals: execGoals,
         recommendedAction: document.getElementById('exec-action').value,
         comments: document.getElementById('exec-comments').value.trim(),
@@ -2515,6 +2560,7 @@
         ...getExecScorePayload(),
         overallScore: +score,
         competencyRatings: execRatings,
+        competencyNotes: execNotes,
         goals: execGoals,
         recommendedAction: document.getElementById('exec-action').value,
         comments,
@@ -2601,6 +2647,7 @@
     document.getElementById('modal-print').style.display = 'none';
     resetScoreChoiceUI();
     selfGoals = []; mgrGoals = []; execGoals = [];
+    selfNotes = {}; mgrNotes = {}; execNotes = {};
     currentReview = null;
     activeTab = 'self';
   }
@@ -2633,13 +2680,15 @@
       return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     }
 
-    function compRow(label, selfR, mgrR, execR) {
+    function compRow(label, selfR, mgrR, execR, selfNote, mgrNote, execNote) {
       const chip = (r, color) => r ? `<span style="display:inline-block;padding:2px 10px;border-radius:99px;background:${color};color:#fff;font-weight:700;font-size:0.8rem">${r}</span>` : '<span style="color:#aaa">—</span>';
+      const noteCell = (note, color) => note ? `<div style="font-size:0.75rem;color:#555;font-style:italic;margin-top:4px;padding:4px 6px;background:${color}11;border-left:2px solid ${color};border-radius:0 4px 4px 0">${esc(note)}</div>` : '';
+      const hasNotes = selfNote || mgrNote || execNote;
       return `<tr>
-        <td style="padding:8px 12px;border-bottom:1px solid #e0e0e0;font-size:0.875rem">${esc(label)}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid #e0e0e0;text-align:center">${chip(selfR, COMP_COLORS.self)}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid #e0e0e0;text-align:center">${chip(mgrR,  COMP_COLORS.mgr)}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid #e0e0e0;text-align:center">${chip(execR, COMP_COLORS.exec)}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #e0e0e0;font-size:0.875rem;vertical-align:top">${esc(label)}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #e0e0e0;text-align:center;vertical-align:top">${chip(selfR, COMP_COLORS.self)}${noteCell(selfNote, COMP_COLORS.self)}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #e0e0e0;text-align:center;vertical-align:top">${chip(mgrR,  COMP_COLORS.mgr)}${noteCell(mgrNote, COMP_COLORS.mgr)}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #e0e0e0;text-align:center;vertical-align:top">${chip(execR, COMP_COLORS.exec)}${noteCell(execNote, COMP_COLORS.exec)}</td>
       </tr>`;
     }
 
@@ -2689,7 +2738,7 @@
         </tr>
       </thead>
       <tbody>
-        ${COMPETENCIES.map(c => compRow(c.label, se.ratings?.[c.key], me.ratings?.[c.key], ee.competencyRatings?.[c.key])).join('')}
+        ${COMPETENCIES.map(c => compRow(c.label, se.ratings?.[c.key], me.ratings?.[c.key], ee.competencyRatings?.[c.key], se.competencyNotes?.[c.key], me.competencyNotes?.[c.key], ee.competencyNotes?.[c.key])).join('')}
       </tbody>
     </table>`;
 
