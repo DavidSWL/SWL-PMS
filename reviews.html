@@ -897,6 +897,9 @@
             <div class="form-label" style="margin-bottom:.5rem">Employee Goals</div>
             <div id="exec-view-self-goals" style="margin-bottom:1rem"></div>
 
+            <div class="form-label" style="margin-bottom:.5rem">Employee's Self-Ratings</div>
+            <div class="competency-grid" id="exec-view-self-competencies"></div>
+
             <div class="form-label" style="margin-bottom:.35rem">Development Needs (Employee)</div>
             <div class="ro-field" id="exec-view-q4"></div>
 
@@ -1810,8 +1813,9 @@
           </div>`).join('');
     }
 
-    // Build read-only mgr competency grid in exec tab
-    buildCompetencies('exec-view-mgr-competencies', mgrRatings, false, 'exec-mgr');
+    // Build read-only competency grids in exec tab
+    buildCompetencies('exec-view-self-competencies', selfRatings, false, 'exec-self');
+    buildCompetencies('exec-view-mgr-competencies',  mgrRatings,  false, 'exec-mgr');
 
     // Build exec's own editable competency grid
     execRatings = { ...(currentReview.executiveEval?.competencyRatings || {}) };
