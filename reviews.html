@@ -145,6 +145,84 @@
     .ro-field { background: var(--gray-50); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.75rem; font-size: 0.8125rem; color: var(--gray-600); line-height: 1.5; min-height: 2.5rem; white-space: pre-wrap; word-break: break-word; margin-bottom: 1rem; }
     .ro-field.empty { color: var(--gray-400); font-style: italic; }
     @media (max-width: 900px) { .exec-two-col { grid-template-columns: 1fr; } .exec-col-left { border-right: none; padding-right: 0; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 1.5rem; } }
+
+    /* ── Full-page Exec Mode ── */
+    .modal-overlay.fp-mode { padding: 0; }
+    .modal-overlay.fp-mode .modal {
+      max-width: 100%; width: 100%; height: 100vh; border-radius: 0; margin: 0;
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .modal-overlay.fp-mode .modal-header,
+    .modal-overlay.fp-mode .modal-tabs,
+    .modal-overlay.fp-mode .modal-footer { flex-shrink: 0; }
+    .modal-overlay.fp-mode .modal-body { flex: 1; overflow: hidden; padding: 0; }
+    .modal-overlay.fp-mode #tab-executive.active {
+      display: flex; flex-direction: row; height: 100%; overflow: hidden; padding: 0;
+    }
+    .modal-overlay.fp-mode .exec-main-content {
+      flex: 1; overflow-y: auto; padding: 1.5rem 1.75rem;
+    }
+    .modal-overlay.fp-mode #comp-panel {
+      width: 420px !important; flex-shrink: 0;
+      overflow-y: auto; display: flex !important; flex-direction: column;
+      border-left: 1px solid var(--border); border-radius: 0;
+      margin: 0 !important;
+    }
+    .modal-overlay.fp-mode .comp-panel-header { border-radius: 0; }
+    .modal-overlay.fp-mode .comp-panel-body { flex: 1; }
+
+    /* ── B2 Full-Page Layout ── */
+    #fp-review { display: none; position: fixed; inset: 0; z-index: 500; background: var(--bg); flex-direction: column; }
+    #fp-review.open { display: flex; }
+    .fp-nav { height: 52px; background: var(--white); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 1rem; padding: 0 1.25rem; flex-shrink: 0; }
+    .fp-back-btn { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8125rem; font-weight: 600; color: var(--gray-600); background: none; border: none; cursor: pointer; padding: 0.375rem 0.625rem; border-radius: 6px; white-space: nowrap; }
+    .fp-back-btn:hover { background: var(--gray-100); color: var(--gray-900); }
+    .fp-nav-center { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+    .fp-nav-name { font-size: 0.9rem; font-weight: 700; color: var(--gray-900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .fp-nav-sub { font-size: 0.75rem; color: var(--gray-500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .fp-nav-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+    .fp-save-status { font-size: 0.75rem; color: var(--gray-500); }
+    .fp-nbtn { padding: 0.375rem 0.75rem; font-size: 0.8rem; }
+    .fp-hero { background: var(--white); border-bottom: 1px solid var(--border); padding: 0.875rem 1.25rem; display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
+    .fp-hero-avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--green); color: white; font-weight: 800; font-size: 1rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .fp-hero-name { font-size: 1rem; font-weight: 700; color: var(--gray-900); }
+    .fp-hero-sub { font-size: 0.78rem; color: var(--gray-500); margin-top: 0.1rem; }
+    .fp-hero-pills { display: flex; gap: 0.5rem; margin-left: auto; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+    .fp-hero-pill { font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .fp-pill-self { background: #DBEAFE; color: #1E40AF; }
+    .fp-pill-mgr { background: #EDE9FE; color: #5B21B6; }
+    .fp-pill-exec { background: #D1FAE5; color: #065F46; }
+    .fp-pill-done { background: #D1FAE5; color: #065F46; }
+    .fp-pill-pending { background: #FEF3C7; color: #92400E; }
+    .fp-pill-not-started { background: var(--gray-100); color: var(--gray-500); }
+    .fp-body { flex: 1; display: flex; overflow: hidden; }
+    .fp-left { flex: 1; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 1.25rem; }
+    .fp-right { width: 400px; flex-shrink: 0; border-left: 1px solid var(--border); overflow-y: auto; display: flex; flex-direction: column; background: var(--white); }
+    .fp-right-placeholder { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; }
+    #comp-panel { flex: 1; display: flex; flex-direction: column; }
+    #comp-panel.hidden { display: none; }
+    #fp-right-placeholder.hidden { display: none; }
+    .fp-section-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .fp-section-hdr { padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.875rem; }
+    .fp-hdr-self { background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%); }
+    .fp-hdr-mgr { background: linear-gradient(135deg, #5B21B6 0%, #8B5CF6 100%); }
+    .fp-hdr-exec { background: linear-gradient(135deg, #065F46 0%, #10B981 100%); }
+    .fp-section-icon { font-size: 1.25rem; }
+    .fp-section-title { font-size: 0.9375rem; font-weight: 700; color: white; }
+    .fp-section-sub { font-size: 0.75rem; color: rgba(255,255,255,0.75); margin-top: 0.1rem; }
+    .fp-section-title-wrap { flex: 1; }
+    .fp-section-badge { font-size: 0.68rem; font-weight: 700; padding: 0.2rem 0.65rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.04em; background: rgba(255,255,255,0.2); color: white; white-space: nowrap; }
+    .fp-section-body { padding: 1.25rem; }
+    .fp-sub-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--gray-500); margin-bottom: 0.5rem; margin-top: 1.25rem; }
+    .fp-sub-label:first-child { margin-top: 0; }
+    .fp-hint { font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--gray-400); }
+    .fp-score-overview { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.75rem; margin-bottom: 1rem; }
+    .fp-score-chip { background: var(--gray-50); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem; text-align: center; }
+    .fp-score-chip-num { font-size: 1.5rem; font-weight: 800; color: var(--gray-900); }
+    .fp-score-chip-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gray-500); margin-top: 0.2rem; }
+    .fp-score-chip-role { font-size: 0.7rem; color: var(--gray-400); margin-top: 0.1rem; }
+    .readonly-field { background: var(--gray-50) !important; color: var(--gray-600) !important; }
+
     .modal-header { padding: 1.5rem 1.75rem 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
     .modal-header h2 { font-size: 1.125rem; font-weight: 700; color: var(--gray-900); }
     .modal-header .sub { font-size: 0.8125rem; color: var(--gray-600); margin-top: 0.15rem; }
@@ -732,294 +810,289 @@
   </div>
 </div>
 
-<!-- ── Review Modal ── -->
-<div class="modal-overlay" id="review-modal">
-  <div class="modal">
-    <div class="modal-header">
-      <div>
-        <h2 id="modal-emp-name">Employee Review</h2>
-        <div class="sub" id="modal-emp-sub"></div>
-      </div>
-      <button class="modal-close" id="modal-close">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+<!-- ── Full-Page Review (B2 Layout) ── -->
+<div id="fp-review">
+  <div style="display:contents" id="review-modal"><!-- compat alias --></div>
+  <div style="display:none" id="tab-self"></div>
+  <div style="display:none" id="tab-manager"></div>
+  <div style="display:none" id="tab-executive"></div>
+
+  <!-- B2 Top Nav -->
+  <div class="fp-nav">
+    <button class="fp-back-btn" id="modal-close">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Reviews
+    </button>
+    <div class="fp-nav-center">
+      <div class="fp-nav-name" id="modal-emp-name">—</div>
+      <div class="fp-nav-sub" id="modal-emp-sub">—</div>
+    </div>
+    <div class="fp-nav-actions">
+      <span class="fp-save-status" id="modal-footer-status"></span>
+      <button class="btn btn-secondary fp-nbtn" id="modal-print" style="display:none">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:3px"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Print
       </button>
+      <button class="btn btn-secondary fp-nbtn" id="modal-save-draft" style="display:none">Save Draft</button>
+      <button class="btn btn-primary fp-nbtn" id="modal-submit" style="display:none">Submit</button>
     </div>
+  </div>
 
-    <div class="modal-tabs">
-      <button class="tab-btn active" data-tab="self">Self-Evaluation</button>
-      <button class="tab-btn" data-tab="manager">Manager Review</button>
-      <button class="tab-btn" data-tab="executive">Executive Assessment</button>
+  <!-- Hero strip -->
+  <div class="fp-hero" id="fp-hero">
+    <div class="fp-hero-avatar" id="fp-hero-avatar">—</div>
+    <div>
+      <div class="fp-hero-name" id="fp-hero-name">—</div>
+      <div class="fp-hero-sub" id="fp-hero-info">—</div>
     </div>
+    <div class="fp-hero-pills" id="fp-hero-pills"></div>
+  </div>
 
-    <div class="modal-body">
+  <!-- Body: left scrollable sections + right sticky comp -->
+  <div class="fp-body">
 
-      <!-- Self-Eval Tab -->
-      <div class="tab-panel active" id="tab-self">
-        <div id="self-status-note"></div>
-        <div class="section-title">Competency Ratings <span style="font-weight:400;color:var(--gray-400);text-transform:none;letter-spacing:0">(1 = Needs Improvement · 5 = Exceptional)</span></div>
-        <div class="competency-grid" id="self-competencies"></div>
+    <!-- LEFT: three section cards -->
+    <div class="fp-left">
 
-        <div class="section-title" style="margin-top:1.5rem">Performance Reflection</div>
-
-        <div class="form-group">
-          <label class="form-label">What were your key accomplishments this year? <span class="req">*</span></label>
+      <!-- ── Section 1: Self-Evaluation ── -->
+      <div class="fp-section-card" id="fp-sec-self">
+        <div class="fp-section-hdr fp-hdr-self">
+          <div class="fp-section-icon fp-icon-self">👤</div>
+          <div class="fp-section-title-wrap">
+            <div class="fp-section-title">Self-Evaluation</div>
+            <div class="fp-section-sub">Employee's self-assessment</div>
+          </div>
+          <div id="fp-self-badge" class="fp-section-badge"></div>
+        </div>
+        <div class="fp-section-body">
+          <div id="self-status-note"></div>
+          <div class="fp-sub-label">Competency Ratings <span class="fp-hint">(1 = Needs Improvement · 5 = Exceptional)</span></div>
+          <div class="competency-grid" id="self-competencies"></div>
+          <div class="fp-sub-label" style="margin-top:1rem">Key Accomplishments</div>
           <textarea class="form-control" id="self-q1" rows="3" placeholder="Describe your major achievements…"></textarea>
-        </div>
-        <div class="form-group">
-          <label class="form-label">What challenges did you face and how did you handle them? <span class="req">*</span></label>
+          <div class="fp-sub-label">Challenges &amp; How You Handled Them</div>
           <textarea class="form-control" id="self-q2" rows="3" placeholder="Describe key challenges and your approach…"></textarea>
-        </div>
-
-        <div class="section-title" style="margin-top:1.5rem">
-          Goals &amp; Development
-          <span style="font-weight:400;color:var(--gray-400);text-transform:none;letter-spacing:0;font-size:0.8rem"> — your manager will review these and may add suggested goals</span>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Your Goals for Next Year <span class="req">*</span></label>
+          <div class="fp-sub-label" style="margin-top:1rem">Goals for Next Year</div>
           <div class="goal-list-wrap" id="self-goal-list"></div>
           <button class="add-goal-btn" id="self-add-goal-btn" type="button">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
             Add Goal
           </button>
-        </div>
-        <div class="form-group">
-          <label class="form-label">What support or resources do you need from your manager to achieve these goals?</label>
-          <textarea class="form-control" id="self-q4" rows="3" placeholder="Training, mentorship, tools, schedule flexibility, cross-team exposure…"></textarea>
+          <div class="fp-sub-label" style="margin-top:0.75rem">Support Requested from Manager</div>
+          <textarea class="form-control" id="self-q4" rows="2" placeholder="Training, mentorship, tools, schedule flexibility…"></textarea>
         </div>
       </div>
 
-      <!-- Manager Tab -->
-      <div class="tab-panel" id="tab-manager">
-        <div id="mgr-status-note"></div>
-        <div class="section-title">Competency Ratings <span style="font-weight:400;color:var(--gray-400);text-transform:none;letter-spacing:0">(1 = Needs Improvement · 5 = Exceptional)</span></div>
-        <div class="competency-grid" id="mgr-competencies"></div>
-
-        <!-- Score Recommendation (shows once all competencies are rated) -->
-        <div id="mgr-score-rec-wrap" style="display:none;margin-top:1.5rem">
-          <div class="section-title">Score Recommendation</div>
-          <div class="score-suggest-banner" id="mgr-score-suggest-banner">
-            <div class="score-suggest-num" id="mgr-score-suggest-num">—</div>
-            <div class="score-suggest-text">
-              <strong id="mgr-score-suggest-label">—</strong>
-              <small id="mgr-score-suggest-sub">Average competency rating</small>
-            </div>
+      <!-- ── Section 2: Manager Review ── -->
+      <div class="fp-section-card" id="fp-sec-mgr">
+        <div class="fp-section-hdr fp-hdr-mgr">
+          <div class="fp-section-icon fp-icon-mgr">📋</div>
+          <div class="fp-section-title-wrap">
+            <div class="fp-section-title">Manager Review</div>
+            <div class="fp-section-sub" id="fp-mgr-sub">Manager's assessment</div>
           </div>
-          <p style="font-size:0.8125rem;color:var(--gray-600);margin:0 0 0.75rem">Based on your ratings, the system calculated the score above. You can accept it or enter your own recommendation for the executive.</p>
-          <div class="score-choice-row" id="mgr-choice-row">
-            <button class="score-choice-btn" id="mgr-accept-suggested-btn" type="button">✓ Go with suggested score</button>
-            <button class="score-choice-btn outline" id="mgr-set-own-btn" type="button">✏ Set my own recommendation</button>
-          </div>
-          <div id="mgr-own-score-wrap" style="display:none">
-            <div class="form-group" style="margin-bottom:.75rem">
-              <label class="form-label">My Recommended Score <span class="req">*</span></label>
-              <select class="form-control" id="mgr-score-recommendation" style="max-width:320px">
-                <option value="">— Select —</option>
-                <option value="1">1 — Unsatisfactory</option>
-                <option value="2">2 — Needs Improvement</option>
-                <option value="3">3 — Meets Expectations</option>
-                <option value="4">4 — Exceeds Expectations</option>
-                <option value="5">5 — Exceptional</option>
-              </select>
-            </div>
-            <div class="form-group" style="margin-bottom:.5rem">
-              <label class="form-label">Reason for Different Recommendation <span class="req">*</span></label>
-              <textarea class="form-control" id="mgr-score-override-reason" rows="3" placeholder="Explain why your recommendation differs from the calculated score…"></textarea>
-            </div>
-          </div>
-          <div class="score-chosen-display" id="mgr-chosen-display" style="display:none">
-            <div class="score-chosen-badge" id="mgr-chosen-badge">—</div>
-            <div>
-              <div class="score-chosen-label" id="mgr-chosen-label">—</div>
-              <div class="score-chosen-type" id="mgr-chosen-type">—</div>
-            </div>
-            <button class="score-change-link" id="mgr-change-choice-btn" type="button">Change</button>
-          </div>
+          <div id="fp-mgr-badge" class="fp-section-badge"></div>
         </div>
+        <div class="fp-section-body">
+          <div id="mgr-status-note"></div>
+          <div class="fp-sub-label">Competency Ratings <span class="fp-hint">(1 = Needs Improvement · 5 = Exceptional)</span></div>
+          <div class="competency-grid" id="mgr-competencies"></div>
 
-        <div class="section-title" style="margin-top:1.5rem">Manager Assessment</div>
-        <div class="form-group">
-          <label class="form-label">Manager Comments <span class="req">*</span></label>
+          <div id="mgr-score-rec-wrap" style="display:none;margin-top:1rem">
+            <div class="fp-sub-label">Score Recommendation</div>
+            <div class="score-suggest-banner" id="mgr-score-suggest-banner">
+              <div class="score-suggest-num" id="mgr-score-suggest-num">—</div>
+              <div class="score-suggest-text">
+                <strong id="mgr-score-suggest-label">—</strong>
+                <small id="mgr-score-suggest-sub">Average competency rating</small>
+              </div>
+            </div>
+            <p style="font-size:0.8125rem;color:var(--gray-600);margin:0 0 0.75rem">Based on your ratings, the system calculated the score above. You can accept it or enter your own recommendation for the executive.</p>
+            <div class="score-choice-row" id="mgr-choice-row">
+              <button class="score-choice-btn" id="mgr-accept-suggested-btn" type="button">✓ Go with suggested score</button>
+              <button class="score-choice-btn outline" id="mgr-set-own-btn" type="button">✏ Set my own recommendation</button>
+            </div>
+            <div id="mgr-own-score-wrap" style="display:none">
+              <div class="form-group" style="margin-bottom:.75rem">
+                <label class="form-label">My Recommended Score <span class="req">*</span></label>
+                <select class="form-control" id="mgr-score-recommendation" style="max-width:320px">
+                  <option value="">— Select —</option>
+                  <option value="1">1 — Unsatisfactory</option>
+                  <option value="2">2 — Needs Improvement</option>
+                  <option value="3">3 — Meets Expectations</option>
+                  <option value="4">4 — Exceeds Expectations</option>
+                  <option value="5">5 — Exceptional</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom:.5rem">
+                <label class="form-label">Reason for Different Recommendation <span class="req">*</span></label>
+                <textarea class="form-control" id="mgr-score-override-reason" rows="3" placeholder="Explain why your recommendation differs from the calculated score…"></textarea>
+              </div>
+            </div>
+            <div class="score-chosen-display" id="mgr-chosen-display" style="display:none">
+              <div class="score-chosen-badge" id="mgr-chosen-badge">—</div>
+              <div>
+                <div class="score-chosen-label" id="mgr-chosen-label">—</div>
+                <div class="score-chosen-type" id="mgr-chosen-type">—</div>
+              </div>
+              <button class="score-change-link" id="mgr-change-choice-btn" type="button">Change</button>
+            </div>
+          </div>
+
+          <div class="fp-sub-label" style="margin-top:1rem">Manager Comments</div>
           <textarea class="form-control" id="mgr-comments" rows="4" placeholder="Provide overall feedback and context for your ratings…"></textarea>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Employee's Self-Eval — Accomplishments</label>
+
+          <div class="fp-sub-label">Employee's Accomplishments (from Self-Eval)</div>
           <textarea class="form-control readonly-field" id="mgr-view-q1" rows="2" readonly></textarea>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Employee's Self-Eval — Challenges</label>
+          <div class="fp-sub-label">Employee's Challenges (from Self-Eval)</div>
           <textarea class="form-control readonly-field" id="mgr-view-q2" rows="2" readonly></textarea>
-        </div>
 
-        <div class="section-title" style="margin-top:1.5rem">Goals &amp; Development</div>
-
-        <div class="form-group">
-          <label class="form-label">Employee's Goals for Next Year</label>
+          <div class="fp-sub-label">Employee's Goals for Next Year</div>
           <div class="goal-list-wrap" id="self-goal-list-mgr-view"></div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Support Requested by Employee</label>
+          <div class="fp-sub-label">Support Requested by Employee</div>
           <textarea class="form-control readonly-field" id="mgr-view-q4" rows="2" readonly placeholder="(Not provided)"></textarea>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Manager's Suggested Goals for Next Year</label>
+
+          <div class="fp-sub-label" style="margin-top:1rem">Manager's Suggested Goals for Next Year</div>
           <div class="goal-list-wrap" id="mgr-goal-list"></div>
           <button class="add-goal-btn" id="mgr-add-goal-btn" type="button">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
             Add Suggested Goal
           </button>
+          <div class="fp-sub-label" style="margin-top:0.75rem">How Will You Support This Employee?</div>
+          <textarea class="form-control" id="mgr-support" rows="3" placeholder="Training opportunities, mentorship, resources…"></textarea>
         </div>
-        <div class="form-group">
-          <label class="form-label">How Will You Support This Employee?</label>
-          <textarea class="form-control" id="mgr-support" rows="3" placeholder="Training opportunities, mentorship, resources, check-in cadence, stretch assignments…"></textarea>
-        </div>
-
       </div>
 
-      <!-- Executive Assessment Tab -->
-      <div class="tab-panel" id="tab-executive">
-        <div id="exec-status-note"></div>
+      <!-- ── Section 3: Executive Assessment ── -->
+      <div class="fp-section-card" id="fp-sec-exec">
+        <div class="fp-section-hdr fp-hdr-exec">
+          <div class="fp-section-icon fp-icon-exec">⭐</div>
+          <div class="fp-section-title-wrap">
+            <div class="fp-section-title">Executive Assessment</div>
+            <div class="fp-section-sub" id="fp-exec-sub">Executive's final evaluation</div>
+          </div>
+          <div id="fp-exec-badge" class="fp-section-badge"></div>
+        </div>
+        <div class="fp-section-body">
+          <div id="exec-status-note"></div>
 
-        <div class="exec-two-col">
+          <!-- 3-col competency score summary -->
+          <div id="fp-score-overview" class="fp-score-overview"></div>
 
-          <!-- ── LEFT: Read-only context ── -->
-          <div class="exec-col-left">
-            <div class="exec-col-label">Employee &amp; Manager Context</div>
+          <!-- Exec own competency ratings -->
+          <div class="fp-sub-label" style="margin-top:1rem">Your Competency Ratings <span class="fp-hint">— Click to rate (1 = Needs Improvement · 5 = Exceptional)</span></div>
+          <div class="competency-grid" id="exec-own-competencies"></div>
 
-            <div class="section-title">Employee Self-Evaluation</div>
-
-            <div class="form-label" style="margin-bottom:.35rem">Key Accomplishments</div>
-            <div class="ro-field" id="exec-view-q1"></div>
-
-            <div class="form-label" style="margin-bottom:.35rem">Challenges &amp; Approach</div>
-            <div class="ro-field" id="exec-view-q2"></div>
-
-            <div class="form-label" style="margin-bottom:.5rem">Employee Goals</div>
-            <div id="exec-view-self-goals" style="margin-bottom:1rem"></div>
-
-            <div class="form-label" style="margin-bottom:.5rem">Employee's Self-Ratings</div>
-            <div class="competency-grid" id="exec-view-self-competencies"></div>
-
-            <div class="form-label" style="margin-bottom:.35rem">Development Needs (Employee)</div>
-            <div class="ro-field" id="exec-view-q4"></div>
-
-            <div class="section-title" style="margin-top:1.5rem">Manager's Assessment</div>
-
-            <div class="form-label" style="margin-bottom:.35rem">Manager Comments</div>
-            <div class="ro-field" id="exec-view-mgr-comments"></div>
-
-            <div class="form-label" style="margin-bottom:.5rem">Goals Set by Manager</div>
-            <div id="exec-view-mgr-goals" style="margin-bottom:1rem"></div>
-
-            <div class="form-label" style="margin-bottom:.35rem">Manager's Support Plan</div>
-            <div class="ro-field" id="exec-view-mgr-support"></div>
-
-            <div class="section-title" style="margin-top:1.5rem">Manager's Competency Ratings</div>
-            <div class="competency-grid" id="exec-view-mgr-competencies"></div>
+          <!-- Score suggestion -->
+          <div class="score-suggest-banner" id="score-suggest-banner">
+            <div class="score-suggest-num" id="score-suggest-num">—</div>
+            <div class="score-suggest-text">
+              <strong id="score-suggest-label">—</strong>
+              <small id="score-suggest-sub">Based on average competency rating</small>
+            </div>
+          </div>
+          <div class="score-summary-card" id="score-summary-card">
+            <div class="score-summary-header" id="score-summary-header">
+              <div class="score-summary-score" id="score-summary-score">—</div>
+              <div>
+                <div class="score-summary-label" id="score-summary-label-txt">—</div>
+                <div class="score-summary-desc" id="score-summary-desc">—</div>
+              </div>
+            </div>
+            <div class="score-summary-body">
+              <div class="score-strengths">
+                <div class="score-section-title">Key Strengths</div>
+                <ul class="score-comp-list" id="score-strengths-list"></ul>
+              </div>
+              <div class="score-improve">
+                <div class="score-section-title">Areas to Develop</div>
+                <ul class="score-comp-list" id="score-improve-list"></ul>
+              </div>
+            </div>
           </div>
 
-          <!-- ── RIGHT: Executive inputs ── -->
-          <div class="exec-col-right">
-            <div class="exec-col-label">Your Executive Assessment</div>
+          <!-- Manager's recommendation (read-only) -->
+          <div class="mgr-rec-box" id="exec-mgr-rec-box" style="display:none">
+            <div class="mgr-rec-box-title">Manager's Score Recommendation</div>
+            <div style="display:flex;align-items:baseline;gap:.5rem">
+              <span class="mgr-rec-box-score" id="exec-mgr-rec-score">—</span>
+              <span class="mgr-rec-box-label" id="exec-mgr-rec-label">—</span>
+            </div>
+            <div class="mgr-rec-box-reason" id="exec-mgr-rec-reason" style="display:none"></div>
+          </div>
 
-            <div class="section-title">Your Competency Ratings <span style="font-weight:400;color:var(--gray-500);text-transform:none;letter-spacing:0;font-size:0.75rem">— Click to rate</span></div>
-            <div class="competency-grid" id="exec-own-competencies"></div>
-
-            <!-- Auto-suggested score banner -->
-            <div class="score-suggest-banner" id="score-suggest-banner">
-              <div class="score-suggest-num" id="score-suggest-num">—</div>
-              <div class="score-suggest-text">
-                <strong id="score-suggest-label">—</strong>
-                <small id="score-suggest-sub">Based on average competency rating</small>
+          <!-- Exec score choice -->
+          <div id="exec-score-choice-wrap" style="margin-top:1rem">
+            <div class="score-choice-row" id="exec-choice-row">
+              <button class="score-choice-btn" id="exec-accept-suggested-btn" type="button">✓ Go with suggested score</button>
+              <button class="score-choice-btn outline" id="exec-set-own-btn" type="button">✏ Set my own score</button>
+            </div>
+            <div class="score-chosen-display" id="exec-chosen-display" style="display:none">
+              <div class="score-chosen-badge" id="exec-chosen-badge">—</div>
+              <div>
+                <div class="score-chosen-label" id="exec-chosen-label">—</div>
+                <div class="score-chosen-type" id="exec-chosen-type">—</div>
+              </div>
+              <button class="score-change-link" id="exec-change-choice-btn" type="button">Change</button>
+            </div>
+            <div id="exec-own-score-wrap" style="display:none">
+              <div class="form-group" style="margin-bottom:.75rem">
+                <label class="form-label">Overall Performance Score <span class="req">*</span></label>
+                <select class="form-control" id="exec-overall-score" style="max-width:320px">
+                  <option value="">— Select —</option>
+                  <option value="1">1 — Unsatisfactory</option>
+                  <option value="2">2 — Needs Improvement</option>
+                  <option value="3">3 — Meets Expectations</option>
+                  <option value="4">4 — Exceeds Expectations</option>
+                  <option value="5">5 — Exceptional</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Reason for Different Score <span class="req">*</span></label>
+                <textarea class="form-control" id="exec-score-override-reason" rows="2" placeholder="Explain why you're choosing a score different from the suggestion…"></textarea>
               </div>
             </div>
+          </div>
 
-            <!-- Score summary card -->
-            <div class="score-summary-card" id="score-summary-card">
-              <div class="score-summary-header" id="score-summary-header">
-                <div class="score-summary-score" id="score-summary-score">—</div>
-                <div>
-                  <div class="score-summary-label" id="score-summary-label-txt">—</div>
-                  <div class="score-summary-desc" id="score-summary-desc">—</div>
-                </div>
-              </div>
-              <div class="score-summary-body">
-                <div class="score-strengths">
-                  <div class="score-section-title">Key Strengths</div>
-                  <ul class="score-comp-list" id="score-strengths-list"></ul>
-                </div>
-                <div class="score-improve">
-                  <div class="score-section-title">Areas to Develop</div>
-                  <ul class="score-comp-list" id="score-improve-list"></ul>
-                </div>
-              </div>
-            </div>
+          <div class="fp-sub-label" style="margin-top:1rem">Recommended Action <span class="req">*</span></div>
+          <select class="form-control" id="exec-action" style="max-width:320px;margin-bottom:1rem">
+            <option value="no-change">No Change</option>
+            <option value="merit-increase">Merit Increase</option>
+            <option value="promotion">Promotion</option>
+            <option value="performance-plan">Performance Improvement Plan</option>
+          </select>
 
-            <div class="section-title" style="margin-top:1.5rem">Executive Decision</div>
+          <div class="fp-sub-label">Executive Comments <span class="req">*</span></div>
+          <textarea class="form-control" id="exec-comments" rows="4" placeholder="Provide executive-level feedback and justify the recommended action…"></textarea>
 
-            <!-- Manager's score recommendation (read-only) -->
-            <div class="mgr-rec-box" id="exec-mgr-rec-box" style="display:none">
-              <div class="mgr-rec-box-title">Manager's Score Recommendation</div>
-              <div style="display:flex;align-items:baseline;gap:.5rem">
-                <span class="mgr-rec-box-score" id="exec-mgr-rec-score">—</span>
-                <span class="mgr-rec-box-label" id="exec-mgr-rec-label">—</span>
-              </div>
-              <div class="mgr-rec-box-reason" id="exec-mgr-rec-reason" style="display:none"></div>
-            </div>
+          <div class="fp-sub-label" style="margin-top:0.75rem">Executive Goals for Employee</div>
+          <div class="goal-list-wrap" id="exec-goal-list"></div>
+          <button class="add-goal-btn" id="exec-add-goal-btn" type="button">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            Add Executive Goal
+          </button>
 
-            <!-- Exec score choice -->
-            <div id="exec-score-choice-wrap">
-              <div class="score-choice-row" id="exec-choice-row">
-                <button class="score-choice-btn" id="exec-accept-suggested-btn" type="button">✓ Go with suggested score</button>
-                <button class="score-choice-btn outline" id="exec-set-own-btn" type="button">✏ Set my own score</button>
-              </div>
-              <div class="score-chosen-display" id="exec-chosen-display" style="display:none">
-                <div class="score-chosen-badge" id="exec-chosen-badge">—</div>
-                <div>
-                  <div class="score-chosen-label" id="exec-chosen-label">—</div>
-                  <div class="score-chosen-type" id="exec-chosen-type">—</div>
-                </div>
-                <button class="score-change-link" id="exec-change-choice-btn" type="button">Change</button>
-              </div>
-              <div id="exec-own-score-wrap" style="display:none">
-                <div class="form-group" style="margin-bottom:.75rem">
-                  <label class="form-label">Overall Performance Score <span class="req">*</span></label>
-                  <select class="form-control" id="exec-overall-score" style="max-width:320px">
-                    <option value="">— Select —</option>
-                    <option value="1">1 — Unsatisfactory</option>
-                    <option value="2">2 — Needs Improvement</option>
-                    <option value="3">3 — Meets Expectations</option>
-                    <option value="4">4 — Exceeds Expectations</option>
-                    <option value="5">5 — Exceptional</option>
-                  </select>
-                </div>
-                <div class="form-group" style="margin-bottom:.5rem">
-                  <label class="form-label">Reason for Different Score <span class="req">*</span></label>
-                  <textarea class="form-control" id="exec-score-override-reason" rows="2" placeholder="Explain why you're choosing a score different from the suggestion…"></textarea>
-                </div>
-              </div>
-            </div>
+          <!-- Hidden compatibility elements -->
+          <div style="display:none">
+            <div id="exec-view-q1"></div><div id="exec-view-q2"></div><div id="exec-view-q4"></div>
+            <div id="exec-view-mgr-comments"></div><div id="exec-view-mgr-support"></div>
+            <div id="exec-view-self-goals"></div><div id="exec-view-mgr-goals"></div>
+            <div class="competency-grid" id="exec-view-self-competencies"></div>
+            <div class="competency-grid" id="exec-view-mgr-competencies"></div>
+          </div>
+        </div>
+      </div>
 
-            <div class="form-group" style="margin-bottom:.75rem">
-              <label class="form-label">Recommended Action <span class="req">*</span></label>
-              <select class="form-control" id="exec-action" style="max-width:320px">
-                <option value="no-change">No Change</option>
-                <option value="merit-increase">Merit Increase</option>
-                <option value="promotion">Promotion</option>
-                <option value="performance-plan">Performance Improvement Plan</option>
-              </select>
-            </div>
+    </div><!-- end fp-left -->
 
-            <div class="form-group">
-              <label class="form-label">Executive Comments <span class="req">*</span></label>
-              <textarea class="form-control" id="exec-comments" rows="4" placeholder="Provide executive-level feedback and justify the recommended action…"></textarea>
-            </div>
-
-          </div><!-- end exec-col-right -->
-        </div><!-- end exec-two-col -->
-
-        <!-- Compensation Analysis Panel (exec only) -->
-        <div class="comp-panel" id="comp-panel" style="display:none">
+    <!-- RIGHT: sticky comp panel -->
+    <div class="fp-right">
+      <div class="fp-right-placeholder" id="fp-right-placeholder">
+        <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="opacity:.3;margin-bottom:.5rem"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <div style="font-size:.8rem;color:var(--gray-400);text-align:center">Compensation analysis<br>appears when a score is set</div>
+      </div>
+      <!-- Comp Panel (shown when score is set) -->
+      <div class="comp-panel hidden" id="comp-panel">
           <div class="comp-panel-header">
             <div class="comp-panel-title">
               <svg width="18" height="18" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
@@ -1158,20 +1231,10 @@
           </div>
         </div>
 
-      </div>
-
-    </div>
-
-    <div class="modal-footer">
-      <div class="footer-status" id="modal-footer-status"></div>
-      <div class="footer-actions">
-        <button class="btn btn-ghost" id="modal-cancel">Cancel</button>
-        <button class="btn btn-secondary" id="modal-save-draft">Save Draft</button>
-        <button class="btn btn-primary" id="modal-submit">Submit</button>
-      </div>
-    </div>
-  </div>
-</div>
+      </div><!-- end comp-panel -->
+    </div><!-- end fp-right -->
+  </div><!-- end fp-body -->
+</div><!-- end fp-review -->
 
 <!-- ── Initialize Cycle Modal ── -->
 <div class="modal-overlay" id="init-modal">
@@ -1241,6 +1304,7 @@
   let execRatings = {};
   let selfGoals   = [];
   let mgrGoals    = [];
+  let execGoals   = [];
 
   const GOAL_CATEGORIES = ['Professional Development','Technical Skills','Leadership & Management','Safety & Compliance','Productivity','Customer Service','Other'];
   const GOAL_PRIORITIES  = ['High','Medium','Low'];
@@ -1297,7 +1361,7 @@
       });
       listEl.querySelectorAll('[data-action="del"]').forEach(btn => {
         btn.addEventListener('click', () => {
-          const arr = btn.dataset.prefix === 'self' ? selfGoals : mgrGoals;
+          const arr = btn.dataset.prefix === 'self' ? selfGoals : (btn.dataset.prefix === 'exec' ? execGoals : mgrGoals);
           arr.splice(+btn.dataset.idx, 1);
           renderGoalList(btn.dataset.prefix, arr, true);
         });
@@ -1306,7 +1370,7 @@
   }
 
   function showGoalForm(prefix, editIdx = null) {
-    const arr  = prefix === 'self' ? selfGoals : mgrGoals;
+    const arr  = prefix === 'self' ? selfGoals : (prefix === 'exec' ? execGoals : mgrGoals);
     const g    = editIdx !== null ? arr[editIdx] : {};
     const listEl = document.getElementById(`${prefix}-goal-list`);
     const addBtn = document.getElementById(`${prefix}-add-goal-btn`);
@@ -1677,13 +1741,32 @@
     const isExecOfEmp= currentEmployee?.id === emp?.executiveId;
     const isAdmin    = !currentEmployee || currentEmployee.role === 'admin';
 
-    document.getElementById('modal-emp-name').textContent = emp ? `${emp.firstName} ${emp.lastName}` : 'Employee';
-    document.getElementById('modal-emp-sub').textContent  = `${emp?.position || ''} · ${emp?.branch || ''} · ${selectedYear} Annual Review`;
+    const empFullName = emp ? `${emp.firstName} ${emp.lastName}` : 'Employee';
+    const empSubText  = `${emp?.position || ''} · ${emp?.branch || ''} · ${selectedYear} Annual Review`;
+    document.getElementById('modal-emp-name').textContent = empFullName;
+    document.getElementById('modal-emp-sub').textContent  = empSubText;
+    // B2 hero strip
+    document.getElementById('fp-hero-avatar').textContent = emp ? `${(emp.firstName||'')[0]}${(emp.lastName||'')[0]}` : '—';
+    document.getElementById('fp-hero-name').textContent   = empFullName;
+    document.getElementById('fp-hero-info').textContent   = empSubText;
+    // Hero pills
+    {
+      const selfStatus  = currentReview.selfEval?.submitted ? 'done' : (currentReview.selfEval?.drafting ? 'pending' : 'not-started');
+      const mgrStatus   = currentReview.managerEval?.completedAt ? 'done' : (currentReview.managerEval?.drafting ? 'pending' : 'not-started');
+      const execStatus  = currentReview.status === 'completed' ? 'done' : (currentReview.executiveEval?.drafting ? 'pending' : 'not-started');
+      const pillLabel   = { 'done': 'Complete', 'pending': 'In Progress', 'not-started': 'Not Started' };
+      document.getElementById('fp-hero-pills').innerHTML = `
+        <span class="fp-hero-pill fp-pill-${selfStatus}">Self: ${pillLabel[selfStatus]}</span>
+        <span class="fp-hero-pill fp-pill-${mgrStatus}">Mgr: ${pillLabel[mgrStatus]}</span>
+        <span class="fp-hero-pill fp-pill-${execStatus}">Exec: ${pillLabel[execStatus]}</span>
+      `;
+    }
 
     selfRatings = { ...(currentReview.selfEval?.ratings || {}) };
     mgrRatings  = { ...(currentReview.managerEval?.ratings || {}) };
     selfGoals   = JSON.parse(JSON.stringify(currentReview.selfEval?.goals || []));
     mgrGoals    = JSON.parse(JSON.stringify(currentReview.managerEval?.goals || []));
+    execGoals   = JSON.parse(JSON.stringify(currentReview.executiveEval?.goals || []));
 
     const canEditSelfGoals = isOwn && !currentReview.selfEval?.submitted;
     const canEditMgrGoals  = (isMgrOfEmp || isAdmin) && currentReview.status !== 'completed';
@@ -1821,6 +1904,20 @@
     execRatings = { ...(currentReview.executiveEval?.competencyRatings || {}) };
     buildCompetencies('exec-own-competencies', execRatings, canEditExec, 'exec-own');
     updateExecScoreSuggestion();
+    // Populate B2 score overview chips
+    {
+      const selfAvg = (() => { const r = Object.values(selfRatings).filter(Boolean); return r.length ? (r.reduce((a,b)=>a+b,0)/r.length).toFixed(1) : '—'; })();
+      const mgrAvg  = (() => { const r = Object.values(mgrRatings).filter(Boolean); return r.length ? (r.reduce((a,b)=>a+b,0)/r.length).toFixed(1) : '—'; })();
+      const execAvg = (() => { const r = Object.values(execRatings).filter(Boolean); return r.length ? (r.reduce((a,b)=>a+b,0)/r.length).toFixed(1) : '—'; })();
+      document.getElementById('fp-score-overview').innerHTML = `
+        <div class="fp-score-chip"><div class="fp-score-chip-num">${selfAvg}</div><div class="fp-score-chip-label">Self-Rating</div><div class="fp-score-chip-role">Employee avg</div></div>
+        <div class="fp-score-chip"><div class="fp-score-chip-num">${mgrAvg}</div><div class="fp-score-chip-label">Manager Rating</div><div class="fp-score-chip-role">Manager avg</div></div>
+        <div class="fp-score-chip"><div class="fp-score-chip-num">${execAvg}</div><div class="fp-score-chip-label">Your Rating</div><div class="fp-score-chip-role">Exec avg</div></div>
+      `;
+    }
+
+    // Exec goals
+    renderGoalList('exec', execGoals, canEditExec);
 
     const en = document.getElementById('exec-status-note');
     if (completed) {
@@ -1851,7 +1948,7 @@
     if (!isOwn && (isMgrOfEmp || isAdmin)) defaultTab = 'manager';
     if (isExecOfEmp && !isMgrOfEmp && !isOwn) defaultTab = 'executive';
     switchTab(defaultTab);
-    document.getElementById('review-modal').classList.add('open');
+    document.getElementById('fp-review').classList.add('open');
   }
 
   function setField(id, val, readonly, isSelect = false) {
@@ -2208,7 +2305,12 @@
     document.getElementById('tab-self').classList.toggle('active', tab === 'self');
     document.getElementById('tab-manager').classList.toggle('active', tab === 'manager');
     document.getElementById('tab-executive').classList.toggle('active', tab === 'executive');
-    document.querySelector('.modal').classList.toggle('exec-wide', tab === 'executive');
+    // B2: always show print button (exec-relevant actions controlled by role)
+    document.getElementById('modal-print').style.display = 'inline-flex';
+    // Auto-show comp panel if score already set
+    const scoreVal = document.getElementById('exec-overall-score').value;
+    const actionVal = document.getElementById('exec-action').value;
+    if (scoreVal || actionVal === 'merit-increase') updateCompPanel();
 
     if (!currentReview) return;
     const emp = allEmployees[currentReview.employeeId];
@@ -2246,6 +2348,7 @@
 
   document.getElementById('self-add-goal-btn').addEventListener('click', () => showGoalForm('self'));
   document.getElementById('mgr-add-goal-btn').addEventListener('click',  () => showGoalForm('mgr'));
+  document.getElementById('exec-add-goal-btn').addEventListener('click', () => showGoalForm('exec'));
 
   // ── Save Draft ──
   document.getElementById('modal-save-draft').addEventListener('click', async () => {
@@ -2318,6 +2421,7 @@
       executiveEval: {
         ...getExecScorePayload(),
         competencyRatings: execRatings,
+        goals: execGoals,
         recommendedAction: document.getElementById('exec-action').value,
         comments: document.getElementById('exec-comments').value.trim(),
         savedAt: serverTimestamp()
@@ -2411,6 +2515,7 @@
         ...getExecScorePayload(),
         overallScore: +score,
         competencyRatings: execRatings,
+        goals: execGoals,
         recommendedAction: document.getElementById('exec-action').value,
         comments,
         completedAt: serverTimestamp()
@@ -2488,21 +2593,236 @@
 
   // ── Modal close ──
   function closeModal() {
-    document.getElementById('review-modal').classList.remove('open');
-    document.getElementById('comp-panel').style.display = 'none';
+    document.getElementById('fp-review').classList.remove('open');
+    showCompPanel(false);
     document.getElementById('comp-pct-input').value = '';
     document.getElementById('score-suggest-banner').classList.remove('show');
     document.getElementById('score-summary-card').classList.remove('show');
+    document.getElementById('modal-print').style.display = 'none';
     resetScoreChoiceUI();
-    selfGoals = []; mgrGoals = [];
+    selfGoals = []; mgrGoals = []; execGoals = [];
     currentReview = null;
     activeTab = 'self';
   }
+  function showCompPanel(show) {
+    document.getElementById('comp-panel').classList.toggle('hidden', !show);
+    document.getElementById('fp-right-placeholder').classList.toggle('hidden', show);
+  }
   document.getElementById('modal-close').addEventListener('click', closeModal);
-  document.getElementById('modal-cancel').addEventListener('click', closeModal);
-  document.getElementById('review-modal').addEventListener('click', e => {
-    if (e.target === document.getElementById('review-modal')) closeModal();
-  });
+  document.getElementById('modal-print').addEventListener('click', printReview);
+
+  // ── Print Review ──
+  function printReview() {
+    if (!currentReview) return;
+    const emp  = allEmployees[currentReview.employeeId];
+    const mgr  = emp?.managerId  ? allEmployees[emp.managerId]  : null;
+    const exec = emp?.executiveId ? allEmployees[emp.executiveId] : null;
+
+    const se  = currentReview.selfEval     || {};
+    const me  = currentReview.managerEval  || {};
+    const ee  = currentReview.executiveEval || {};
+
+    const SCORE_LABELS = { 1:'Unsatisfactory', 2:'Needs Improvement', 3:'Meets Expectations', 4:'Exceeds Expectations', 5:'Exceptional' };
+    const ACTION_LABELS = { 'no-change':'No Change', 'merit-increase':'Merit Increase', 'promotion':'Promotion', 'performance-plan':'Performance Improvement Plan' };
+    const COMP_COLORS  = { self: '#1565C0', mgr: '#6A1B9A', exec: '#1B5E20' };
+
+    function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function fmtDate(ts) {
+      if (!ts) return '—';
+      const d = ts.toDate ? ts.toDate() : new Date(ts);
+      return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    }
+
+    function compRow(label, selfR, mgrR, execR) {
+      const chip = (r, color) => r ? `<span style="display:inline-block;padding:2px 10px;border-radius:99px;background:${color};color:#fff;font-weight:700;font-size:0.8rem">${r}</span>` : '<span style="color:#aaa">—</span>';
+      return `<tr>
+        <td style="padding:8px 12px;border-bottom:1px solid #e0e0e0;font-size:0.875rem">${esc(label)}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #e0e0e0;text-align:center">${chip(selfR, COMP_COLORS.self)}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #e0e0e0;text-align:center">${chip(mgrR,  COMP_COLORS.mgr)}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #e0e0e0;text-align:center">${chip(execR, COMP_COLORS.exec)}</td>
+      </tr>`;
+    }
+
+    function goalList(goals, color) {
+      if (!goals || goals.length === 0) return '<p style="color:#888;font-style:italic;font-size:0.875rem">No goals recorded.</p>';
+      return goals.map(g => `<div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px 14px;margin-bottom:8px">
+        <div style="font-weight:700;font-size:0.9rem;color:#1a1a1a">${esc(g.title)}</div>
+        ${g.description ? `<div style="font-size:0.8rem;color:#555;margin-top:4px">${esc(g.description)}</div>` : ''}
+        <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap">
+          ${g.category  ? `<span style="background:#f0f0f0;border-radius:99px;padding:2px 8px;font-size:0.72rem;font-weight:600">${esc(g.category)}</span>` : ''}
+          ${g.priority  ? `<span style="background:${color}22;color:${color};border-radius:99px;padding:2px 8px;font-size:0.72rem;font-weight:700">${esc(g.priority)} Priority</span>` : ''}
+          ${g.targetDate ? `<span style="font-size:0.72rem;color:#888">🗓 ${esc(g.targetDate)}</span>` : ''}
+        </div>
+      </div>`).join('');
+    }
+
+    function section(title, color, content) {
+      return `<div style="margin-bottom:32px;border:1px solid ${color}33;border-radius:12px;overflow:hidden">
+        <div style="background:${color};color:#fff;padding:14px 20px">
+          <div style="font-size:1rem;font-weight:800;letter-spacing:0.02em;text-transform:uppercase">${title}</div>
+        </div>
+        <div style="padding:20px">${content}</div>
+      </div>`;
+    }
+
+    function box(label, val) {
+      return `<div style="margin-bottom:14px">
+        <div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:#666;margin-bottom:4px">${label}</div>
+        <div style="background:#f8f8f8;border:1px solid #e8e8e8;border-radius:6px;padding:10px 14px;font-size:0.875rem;line-height:1.6;white-space:pre-wrap">${esc(val) || '<span style="color:#aaa;font-style:italic">Not provided</span>'}</div>
+      </div>`;
+    }
+
+    const empName  = emp ? `${emp.firstName} ${emp.lastName}` : 'Employee';
+    const mgrName  = mgr  ? `${mgr.firstName} ${mgr.lastName}`  : '—';
+    const execName = exec ? `${exec.firstName} ${exec.lastName}` : '—';
+    const selfScore = se.ratings ? (Object.values(se.ratings).reduce((a,b)=>a+b,0)/Object.values(se.ratings).length).toFixed(1) : '—';
+    const mgrScore  = me.ratings ? (Object.values(me.ratings).reduce((a,b)=>a+b,0)/Object.values(me.ratings).length).toFixed(1) : '—';
+    const execScore = ee.overallScore || '—';
+
+    const compTable = `<table style="width:100%;border-collapse:collapse;margin:16px 0">
+      <thead>
+        <tr style="background:#f5f5f5">
+          <th style="padding:10px 12px;text-align:left;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:#555">Competency</th>
+          <th style="padding:10px 12px;text-align:center;font-size:0.75rem;font-weight:700;color:${COMP_COLORS.self}">Self</th>
+          <th style="padding:10px 12px;text-align:center;font-size:0.75rem;font-weight:700;color:${COMP_COLORS.mgr}">Manager</th>
+          <th style="padding:10px 12px;text-align:center;font-size:0.75rem;font-weight:700;color:${COMP_COLORS.exec}">Executive</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${COMPETENCIES.map(c => compRow(c.label, se.ratings?.[c.key], me.ratings?.[c.key], ee.competencyRatings?.[c.key])).join('')}
+      </tbody>
+    </table>`;
+
+    const execScoreLabel = SCORE_LABELS[execScore] || '';
+    const execAction = ACTION_LABELS[ee.recommendedAction] || ee.recommendedAction || '—';
+
+    const selfScoreLabel = selfScore !== '—' ? (SCORE_LABELS[Math.round(parseFloat(selfScore))] || '') : '';
+    const selfSection = section('Section 1 — Employee Self-Evaluation', COMP_COLORS.self,
+      `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;padding:16px;background:#EBF4FB;border-radius:8px;border:1px solid #BFDBFE">
+        <div style="text-align:center">
+          <div style="font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#1E40AF;margin-bottom:4px">Self-Rating Avg</div>
+          <div style="font-size:2rem;font-weight:900;color:#1E3A8A;line-height:1">${selfScore}</div>
+          <div style="font-size:0.75rem;font-weight:600;color:#1D4ED8;margin-top:3px">${esc(selfScoreLabel)}</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#5B21B6;margin-bottom:4px">Manager Rating Avg</div>
+          <div style="font-size:2rem;font-weight:900;color:#4C1D95;line-height:1">${mgrScore}</div>
+          <div style="font-size:0.75rem;font-weight:600;color:#6D28D9;margin-top:3px">${mgrScore !== '—' ? (SCORE_LABELS[Math.round(parseFloat(mgrScore))] || '') : ''}</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#065F46;margin-bottom:4px">Exec Final Score</div>
+          <div style="font-size:2rem;font-weight:900;color:#064E3B;line-height:1">${execScore}</div>
+          <div style="font-size:0.75rem;font-weight:600;color:#047857;margin-top:3px">${esc(SCORE_LABELS[execScore] || '')}</div>
+        </div>
+      </div>` +
+      box('Key Accomplishments', se.q1) +
+      box('Challenges & Approach', se.q2) +
+      box('Support Requested from Manager', se.q4) +
+      `<div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:#666;margin-bottom:8px;margin-top:14px">Employee Goals for Next Year</div>` +
+      goalList(se.goals, COMP_COLORS.self)
+    );
+
+    const mgrSection = section('Section 2 — Manager Review', COMP_COLORS.mgr,
+      box('Manager Comments & Feedback', me.comments) +
+      box('How Manager Will Support Employee', me.managerSupport) +
+      `<div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:#666;margin-bottom:8px;margin-top:14px">Manager's Suggested Goals</div>` +
+      goalList(me.goals, COMP_COLORS.mgr)
+    );
+
+    const execSection = section('Section 3 — Executive Assessment', COMP_COLORS.exec,
+      compTable +
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0">
+        <div style="background:#E8F5E9;border:1px solid #C8E6C9;border-radius:8px;padding:16px;text-align:center">
+          <div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#2E7D32;letter-spacing:0.06em">Final Performance Score</div>
+          <div style="font-size:2.5rem;font-weight:900;color:#1B5E20;line-height:1.2">${execScore}</div>
+          <div style="font-weight:700;color:#2E7D32">${esc(execScoreLabel)}</div>
+        </div>
+        <div style="background:#F1F8E9;border:1px solid #DCEDC8;border-radius:8px;padding:16px;text-align:center">
+          <div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#33691E;letter-spacing:0.06em">Recommended Action</div>
+          <div style="font-size:1.25rem;font-weight:800;color:#1B5E20;margin-top:8px;line-height:1.3">${esc(execAction)}</div>
+        </div>
+      </div>` +
+      box('Executive Comments', ee.comments) +
+      `<div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:#666;margin-bottom:8px;margin-top:14px">Executive Goals for Employee</div>` +
+      goalList(ee.goals, COMP_COLORS.exec)
+    );
+
+    const signoffSection = `<div style="margin-top:40px;border-top:2px solid #e0e0e0;padding-top:24px">
+      <div style="font-size:0.875rem;font-weight:700;color:#333;margin-bottom:6px">Employee Acknowledgment</div>
+      <p style="font-size:0.8125rem;color:#555;line-height:1.6;margin-bottom:24px">
+        My signature below confirms that I have read and understand the contents of this performance review.
+        Signing does not necessarily indicate agreement with the evaluation.
+      </p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px">
+        ${[
+          ['Manager Signature', mgrName],
+          ['Executive Signature', execName],
+          ['Employee Signature', empName],
+          ['HR Representative', '']
+        ].map(([role, name]) => `
+          <div>
+            <div style="border-bottom:1px solid #333;margin-bottom:6px;padding-bottom:2px;min-height:32px"></div>
+            <div style="font-size:0.8rem;font-weight:700;color:#333">${role}</div>
+            ${name ? `<div style="font-size:0.75rem;color:#666">${esc(name)}</div>` : ''}
+            <div style="font-size:0.75rem;color:#999;margin-top:4px">Date: _______________</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+    const html = `<!DOCTYPE html><html lang="en"><head>
+      <meta charset="UTF-8"/><title>Performance Review — ${esc(empName)}</title>
+      <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; color: #1a1a1a; background: #fff; padding: 32px; max-width: 900px; margin: 0 auto; }
+        @media print {
+          body { padding: 0; max-width: none; }
+          .no-print { display: none !important; }
+          @page { margin: 20mm 18mm; size: letter; }
+        }
+      </style>
+    </head><body>
+      <div style="background:#0E4C2D;color:#fff;padding:24px 28px;border-radius:12px;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:1.5rem;font-weight:900;letter-spacing:-0.02em">SWL Performance Management</div>
+          <div style="font-size:1rem;color:rgba(255,255,255,0.8);margin-top:4px">Annual Performance Review — ${esc(String(selectedYear))}</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:8px 18px;text-align:center">
+          <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;opacity:0.8">CONFIDENTIAL</div>
+        </div>
+      </div>
+
+      <div style="background:#f8f8f8;border:1px solid #e0e0e0;border-radius:10px;padding:16px 20px;margin-bottom:28px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+        ${[
+          ['Employee', empName],
+          ['Position', emp?.position || '—'],
+          ['Branch', emp?.branch || '—'],
+          ['Review Period', `${selectedYear} Annual`],
+          ['Manager', mgrName],
+          ['Executive', execName],
+          ['Department', emp?.department || '—'],
+          ['Date Prepared', new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})]
+        ].map(([l,v]) => `<div><div style="font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:#888">${l}</div><div style="font-size:0.875rem;font-weight:600;color:#222;margin-top:2px">${esc(v)}</div></div>`).join('')}
+      </div>
+
+      <div style="background:#FFF8E1;border:1px solid #FFE082;border-radius:8px;padding:10px 16px;margin-bottom:24px;font-size:0.8rem;color:#E65100;font-weight:600;text-align:center">
+        ⚠ CONFIDENTIAL — For HR and Management Use Only — Do Not Distribute
+      </div>
+
+      ${selfSection}
+      ${mgrSection}
+      ${execSection}
+      ${signoffSection}
+
+      <div class="no-print" style="margin-top:32px;text-align:center">
+        <button onclick="window.print()" style="padding:12px 32px;background:#0E4C2D;color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer">🖨 Print / Save as PDF</button>
+        <button onclick="window.close()" style="margin-left:12px;padding:12px 24px;background:#f0f0f0;border:1px solid #ccc;border-radius:8px;font-size:1rem;cursor:pointer">Close</button>
+      </div>
+    </body></html>`;
+
+    const w = window.open('', '_blank', 'width=960,height=800');
+    w.document.write(html);
+    w.document.close();
+  }
 
   // ── Sign out / hamburger ──
   async function logout() { await signOut(auth); window.location.href = 'index.html'; }
@@ -3110,9 +3430,9 @@
     const action = document.getElementById('exec-action').value;
     const panel = document.getElementById('comp-panel');
 
-    if (!score && action !== 'merit-increase') { panel.style.display = 'none'; return; }
+    if (!score && action !== 'merit-increase') { showCompPanel(false); return; }
 
-    panel.style.display = 'block';
+    showCompPanel(true);
 
     const emp = allEmployees[currentReview.employeeId];
     const role = await matchBLSRoleLive(emp?.position);
