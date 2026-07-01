@@ -221,9 +221,19 @@
     .comp-data-header { background: linear-gradient(135deg, var(--green-dark) 0%, #1a3d18 100%); padding: 1.1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
     .comp-data-header-title { color: var(--white); font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
     .comp-data-body { padding: 1.5rem; }
-    .comp-role-tabs { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.25rem; }
+    .comp-role-tabs { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.25rem; row-gap: 0.5rem; }
     .comp-role-tab { padding: 0.35rem 0.85rem; border-radius: 99px; border: 1.5px solid var(--border); font-size: 0.8125rem; font-weight: 600; color: var(--gray-600); cursor: pointer; background: transparent; transition: all 0.15s; }
     .comp-role-tab.active { background: var(--green-dark); color: var(--white); border-color: var(--green-dark); }
+    .comp-role-tab.custom { border-color: var(--accent); color: var(--accent); }
+    .comp-role-tab.custom.active { background: var(--accent); color: var(--white); border-color: var(--accent); }
+    .comp-add-role-btn { padding: 0.35rem 0.85rem; border-radius: 99px; border: 1.5px dashed var(--border); font-size: 0.8125rem; font-weight: 600; color: var(--gray-400); cursor: pointer; background: transparent; transition: all 0.15s; }
+    .comp-add-role-btn:hover { border-color: var(--green); color: var(--green); }
+    .comp-new-role-form { display: none; align-items: center; gap: 0.5rem; margin-bottom: 1rem; padding: 0.75rem 1rem; background: var(--gray-50); border: 1px solid var(--border); border-radius: 10px; }
+    .comp-new-role-form.show { display: flex; }
+    .comp-new-role-form input { flex: 1; padding: 0.45rem 0.75rem; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.875rem; outline: none; }
+    .comp-new-role-form input:focus { border-color: var(--green); }
+    .comp-del-role-btn { padding: 0.25rem 0.6rem; background: var(--error-bg); color: var(--error); border: 1px solid #FFCDD2; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; margin-left: 0.25rem; }
+    .comp-del-role-btn:hover { background: #FFCDD2; }
     .comp-entry-form { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 0.6rem; align-items: end; margin-bottom: 1.25rem; }
     .comp-entry-form label { font-size: 0.75rem; font-weight: 600; color: var(--gray-600); display: block; margin-bottom: 0.25rem; }
     .comp-entry-form input { width: 100%; padding: 0.5rem 0.65rem; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.8125rem; outline: none; transition: border-color 0.15s; }
@@ -419,6 +429,13 @@
       </div>
       <div class="comp-data-body">
         <div class="comp-role-tabs" id="comp-role-tabs"></div>
+
+        <!-- Add custom role inline form -->
+        <div class="comp-new-role-form" id="comp-new-role-form">
+          <input type="text" id="new-role-input" placeholder="Role name, e.g. Equipment Operator" maxlength="60" />
+          <button class="comp-add-btn" id="new-role-save-btn" style="white-space:nowrap">Save Role</button>
+          <button class="btn btn-secondary" id="new-role-cancel-btn" style="padding:0.45rem 0.85rem;font-size:0.8125rem">Cancel</button>
+        </div>
 
         <div class="comp-entry-form" id="comp-entry-form" style="grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr auto">
           <div>
@@ -1088,38 +1105,109 @@
 
   // ── Competitor Salary Data ─────────────────────────────────────
   const COMP_ROLES = [
-    { key: 'crew_member',    label: 'Crew Member / Field Tech' },
-    { key: 'crew_leader',    label: 'Crew Leader / Foreman' },
-    { key: 'branch_manager', label: 'Branch Manager' },
-    { key: 'account_manager',label: 'Account Manager' },
-    { key: 'office_admin',   label: 'Office / Admin' },
-    { key: 'finance',        label: 'Finance / Accounting' },
-    { key: 'general_manager',label: 'General Manager' },
+    { key: 'crew_member',          label: 'Crew Member' },
+    { key: 'crew_leader',          label: 'Crew Leader' },
+    { key: 'foreman',              label: 'Foreman' },
+    { key: 'branch_manager',       label: 'Branch Manager' },
+    { key: 'account_manager',      label: 'Account Manager / Client Rep' },
+    { key: 'admin_assistant',      label: 'Admin Assistant' },
+    { key: 'procurement',          label: 'Procurement' },
+    { key: 'office_manager',       label: 'Office Manager' },
+    { key: 'landscape_designer',   label: 'Landscape Designer' },
+    { key: 'division_manager',     label: 'Landscape Division Manager' },
+    { key: 'hr_manager',           label: 'HR Manager' },
+    { key: 'hr_specialist',        label: 'HR Specialist / Recruiter' },
+    { key: 'hr_coordinator',       label: 'HR Coordinator / Generalist' },
   ];
 
-  let compData = {};      // { role_key: [ { company, low, mid, high, source, addedAt } ] }
+  let compData = {};      // { role_key: [ ... ], _customRoles: [ { key, label } ] }
   let activeCompRole = COMP_ROLES[0].key;
+
+  function allRoles() {
+    const custom = (compData._customRoles || []);
+    return [...COMP_ROLES, ...custom];
+  }
 
   async function loadCompData() {
     const snap = await getDoc(doc(db, 'config', 'competitorData'));
     compData = snap.exists() ? (snap.data() || {}) : {};
+    // Ensure active role is valid
+    if (!allRoles().find(r => r.key === activeCompRole)) activeCompRole = allRoles()[0].key;
     renderCompRoleTabs();
     renderCompEntries();
   }
 
   function renderCompRoleTabs() {
     const tabs = document.getElementById('comp-role-tabs');
-    tabs.innerHTML = COMP_ROLES.map(r =>
-      `<button class="comp-role-tab${r.key === activeCompRole ? ' active' : ''}" data-role="${r.key}">${r.label}</button>`
-    ).join('');
+    const roles = allRoles();
+    const customKeys = new Set((compData._customRoles || []).map(r => r.key));
+    let html = roles.map(r => {
+      const isCustom = customKeys.has(r.key);
+      const activeClass = r.key === activeCompRole ? ' active' : '';
+      const customClass = isCustom ? ' custom' : '';
+      return `<button class="comp-role-tab${activeClass}${customClass}" data-role="${r.key}">${r.label}${isCustom ? ` <span class="comp-del-role-btn" data-del-role="${r.key}" title="Remove this role">✕</span>` : ''}</button>`;
+    }).join('');
+    html += `<button class="comp-add-role-btn" id="show-add-role-btn">＋ Add Role</button>`;
+    tabs.innerHTML = html;
+
     tabs.querySelectorAll('.comp-role-tab').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        if (e.target.classList.contains('comp-del-role-btn')) return; // handled separately
         activeCompRole = btn.dataset.role;
         renderCompRoleTabs();
         renderCompEntries();
       });
     });
+
+    tabs.querySelectorAll('.comp-del-role-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        deleteCustomRole(btn.dataset.delRole);
+      });
+    });
+
+    document.getElementById('show-add-role-btn').addEventListener('click', () => {
+      document.getElementById('comp-new-role-form').classList.add('show');
+      document.getElementById('new-role-input').focus();
+    });
   }
+
+  async function deleteCustomRole(key) {
+    if (!confirm('Remove this role? Existing salary entries for it will also be deleted.')) return;
+    compData._customRoles = (compData._customRoles || []).filter(r => r.key !== key);
+    delete compData[key];
+    if (activeCompRole === key) activeCompRole = allRoles()[0]?.key || COMP_ROLES[0].key;
+    await setDoc(doc(db, 'config', 'competitorData'), compData);
+    renderCompRoleTabs();
+    renderCompEntries();
+    toast('Role removed.', 'success');
+  }
+
+  document.getElementById('new-role-save-btn').addEventListener('click', async () => {
+    const label = document.getElementById('new-role-input').value.trim();
+    if (!label) { toast('Please enter a role name.', 'error'); return; }
+    const key = 'custom_' + label.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+    if (allRoles().find(r => r.key === key)) { toast('A role with that name already exists.', 'error'); return; }
+    if (!compData._customRoles) compData._customRoles = [];
+    compData._customRoles.push({ key, label });
+    await setDoc(doc(db, 'config', 'competitorData'), compData);
+    activeCompRole = key;
+    document.getElementById('new-role-input').value = '';
+    document.getElementById('comp-new-role-form').classList.remove('show');
+    renderCompRoleTabs();
+    renderCompEntries();
+    toast(`Role "${label}" added!`, 'success');
+  });
+
+  document.getElementById('new-role-cancel-btn').addEventListener('click', () => {
+    document.getElementById('new-role-input').value = '';
+    document.getElementById('comp-new-role-form').classList.remove('show');
+  });
+
+  document.getElementById('new-role-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('new-role-save-btn').click();
+    if (e.key === 'Escape') document.getElementById('new-role-cancel-btn').click();
+  });
 
   function fmtK(n) { return n >= 1000 ? '$' + (n / 1000).toFixed(0) + 'k' : '$' + n; }
 
