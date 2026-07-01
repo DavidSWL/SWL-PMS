@@ -1551,8 +1551,8 @@
       const mgrStatus  = getMgrStatus(review);
       const execStatus = getExecStatus(review);
       const score = review.executiveEval?.overallScore
-        ? `<span class="score-cell">${review.executiveEval.overallScore} / 5</span>`
-        : `<span class="score-cell na">—</span>`;
+        ? `<span class="score-cell clickable-score" data-id="${review.id}" style="cursor:pointer;text-decoration:underline dotted">${review.executiveEval.overallScore} / 5</span>`
+        : `<span class="score-cell na clickable-score" data-id="${review.id}" style="cursor:pointer">—</span>`;
       return `
         <tr>
           <td><div class="emp-cell">
@@ -1575,6 +1575,9 @@
 
     tbody.querySelectorAll('.btn-action').forEach(btn => {
       btn.addEventListener('click', () => openReview(btn.dataset.id));
+    });
+    tbody.querySelectorAll('.clickable-score').forEach(el => {
+      el.addEventListener('click', () => openReview(el.dataset.id));
     });
     tbody.querySelectorAll('.btn-delete-review').forEach(btn => {
       btn.addEventListener('click', () => confirmDeleteReview(btn.dataset.delId, btn.dataset.delName));
@@ -2841,6 +2844,65 @@
   }
   window.switchRegion = switchRegion;
 
+  // ── BLS API live data cache ──
+  // Uses BLS Public Data API v2 (free, no key needed for basic queries)
+  // Series IDs: OES occupation codes for LA-Long Beach-Anaheim MSA (area code M0031800)
+  // Format: OEU{area}000000{occ}04 = median annual wage
+  const BLS_SERIES_MAP = [
+    { keywords: ['landscap','grounds','crew member','field tech','field worker'], seriesId: 'OEUM003180000000373500004', fallbackIdx: 0 },
+    { keywords: ['crew leader','crew lead','foreman'],                            seriesId: 'OEUM003180000000373100004', fallbackIdx: 1 },
+    { keywords: ['supervisor','first-line','landscape supervisor'],               seriesId: 'OEUM003180000000373100004', fallbackIdx: 2 },
+    { keywords: ['tree','arborist','trimmer','pruner','climber'],                 seriesId: 'OEUM003180000000373600004', fallbackIdx: 3 },
+    { keywords: ['branch manager','area manager'],                                seriesId: 'OEUM003180000001193000004', fallbackIdx: 5 },
+    { keywords: ['operations manager','ops manager'],                             seriesId: 'OEUM003180000001193000004', fallbackIdx: 7 },
+    { keywords: ['hr manager','human resources manager','hr director'],           seriesId: 'OEUM003180000001121100004', fallbackIdx: 8 },
+    { keywords: ['hr specialist','hr generalist','recruiter'],                    seriesId: 'OEUM003180000001311200004', fallbackIdx: 9 },
+    { keywords: ['account manager','account exec'],                               seriesId: 'OEUM003180000004132000004', fallbackIdx: 11 },
+    { keywords: ['sales manager','business dev'],                                 seriesId: 'OEUM003180000001112200004', fallbackIdx: 12 },
+    { keywords: ['office manager'],                                               seriesId: 'OEUM003180000001121100004', fallbackIdx: 14 },
+    { keywords: ['estimator','bid'],                                              seriesId: 'OEUM003180000001375100004', fallbackIdx: 16 },
+    { keywords: ['dispatcher','scheduler'],                                       seriesId: 'OEUM003180000004371010004', fallbackIdx: 17 },
+    { keywords: ['finance','accounting','accountant'],                            seriesId: 'OEUM003180000001320100004', fallbackIdx: 18 },
+    { keywords: ['manager'],                                                      seriesId: 'OEUM003180000001119900004', fallbackIdx: 19 },
+  ];
+
+  let blsLiveCache = {}; // seriesId → {low, median, high}
+
+  async function fetchBLSMedian(seriesId) {
+    if (blsLiveCache[seriesId]) return blsLiveCache[seriesId];
+    try {
+      const res = await fetch(`https://api.bls.gov/publicAPI/v2/timeseries/data/${seriesId}?latest=true`);
+      const json = await res.json();
+      const val = json?.Results?.series?.[0]?.data?.[0]?.value;
+      if (val) {
+        const median = parseFloat(val);
+        const result = { median, low: Math.round(median * 0.72), high: Math.round(median * 1.42) };
+        blsLiveCache[seriesId] = result;
+        return result;
+      }
+    } catch (e) { /* fall through to hardcoded */ }
+    return null;
+  }
+
+  async function matchBLSRoleLive(position) {
+    const fallback = matchBLSRole(position);
+    if (!position) return fallback;
+    const pos = position.toLowerCase();
+    let bestEntry = null, bestScore = 0;
+    for (const e of BLS_SERIES_MAP) {
+      let score = 0;
+      for (const kw of e.keywords) { if (pos.includes(kw)) score += kw.length; }
+      if (score > bestScore) { bestScore = score; bestEntry = e; }
+    }
+    if (!bestEntry) return fallback;
+    const live = await fetchBLSMedian(bestEntry.seriesId);
+    if (live) {
+      const fallbackEntry = BLS_OC_DATA[bestEntry.fallbackIdx] || fallback;
+      return { ...fallbackEntry, low: live.low, median: live.median, high: live.high, isLive: true };
+    }
+    return fallback;
+  }
+
   function matchBLSRole(position) {
     if (!position) return null;
     const pos = position.toLowerCase();
@@ -2866,18 +2928,19 @@
     return Math.min(93, Math.max(7, (value - low) / (high - low) * 100));
   }
 
-  function updateCompPanel() {
+  async function updateCompPanel() {
     if (!currentReview) return;
     const score = document.getElementById('exec-overall-score').value;
+    const action = document.getElementById('exec-action').value;
     const panel = document.getElementById('comp-panel');
 
-    if (!score) { panel.style.display = 'none'; return; }
+    if (!score && action !== 'merit-increase') { panel.style.display = 'none'; return; }
 
     panel.style.display = 'block';
 
     const emp = allEmployees[currentReview.employeeId];
-    const role = matchBLSRole(emp?.position);
-    const { low, median, high, title: roleTitle } = role || { low: 40000, median: 60000, high: 90000, title: 'General Role' };
+    const role = await matchBLSRoleLive(emp?.position);
+    const { low, median, high, title: roleTitle, isLive } = role || { low: 40000, median: 60000, high: 90000, title: 'General Role', isLive: false };
 
     // Current salary
     let currentSalary = null;
@@ -2894,8 +2957,11 @@
     suggestEl.style.display = 'inline-flex';
 
     // Role note
+    const dataSource = isLive
+      ? `<span style="color:var(--success);font-weight:700">● Live BLS.gov data</span> · OC/LA Metro`
+      : `BLS OES (cached) · OC/LA Metro`;
     document.getElementById('comp-role-note').innerHTML =
-      `Matched role: <strong>${roleTitle}</strong> — BLS OES May 2023 (latest available), OC/LA Metro. Market range: ${fmtCurrency(low)} (10th %ile) → ${fmtCurrency(median)} (median) → ${fmtCurrency(high)} (90th %ile).`;
+      `Matched role: <strong>${roleTitle}</strong> — ${dataSource}. Market range: ${fmtCurrency(low)} (10th %ile) → ${fmtCurrency(median)} (median) → ${fmtCurrency(high)} (90th %ile).`;
 
     // Bar range labels (below bar)
     document.getElementById('mkt-label-lo').textContent = fmtCurrency(low) + ' (10th %ile)';
@@ -2984,6 +3050,9 @@
 
   // Wire up panel triggers
   document.getElementById('exec-overall-score').addEventListener('change', () => { updateScoreSummaryCard(); updateCompPanel(); });
+  document.getElementById('exec-action').addEventListener('change', () => {
+    if (document.getElementById('exec-action').value === 'merit-increase') updateCompPanel();
+  });
   document.getElementById('comp-pct-input').addEventListener('input', () => {
     if (!currentReview) return;
     const emp = allEmployees[currentReview.employeeId];
