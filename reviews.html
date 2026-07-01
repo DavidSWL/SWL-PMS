@@ -1164,7 +1164,7 @@
   import { initializeApp }    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
   import { getAuth, signOut, onAuthStateChanged }
                                from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-  import { getFirestore, collection, doc, getDocs, addDoc, updateDoc, deleteDoc,
+  import { getFirestore, collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc,
            query, orderBy, where, serverTimestamp }
                                from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
@@ -2794,13 +2794,21 @@
     renderRegionalSection(position, currentSalary, activeRegion);
   }
 
-  function renderRegionalSection(position, currentSalary, regionKey) {
+  async function renderRegionalSection(position, currentSalary, regionKey) {
     const wrap = document.getElementById('regional-comp-wrap');
     const region = REGIONAL_DATA[regionKey];
     if (!region || !position) { wrap.style.display = 'none'; return; }
 
     const blsMatch = matchRegionalBLS(position, regionKey);
-    const comps    = getRegionalCompetitors(position, regionKey);
+
+    // Firestore competitor entries take priority; fall back to hardcoded
+    const firestoreData = await getFirestoreCompData();
+    const roleKey = matchCompRole(position);
+    const firestoreEntries = roleKey ? (firestoreData[roleKey] || []) : [];
+    const comps = firestoreEntries.length > 0
+      ? firestoreEntries.map(e => ({ name: e.company, low: e.low, mid: e.mid, high: e.high }))
+      : getRegionalCompetitors(position, regionKey);
+
     if (!blsMatch && !comps.length) { wrap.style.display = 'none'; return; }
 
     wrap.style.display = 'block';
@@ -2835,7 +2843,10 @@
 
     // Competitor rows
     const rowsEl = document.getElementById('regional-comp-rows');
-    if (!comps.length) { rowsEl.innerHTML = '<div style="font-size:.8rem;color:var(--gray-400);padding:.5rem 0">No competitor data available for this role in this region.</div>'; return; }
+    const compSourceNote = firestoreEntries.length > 0
+      ? `<div style="font-size:0.72rem;color:var(--success);font-weight:700;margin-bottom:.5rem">● Your entered competitor data (${firestoreEntries.length} ${firestoreEntries.length === 1 ? 'company' : 'companies'}) — add more in Admin → Competitor Salary Data</div>`
+      : `<div style="font-size:0.72rem;color:var(--gray-400);margin-bottom:.5rem">Hardcoded benchmark data · Add your own in Admin → Competitor Salary Data</div>`;
+    if (!comps.length) { rowsEl.innerHTML = compSourceNote + '<div style="font-size:.8rem;color:var(--gray-400);padding:.5rem 0">No competitor data available for this role. Go to Admin → Competitor Salary Data to add entries.</div>'; return; }
 
     const allLows  = comps.map(c => c.low);
     const allHighs = comps.map(c => c.high);
@@ -2867,7 +2878,7 @@
         <div class="comp-competitor-mid ${midClass}">${fmtCurrency(c.mid)}</div>
       </div>`;
     }
-    rowsEl.innerHTML = html;
+    rowsEl.innerHTML = compSourceNote + html;
   }
 
   function switchRegion(regionKey) {
@@ -2902,6 +2913,39 @@
   ];
 
   let blsLiveCache = {}; // seriesId → {low, median, high}
+  let firestoreCompData = null; // cached competitor data from Firestore
+
+  async function getFirestoreCompData() {
+    if (firestoreCompData) return firestoreCompData;
+    try {
+      const snap = await getDoc(doc(db, 'config', 'competitorData'));
+      firestoreCompData = snap.exists() ? (snap.data() || {}) : {};
+    } catch (e) { firestoreCompData = {}; }
+    return firestoreCompData;
+  }
+
+  // Map position text → competitor data role key
+  const COMP_ROLE_KEYWORDS = [
+    { key: 'crew_member',    kw: ['crew member','field tech','field worker','laborer','landscap','grounds'] },
+    { key: 'crew_leader',    kw: ['crew leader','crew lead','foreman','lead tech'] },
+    { key: 'branch_manager', kw: ['branch manager','branch mgr'] },
+    { key: 'account_manager',kw: ['account manager','account mgr','sales'] },
+    { key: 'office_admin',   kw: ['office','admin','coordinator','receptionist','clerk'] },
+    { key: 'finance',        kw: ['finance','accounting','accountant','payroll','controller'] },
+    { key: 'general_manager',kw: ['general manager','gm','director','operations manager'] },
+  ];
+
+  function matchCompRole(position) {
+    if (!position) return null;
+    const pos = position.toLowerCase();
+    let bestKey = null, bestScore = 0;
+    for (const r of COMP_ROLE_KEYWORDS) {
+      let score = 0;
+      for (const kw of r.kw) { if (pos.includes(kw)) score += kw.length; }
+      if (score > bestScore) { bestScore = score; bestKey = r.key; }
+    }
+    return bestKey;
+  }
 
   async function fetchBLSMedian(seriesId) {
     if (blsLiveCache[seriesId]) return blsLiveCache[seriesId];
