@@ -109,8 +109,7 @@
 </nav>
 
 <div class="page">
-  <div id="auth-check" class="auth-check">Checking authentication…</div>
-  <div id="main-content" style="display:none">
+  <div id="main-content">
 
   <div class="page-header">
     <h1>🧪 Test Environment Setup</h1>
@@ -305,9 +304,7 @@
 
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-  import { getAuth, onAuthStateChanged, fetchSignInMethodsForEmail }
-    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-  import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, query, where, deleteDoc }
+  import { getFirestore, doc, setDoc, getDoc, deleteDoc }
     from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
   const firebaseConfig = {
@@ -319,26 +316,8 @@
     appId: "1:465838605580:web:c3322da1833f219725b529"
   };
 
-  const app  = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db   = getFirestore(app);
-
-  // Auth guard — timeout after 6s in case Firebase fails to load
-  const authTimeout = setTimeout(() => {
-    document.getElementById('auth-check').innerHTML =
-      '⚠️ Taking too long to load. Make sure you are <a href="index.html">signed in</a> first, then return to this page. If already signed in, try a hard refresh (Ctrl+Shift+R).';
-  }, 6000);
-
-  onAuthStateChanged(auth, user => {
-    clearTimeout(authTimeout);
-    document.getElementById('auth-check').style.display = 'none';
-    if (!user) {
-      document.getElementById('auth-check').style.display = 'block';
-      document.getElementById('auth-check').innerHTML = '🔒 You must be signed in to use this page. <a href="index.html">Sign In →</a>';
-      return;
-    }
-    document.getElementById('main-content').style.display = 'block';
-  });
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
 
   // ── Logging helpers ─────────────────────────────────────────────
   function log(id, msg, cls = '') {
