@@ -323,8 +323,14 @@
   const auth = getAuth(app);
   const db   = getFirestore(app);
 
-  // Auth guard
+  // Auth guard — timeout after 6s in case Firebase fails to load
+  const authTimeout = setTimeout(() => {
+    document.getElementById('auth-check').innerHTML =
+      '⚠️ Taking too long to load. Make sure you are <a href="index.html">signed in</a> first, then return to this page. If already signed in, try a hard refresh (Ctrl+Shift+R).';
+  }, 6000);
+
   onAuthStateChanged(auth, user => {
+    clearTimeout(authTimeout);
     document.getElementById('auth-check').style.display = 'none';
     if (!user) {
       document.getElementById('auth-check').style.display = 'block';
