@@ -109,7 +109,23 @@
 </nav>
 
 <div class="page">
-  <div id="main-content">
+  <!-- Sign-in panel (shown when not authenticated) -->
+  <div id="signin-panel" style="display:none;max-width:420px;margin:2rem auto;background:var(--white);border:1px solid var(--border);border-radius:14px;padding:2rem;">
+    <h2 style="font-size:1.1rem;font-weight:800;color:var(--green-dark);margin-bottom:0.35rem;">Sign In Required</h2>
+    <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1.25rem;">Sign in with your admin account to run the test setup.</p>
+    <div id="signin-error" style="display:none;background:var(--red-bg);border:1px solid #FECACA;border-radius:8px;color:var(--red);font-size:0.8rem;padding:0.6rem 0.875rem;margin-bottom:1rem;"></div>
+    <div style="margin-bottom:0.875rem;">
+      <label style="display:block;font-size:0.7rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.4rem;">Email</label>
+      <input id="si-email" type="email" placeholder="your@email.com" style="width:100%;padding:0.7rem 1rem;border-radius:8px;border:1.5px solid var(--border);font-size:0.9rem;outline:none;font-family:inherit;" />
+    </div>
+    <div style="margin-bottom:1rem;">
+      <label style="display:block;font-size:0.7rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.4rem;">Password</label>
+      <input id="si-password" type="password" placeholder="••••••••" style="width:100%;padding:0.7rem 1rem;border-radius:8px;border:1.5px solid var(--border);font-size:0.9rem;outline:none;font-family:inherit;" />
+    </div>
+    <button id="si-btn" onclick="doSignIn()" style="width:100%;padding:0.875rem;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:inherit;">Sign In</button>
+  </div>
+
+  <div id="main-content" style="display:none">
 
   <div class="page-header">
     <h1>🧪 Test Environment Setup</h1>
@@ -304,6 +320,8 @@
 
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+  import { getAuth, onAuthStateChanged, signInWithEmailAndPassword }
+    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
   import { getFirestore, doc, setDoc, getDoc, deleteDoc }
     from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
@@ -316,8 +334,36 @@
     appId: "1:465838605580:web:c3322da1833f219725b529"
   };
 
-  const app = initializeApp(firebaseConfig);
-  const db  = getFirestore(app);
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  // Show sign-in or main content based on auth state
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      document.getElementById('signin-panel').style.display = 'none';
+      document.getElementById('main-content').style.display = 'block';
+    } else {
+      document.getElementById('signin-panel').style.display = 'block';
+      document.getElementById('main-content').style.display = 'none';
+    }
+  });
+
+  window.doSignIn = async function() {
+    const btn = document.getElementById('si-btn');
+    const errEl = document.getElementById('signin-error');
+    const email = document.getElementById('si-email').value.trim();
+    const pass  = document.getElementById('si-password').value;
+    errEl.style.display = 'none';
+    btn.textContent = 'Signing in…'; btn.disabled = true;
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+    } catch(e) {
+      errEl.textContent = 'Sign in failed: ' + (e.message || e.code);
+      errEl.style.display = 'block';
+      btn.textContent = 'Sign In'; btn.disabled = false;
+    }
+  };
 
   // ── Logging helpers ─────────────────────────────────────────────
   function log(id, msg, cls = '') {
