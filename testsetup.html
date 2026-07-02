@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Test Setup — SWL PMS</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green: #0E4C2D; --green-dark: #0A3B22; --sage: #D3DED7;
+      --sage-light: #EDF2EF; --white: #fff; --text: #0D1F16;
+      --text-muted: #5A7A6A; --border: #C4D5CC; --bg: #F4F6F2;
+      --red: #B91C1C; --red-bg: #FEF2F2; --amber: #92400E; --amber-bg: #FFFBEB;
+    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* Nav */
+    .topnav { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: var(--green); display: flex; align-items: center; padding: 0 1.5rem; gap: 1rem; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+    .brand { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+    .brand img { height: 36px; object-fit: contain; }
+    .brand-name { color: #fff; font-weight: 700; font-size: 1rem; }
+    .nav-back { margin-left: auto; color: rgba(255,255,255,0.8); font-size: 0.85rem; text-decoration: none; border: 1px solid rgba(255,255,255,0.3); border-radius: 7px; padding: 0.35rem 0.75rem; }
+    .nav-back:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+    .page { padding-top: 80px; max-width: 780px; margin: 0 auto; padding-bottom: 3rem; padding-left: 1.5rem; padding-right: 1.5rem; }
+
+    /* Header */
+    .page-header { margin-bottom: 2rem; }
+    .page-header h1 { font-size: 1.6rem; font-weight: 800; color: var(--green-dark); margin-bottom: 0.4rem; }
+    .page-header p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; }
+
+    /* Step cards */
+    .step { background: var(--white); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 1.25rem; overflow: hidden; }
+    .step-header { display: flex; align-items: center; gap: 1rem; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); background: var(--sage-light); }
+    .step-num { width: 32px; height: 32px; border-radius: 50%; background: var(--green); color: #fff; font-weight: 800; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .step-num.done { background: #15803D; }
+    .step-title { font-weight: 700; font-size: 1rem; color: var(--green-dark); }
+    .step-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.1rem; }
+    .step-body { padding: 1.5rem; }
+
+    /* Credential table */
+    .cred-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; margin-bottom: 1rem; }
+    .cred-table th { text-align: left; padding: 0.6rem 0.875rem; background: var(--sage-light); color: var(--text-muted); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+    .cred-table td { padding: 0.7rem 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .cred-table tr:last-child td { border-bottom: none; }
+    .role-badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 99px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; }
+    .role-emp  { background: #DBEAFE; color: #1E40AF; }
+    .role-mgr  { background: #F3E8FF; color: #6B21A8; }
+    .role-exec { background: #DCFCE7; color: #15803D; }
+    .role-adm  { background: #FEF3C7; color: #92400E; }
+    code { font-family: 'Courier New', monospace; background: var(--sage-light); border: 1px solid var(--border); border-radius: 4px; padding: 0.15rem 0.4rem; font-size: 0.85em; color: var(--green-dark); }
+    .copy-btn { background: none; border: 1px solid var(--border); border-radius: 5px; padding: 0.2rem 0.5rem; font-size: 0.72rem; color: var(--text-muted); cursor: pointer; }
+    .copy-btn:hover { border-color: var(--green); color: var(--green); }
+
+    /* Firebase console link */
+    .console-link { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--green); color: #fff; border: none; border-radius: 8px; padding: 0.55rem 1.1rem; font-size: 0.875rem; font-weight: 600; cursor: pointer; text-decoration: none; margin-bottom: 1rem; }
+    .console-link:hover { background: var(--green-dark); }
+
+    /* Instructions list */
+    .instruction-list { list-style: none; counter-reset: inst; }
+    .instruction-list li { counter-increment: inst; display: flex; gap: 0.875rem; padding: 0.6rem 0; border-bottom: 1px solid var(--border); align-items: flex-start; font-size: 0.875rem; }
+    .instruction-list li:last-child { border-bottom: none; }
+    .instruction-list li::before { content: counter(inst); width: 22px; height: 22px; background: var(--green); color: #fff; border-radius: 50%; font-size: 0.72rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 0.1rem; }
+
+    /* Setup button */
+    .setup-btn { width: 100%; padding: 1rem; background: var(--green); color: #fff; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background 0.15s, transform 0.1s; display: flex; align-items: center; justify-content: center; gap: 0.6rem; }
+    .setup-btn:hover { background: var(--green-dark); }
+    .setup-btn:active { transform: scale(0.99); }
+    .setup-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+    /* Progress log */
+    .log { margin-top: 1rem; background: #0D1F16; border-radius: 10px; padding: 1rem; font-family: 'Courier New', monospace; font-size: 0.8rem; color: #7ABA95; min-height: 60px; max-height: 240px; overflow-y: auto; display: none; }
+    .log.show { display: block; }
+    .log .log-ok   { color: #4ADE80; }
+    .log .log-skip { color: #FCD34D; }
+    .log .log-err  { color: #F87171; }
+
+    /* Result banner */
+    .result-banner { display: none; border-radius: 10px; padding: 1rem 1.25rem; margin-top: 1rem; font-size: 0.875rem; font-weight: 600; }
+    .result-banner.success { display: block; background: #DCFCE7; border: 1px solid #86EFAC; color: #15803D; }
+    .result-banner.error   { display: block; background: var(--red-bg); border: 1px solid #FECACA; color: var(--red); }
+
+    /* Workflow map */
+    .workflow { display: flex; align-items: center; gap: 0; margin: 1rem 0; flex-wrap: wrap; }
+    .wf-step { flex: 1; min-width: 120px; background: var(--sage-light); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem; text-align: center; font-size: 0.8rem; }
+    .wf-step strong { display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.25rem; }
+    .wf-step span { font-weight: 700; color: var(--green-dark); }
+    .wf-arrow { color: var(--border); font-size: 1.25rem; padding: 0 0.5rem; }
+
+    /* Spinner */
+    .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .warn-box { background: var(--amber-bg); border: 1px solid #FDE68A; border-radius: 10px; padding: 1rem 1.25rem; font-size: 0.85rem; color: var(--amber); margin-bottom: 1rem; }
+    .warn-box strong { display: block; margin-bottom: 0.25rem; }
+
+    /* Auth check */
+    .auth-check { text-align: center; padding: 3rem; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a class="brand" href="dashboard.html">
+    <img src="logo2.png" alt="SWL"/>
+    <span class="brand-name">SWL PMS</span>
+  </a>
+  <a class="nav-back" href="dashboard.html">← Back to Dashboard</a>
+</nav>
+
+<div class="page">
+  <div id="auth-check" class="auth-check">Checking authentication…</div>
+  <div id="main-content" style="display:none">
+
+  <div class="page-header">
+    <h1>🧪 Test Environment Setup</h1>
+    <p>This page sets up 4 test accounts so you can run a complete end-to-end review cycle — employee self-eval → manager review → executive assessment → print — before launching to your real team.</p>
+  </div>
+
+  <!-- STEP 1: Create Firebase Auth Users -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num">1</div>
+      <div>
+        <div class="step-title">Create Test Users in Firebase Auth</div>
+        <div class="step-sub">One-time setup — 2 minutes in Firebase Console</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="warn-box">
+        <strong>⚠️ Do this first, before clicking Setup below.</strong>
+        Firebase Auth users must exist before Firestore records can reference them.
+      </div>
+
+      <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:1rem;">Open Firebase Console → Authentication → Users → Add user. Create all 4:</p>
+
+      <table class="cred-table">
+        <thead>
+          <tr>
+            <th>Role</th>
+            <th>Email</th>
+            <th>Password</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="role-badge role-emp">Employee</span></td>
+            <td><code>test.employee@swl.test</code></td>
+            <td><code>TestSWL2026!</code></td>
+          </tr>
+          <tr>
+            <td><span class="role-badge role-mgr">Manager</span></td>
+            <td><code>test.manager@swl.test</code></td>
+            <td><code>TestSWL2026!</code></td>
+          </tr>
+          <tr>
+            <td><span class="role-badge role-exec">Executive</span></td>
+            <td><code>test.executive@swl.test</code></td>
+            <td><code>TestSWL2026!</code></td>
+          </tr>
+          <tr>
+            <td><span class="role-badge role-adm">Admin</span></td>
+            <td><code>test.admin@swl.test</code></td>
+            <td><code>TestSWL2026!</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <a class="console-link" href="https://console.firebase.google.com/project/swl-pms/authentication/users" target="_blank">
+        🔗 Open Firebase Auth Console →
+      </a>
+
+      <ol class="instruction-list">
+        <li>Click <strong>Add user</strong> in the Firebase console</li>
+        <li>Enter email <code>test.employee@swl.test</code> and password <code>TestSWL2026!</code>, click Add</li>
+        <li>Repeat for manager, executive, and admin — 4 users total</li>
+        <li>Come back here and click <strong>Run Firestore Setup</strong> below</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- STEP 2: Auto-create Firestore records -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num">2</div>
+      <div>
+        <div class="step-title">Run Firestore Setup</div>
+        <div class="step-sub">Creates employee records, review cycle, and a test review automatically</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:1.25rem;">
+        Click the button below. The setup will look up each test user's UID from Firebase Auth, then create all the Firestore documents needed. If records already exist it will skip them safely.
+      </p>
+
+      <button class="setup-btn" id="setup-btn" onclick="runSetup()">
+        ⚡ Run Firestore Setup
+      </button>
+
+      <div class="log" id="setup-log"></div>
+      <div class="result-banner" id="result-banner"></div>
+    </div>
+  </div>
+
+  <!-- STEP 3: Test workflow -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num">3</div>
+      <div>
+        <div class="step-title">Run the Full Test Workflow</div>
+        <div class="step-sub">Log in as each role and complete the review cycle</div>
+      </div>
+    </div>
+    <div class="step-body">
+
+      <div class="workflow">
+        <div class="wf-step">
+          <strong>Step A</strong>
+          <span>Employee<br/>Self-Eval</span>
+        </div>
+        <div class="wf-arrow">→</div>
+        <div class="wf-step">
+          <strong>Step B</strong>
+          <span>Manager<br/>Review</span>
+        </div>
+        <div class="wf-arrow">→</div>
+        <div class="wf-step">
+          <strong>Step C</strong>
+          <span>Executive<br/>Assessment</span>
+        </div>
+        <div class="wf-arrow">→</div>
+        <div class="wf-step">
+          <strong>Step D</strong>
+          <span>Print &<br/>Comp Review</span>
+        </div>
+      </div>
+
+      <table class="cred-table" style="margin-top:1rem">
+        <thead>
+          <tr>
+            <th>Step</th>
+            <th>Login As</th>
+            <th>Email</th>
+            <th>What to Do</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>A</strong></td>
+            <td><span class="role-badge role-emp">Employee</span></td>
+            <td><code>test.employee@swl.test</code></td>
+            <td style="font-size:0.8rem">Open Reviews → open "Marcus Rivera 2026" → fill out self-eval ratings + all text fields → Save Draft → Submit</td>
+          </tr>
+          <tr>
+            <td><strong>B</strong></td>
+            <td><span class="role-badge role-mgr">Manager</span></td>
+            <td><code>test.manager@swl.test</code></td>
+            <td style="font-size:0.8rem">Reviews → open Marcus Rivera → fill Manager section → review comp panel → Save → Submit</td>
+          </tr>
+          <tr>
+            <td><strong>C</strong></td>
+            <td><span class="role-badge role-exec">Executive</span></td>
+            <td><code>test.executive@swl.test</code></td>
+            <td style="font-size:0.8rem">Reviews → open Marcus Rivera → fill Executive section → set final score + action → Submit</td>
+          </tr>
+          <tr>
+            <td><strong>D</strong></td>
+            <td><span class="role-badge role-adm">Admin</span></td>
+            <td><code>test.admin@swl.test</code></td>
+            <td style="font-size:0.8rem">Reviews → open Marcus Rivera → click Print → verify formal document layout looks correct</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top:1rem;padding:0.875rem 1rem;background:var(--sage-light);border-radius:8px;font-size:0.8rem;color:var(--text-muted);">
+        💡 <strong>Tip:</strong> Use an incognito window for each login so you don't have to keep signing out. All 4 can be open side-by-side.
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4: Clean up -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num">4</div>
+      <div>
+        <div class="step-title">Clean Up After Testing</div>
+        <div class="step-sub">Remove all test data before going live</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:1rem;">When you're satisfied with the test, remove all test data so it doesn't appear in real reports.</p>
+      <button class="setup-btn" id="cleanup-btn" onclick="runCleanup()" style="background:#B91C1C;">
+        🗑️ Delete All Test Data
+      </button>
+      <div class="log" id="cleanup-log"></div>
+      <div class="result-banner" id="cleanup-banner"></div>
+      <p style="font-size:0.78rem;color:var(--text-muted);margin-top:0.75rem;">
+        This deletes the test employee records, review cycle, and review from Firestore. You'll still need to manually delete the 4 test Auth users from Firebase Console.
+      </p>
+    </div>
+  </div>
+
+  </div><!-- /main-content -->
+</div>
+
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+  import { getAuth, onAuthStateChanged, fetchSignInMethodsForEmail }
+    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+  import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, query, where, deleteDoc }
+    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA6XJoxNAuNX0LN21WxBLS7cMbY3LJCri0",
+    authDomain: "swl-pms.firebaseapp.com",
+    projectId: "swl-pms",
+    storageBucket: "swl-pms.firebasestorage.app",
+    messagingSenderId: "465838605580",
+    appId: "1:465838605580:web:c3322da1833f219725b529"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  // Auth guard
+  onAuthStateChanged(auth, user => {
+    document.getElementById('auth-check').style.display = 'none';
+    if (!user) {
+      document.getElementById('auth-check').style.display = 'block';
+      document.getElementById('auth-check').innerHTML = '🔒 You must be signed in to use this page. <a href="index.html">Sign In →</a>';
+      return;
+    }
+    document.getElementById('main-content').style.display = 'block';
+  });
+
+  // ── Logging helpers ─────────────────────────────────────────────
+  function log(id, msg, cls = '') {
+    const el = document.getElementById(id);
+    el.classList.add('show');
+    const line = document.createElement('div');
+    if (cls) line.className = cls;
+    line.textContent = msg;
+    el.appendChild(line);
+    el.scrollTop = el.scrollHeight;
+  }
+
+  function showResult(id, msg, success) {
+    const el = document.getElementById(id);
+    el.className = 'result-banner ' + (success ? 'success' : 'error');
+    el.textContent = msg;
+  }
+
+  // ── Test data definitions ────────────────────────────────────────
+  // We use fixed IDs so cleanup can find them
+  const TEST_PREFIX = 'TEST_';
+  const EMP_ID   = 'TEST_emp_marcus';
+  const MGR_ID   = 'TEST_mgr_roberto';
+  const EXEC_ID  = 'TEST_exec_patricia';
+  const ADMIN_ID = 'TEST_admin';
+  const CYCLE_ID = 'TEST_cycle_2026';
+  const REVIEW_ID = 'TEST_review_marcus_2026';
+
+  // We can't look up UIDs from another user's email client-side (security).
+  // Instead we use the email as the employee id — same pattern the app uses
+  // (employees are keyed by their Firestore doc id, not UID).
+  // The app matches currentUser.email → employees collection → finds the record.
+
+  const testEmployees = [
+    {
+      id: EMP_ID,
+      name: 'Marcus Rivera (TEST)',
+      email: 'test.employee@swl.test',
+      role: 'employee',
+      title: 'Landscape Crew Lead',
+      branch: 'Corona',
+      department: 'Field Operations',
+      hireDate: '2021-03-15',
+      currentSalary: 62000,
+      managerId: MGR_ID,
+      executiveId: EXEC_ID,
+    },
+    {
+      id: MGR_ID,
+      name: 'Roberto Guzman (TEST)',
+      email: 'test.manager@swl.test',
+      role: 'manager',
+      title: 'Branch Manager',
+      branch: 'Corona',
+      department: 'Operations',
+      hireDate: '2018-06-01',
+      currentSalary: 85000,
+      managerId: EXEC_ID,
+      executiveId: EXEC_ID,
+    },
+    {
+      id: EXEC_ID,
+      name: 'Patricia Chen (TEST)',
+      email: 'test.executive@swl.test',
+      role: 'executive',
+      title: 'VP of Operations',
+      branch: 'Corporate',
+      department: 'Executive',
+      hireDate: '2015-01-10',
+      currentSalary: 140000,
+      managerId: null,
+      executiveId: null,
+    },
+    {
+      id: ADMIN_ID,
+      name: 'Test Admin (TEST)',
+      email: 'test.admin@swl.test',
+      role: 'admin',
+      title: 'System Administrator',
+      branch: 'Corporate',
+      department: 'HR',
+      hireDate: '2020-01-01',
+      currentSalary: 75000,
+      managerId: null,
+      executiveId: null,
+    },
+  ];
+
+  // ── Setup ────────────────────────────────────────────────────────
+  window.runSetup = async function() {
+    const btn = document.getElementById('setup-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Setting up…';
+    document.getElementById('setup-log').innerHTML = '';
+    document.getElementById('result-banner').className = 'result-banner';
+
+    try {
+      // 1. Create employee records
+      log('setup-log', '── Creating employee records ──');
+      for (const emp of testEmployees) {
+        const ref = doc(db, 'employees', emp.id);
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+          log('setup-log', `  ⚠ SKIP  ${emp.name} (already exists)`, 'log-skip');
+        } else {
+          const { id, ...data } = emp;
+          await setDoc(ref, { ...data, createdAt: new Date().toISOString() });
+          log('setup-log', `  ✓ OK    ${emp.name}`, 'log-ok');
+        }
+      }
+
+      // 2. Create review cycle
+      log('setup-log', '── Creating review cycle ──');
+      const cycleRef = doc(db, 'cycles', CYCLE_ID);
+      const cycleSnap = await getDoc(cycleRef);
+      if (cycleSnap.exists()) {
+        log('setup-log', '  ⚠ SKIP  Cycle 2026 (already exists)', 'log-skip');
+      } else {
+        await setDoc(cycleRef, {
+          name: 'Annual Review 2026 (TEST)',
+          year: 2026,
+          status: 'open',
+          openedAt: new Date().toISOString(),
+        });
+        log('setup-log', '  ✓ OK    Review cycle 2026 created', 'log-ok');
+      }
+
+      // 3. Create test review
+      log('setup-log', '── Creating test review for Marcus Rivera ──');
+      const reviewRef = doc(db, 'reviews', REVIEW_ID);
+      const reviewSnap = await getDoc(reviewRef);
+      if (reviewSnap.exists()) {
+        log('setup-log', '  ⚠ SKIP  Review already exists', 'log-skip');
+      } else {
+        await setDoc(reviewRef, {
+          employeeId: EMP_ID,
+          cycleId: CYCLE_ID,
+          year: 2026,
+          status: 'in_progress',
+          createdAt: new Date().toISOString(),
+          selfEval: {},
+          managerEval: {},
+          executiveEval: {},
+        });
+        log('setup-log', '  ✓ OK    Review created', 'log-ok');
+      }
+
+      log('setup-log', '');
+      log('setup-log', '✅ Setup complete! Proceed to Step 3.', 'log-ok');
+      showResult('result-banner', '✅ All test data created. You can now log in as each role and run the review cycle.', true);
+
+    } catch (err) {
+      log('setup-log', '✗ ERROR: ' + err.message, 'log-err');
+      showResult('result-banner', '❌ Setup failed: ' + err.message, false);
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = '⚡ Run Firestore Setup';
+  };
+
+  // ── Cleanup ──────────────────────────────────────────────────────
+  window.runCleanup = async function() {
+    if (!confirm('Delete ALL test data? This cannot be undone.')) return;
+
+    const btn = document.getElementById('cleanup-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Deleting…';
+    document.getElementById('cleanup-log').innerHTML = '';
+    document.getElementById('cleanup-banner').className = 'result-banner';
+
+    try {
+      log('cleanup-log', '── Deleting test employees ──');
+      for (const emp of testEmployees) {
+        try {
+          await deleteDoc(doc(db, 'employees', emp.id));
+          log('cleanup-log', `  ✓ Deleted ${emp.name}`, 'log-ok');
+        } catch(e) {
+          log('cleanup-log', `  ⚠ ${emp.name}: ${e.message}`, 'log-skip');
+        }
+      }
+
+      log('cleanup-log', '── Deleting test review ──');
+      try {
+        await deleteDoc(doc(db, 'reviews', REVIEW_ID));
+        log('cleanup-log', '  ✓ Deleted review', 'log-ok');
+      } catch(e) {
+        log('cleanup-log', '  ⚠ Review: ' + e.message, 'log-skip');
+      }
+
+      log('cleanup-log', '── Deleting test cycle ──');
+      try {
+        await deleteDoc(doc(db, 'cycles', CYCLE_ID));
+        log('cleanup-log', '  ✓ Deleted cycle', 'log-ok');
+      } catch(e) {
+        log('cleanup-log', '  ⚠ Cycle: ' + e.message, 'log-skip');
+      }
+
+      log('cleanup-log', '');
+      log('cleanup-log', '✅ All test Firestore data deleted.', 'log-ok');
+      showResult('cleanup-banner', '✅ Test data deleted. Remember to also delete the 4 test Auth users in Firebase Console.', true);
+
+    } catch (err) {
+      log('cleanup-log', '✗ ERROR: ' + err.message, 'log-err');
+      showResult('cleanup-banner', '❌ Cleanup failed: ' + err.message, false);
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = '🗑️ Delete All Test Data';
+  };
+</script>
+</body>
+</html>
