@@ -302,7 +302,7 @@
         <div class="kpi-card">
           <div class="kpi-top">
             <div class="kpi-icon">📋</div>
-            <div class="kpi-badge neutral">2025</div>
+            <div class="kpi-badge neutral" id="kpi-year">—</div>
           </div>
           <div class="kpi-value" id="kpi-total">—</div>
           <div class="kpi-label">Total Reviews</div>
@@ -364,6 +364,9 @@
             <a class="quick-btn" id="qa-admin" href="adminemployees.html" style="display:none">
               <span class="quick-btn-icon">👥</span> Manage Employees
             </a>
+            <a class="quick-btn" id="qa-testsetup" href="test-setup.html" style="display:none;background:#FEF3C7;border-color:#FCD34D;color:#92400E;">
+              <span class="quick-btn-icon">🧪</span> Test Setup
+            </a>
           </div>
         </div>
 
@@ -405,6 +408,7 @@
       document.getElementById('nav-admin')?.style.setProperty('display', '');
       document.getElementById('mobile-nav-admin')?.style.setProperty('display', '');
       document.getElementById('qa-admin')?.style.setProperty('display', '');
+      document.getElementById('qa-testsetup')?.style.setProperty('display', '');
     }
   }
 
@@ -424,7 +428,7 @@
       const deadlineStr = activeCycle?.deadline ? ' · Due ' + new Date(activeCycle.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
       document.getElementById('hero-sub').textContent = `${greetingTime()} · ${cycleName}${deadlineStr}`;
     } catch(e) {
-      document.getElementById('hero-sub').textContent = `${greetingTime()} · 2025 Annual Review Cycle`;
+      document.getElementById('hero-sub').textContent = `${greetingTime()} · ${year} Annual Review Cycle`;
     }
     // initials for avatar
     const initials = displayName.split(' ').map(p => p[0]).join('').slice(0,2).toUpperCase();
@@ -442,16 +446,27 @@
   async function loadDashboard() {
     try {
       const year = new Date().getFullYear();
+      document.getElementById('kpi-year').textContent = year;
       const snap = await getDocs(collection(db, 'reviews'));
       let reviews = [];
       snap.forEach(d => { const r = { id: d.id, ...d.data() }; if (r.year === year) reviews.push(r); });
 
-      // Filter to assigned employees if manager/executive
-      if (currentEmployee && (currentEmployee.role === 'manager' || currentEmployee.role === 'executive')) {
+      // Role-based filtering
+      if (!currentEmployee) {
+        // No matching employee record — show nothing (fail safe)
+        reviews = [];
+      } else if (currentEmployee.role === 'employee') {
+        reviews = reviews.filter(r => r.employeeId === currentEmployee.id);
+      } else if (currentEmployee.role === 'manager') {
         const empSnap = await getDocs(query(collection(db, 'employees'), where('managerId', '==', currentEmployee.id)));
         const assignedIds = new Set(empSnap.docs.map(d => d.id));
         reviews = reviews.filter(r => assignedIds.has(r.employeeId));
+      } else if (currentEmployee.role === 'executive') {
+        const empSnap = await getDocs(query(collection(db, 'employees'), where('executiveId', '==', currentEmployee.id)));
+        const assignedIds = new Set(empSnap.docs.map(d => d.id));
+        reviews = reviews.filter(r => assignedIds.has(r.employeeId));
       }
+      // role === 'admin' sees all — no filter
 
       const total      = reviews.length;
       const completed  = reviews.filter(r => r.status === 'completed').length;
