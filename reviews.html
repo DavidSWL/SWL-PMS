@@ -1315,7 +1315,7 @@
   let selfGoals   = [];
   let mgrGoals    = [];
   let execGoals   = [];
-
+  let isOwn = false, isMgrOfEmp = false, isExecOfEmp = false, isAdmin = false;
   const GOAL_CATEGORIES = ['Professional Development','Technical Skills','Leadership & Management','Safety & Compliance','Productivity','Customer Service','Other'];
   const GOAL_PRIORITIES  = ['High','Medium','Low'];
   const GOAL_STATUSES    = ['Not Started','In Progress','Completed','On Hold'];
@@ -1746,10 +1746,10 @@
     currentReview = allReviews[reviewId];
     const emp = allEmployees[currentReview.employeeId];
     const mgr = emp?.managerId ? allEmployees[emp.managerId] : null;
-    let isOwn      = currentEmployee?.id === currentReview.employeeId;
-    let isMgrOfEmp = currentEmployee?.id === emp?.managerId;
-    let isExecOfEmp= currentEmployee?.id === emp?.executiveId;
-    let isAdmin    = !currentEmployee || currentEmployee.role === 'admin';
+    isOwn      = currentEmployee?.id === currentReview.employeeId;
+    isMgrOfEmp = currentEmployee?.id === emp?.managerId;
+    isExecOfEmp= currentEmployee?.id === emp?.executiveId;
+    isAdmin    = !currentEmployee || currentEmployee.role === 'admin';
     const testRoleVal = document.getElementById('fp-test-role')?.value;
     if (testRoleVal === 'employee')  { isOwn = true;  isMgrOfEmp = false; isExecOfEmp = false; isAdmin = false; }
     else if (testRoleVal === 'manager')   { isOwn = false; isMgrOfEmp = true;  isExecOfEmp = false; isAdmin = false; }
@@ -2361,10 +2361,7 @@
 
     if (!currentReview) return;
     const emp = allEmployees[currentReview.employeeId];
-    const isOwn      = currentEmployee?.id === currentReview.employeeId;
-    const isMgrOfEmp = currentEmployee?.id === emp?.managerId;
-    const isExecOfEmp= currentEmployee?.id === emp?.executiveId;
-    const isAdmin    = !currentEmployee || currentEmployee.role === 'admin';
+
     const selfSubmitted = currentReview.selfEval?.submitted;
     const completed  = currentReview.status === 'completed';
     const canEditSelf = isOwn && !selfSubmitted;
