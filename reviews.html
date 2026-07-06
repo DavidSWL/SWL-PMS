@@ -1999,12 +1999,11 @@
       const hasRating = !!ratingsObj[c.key];
       const noteVal   = escHtml(notesObj[c.key] || '');
       // In read-only mode always show the note wrap when rated; in editable mode show when rated
-      const noteVisible = hasRating ? 'visible' : '';
+      // In editable mode show note wrap when rated; in read-only only show when a note exists
+      const noteVisible = (editable && hasRating) || (!editable && notesObj[c.key]) ? 'visible' : '';
       const readonlyNote = editable
         ? `<textarea class="comp-note-input" id="${prefix}-note-${c.key}" data-key="${c.key}" data-prefix="${prefix}" placeholder="Briefly explain why you chose this rating…" rows="2">${noteVal}</textarea>`
-        : (notesObj[c.key]
-            ? `<div class="comp-note-readonly">${noteVal}</div>`
-            : `<div class="comp-note-readonly" style="color:var(--gray-400);font-style:italic;">No explanation provided.</div>`);
+        : `<div class="comp-note-readonly">${noteVal}</div>`;
       return `
       <div class="competency-row" id="${prefix}-comprow-${c.key}">
         <div class="competency-row-top">
