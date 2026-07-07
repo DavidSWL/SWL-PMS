@@ -1,8 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Employees — SWL Performance Management</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -10,25 +8,47 @@
     :root {
       --green:        #0E4C2D;
       --green-dark:   #0A3B22;
-      --green-deeper: #072818;
-      --green-light:  #EDF2EF;
-      --accent:       #8B6914;
+      --green-deep:   #072818;
+      --green-mid:    #16a34a;
+      --green-lt:     #22c55e;
+      --green-bg:     #f0fdf4;
+      --green-border: #bbf7d0;
+      --green-light:  #f0fdf4;
+      --sage:         #D3DED7;
       --bg:           #f0f4f8;
-      --border:       #C4D5CC;
+      --surface:      #ffffff;
+      --surface2:     #f8fafc;
+      --border:       #e2e8f0;
+      --border2:      #f1f5f9;
+      --text:         #0f172a;
+      --sub:          #475569;
+      --muted:        #94a3b8;
+      --yellow:       #d97706;
+      --yellow-bg:    #fef3c7;
+      --yellow-border:#fde68a;
+      --red:          #dc2626;
+      --red-bg:       #fee2e2;
+      --purple:       #6d28d9;
+      --purple-bg:    #ede9fe;
       --white:        #ffffff;
-      --gray-50:      #F9FAF8;
-      --gray-100:     #EEF1EB;
-      --gray-400:     #7A9485;
-      --gray-600:     #456055;
-      --gray-900:     #0D1F16;
-      --success:      #0E4C2D;
-      --success-bg:   #EDF2EF;
-      --error:        #C62828;
-      --error-bg:     #FFEBEE;
-      --warning:      #E65100;
+      /* ── legacy compat ── */
+      --accent:       #d97706;
+      --success:      #16a34a;
+      --success-bg:   #dcfce7;
+      --error:        #dc2626;
+      --error-bg:     #fee2e2;
+      --warning:      #d97706;
+      --warning-bg:   #fef3c7;
+      --gray-50:      #f8fafc;
+      --gray-100:     #f1f5f9;
+      --gray-400:     #94a3b8;
+      --gray-500:     #94a3b8;
+      --gray-600:     #475569;
+      --gray-700:     #334155;
+      --gray-900:     #0f172a;
     }
 
-    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--gray-900); min-height: 100vh; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
     /* ── Nav (same as dashboard) ── */
     .topnav {
@@ -59,13 +79,13 @@
     .mobile-divider { height: 1px; background: rgba(211,222,215,.12); margin: .35rem 0; }
 
     /* ── Page shell ── */
-    .page { padding-top: 64px; min-height: 100vh; }
-    .content { max-width: 1280px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .page { padding-top: 60px; min-height: 100vh; }
+    .content { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
 
     /* ── Page header ── */
     .page-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.75rem; }
-    .page-header h1 { font-size: 1.625rem; font-weight: 700; color: var(--green-dark); }
-    .page-header p { font-size: 0.875rem; color: var(--gray-600); margin-top: 0.2rem; }
+    .page-header h1 { font-size: 1.5rem; font-weight: 900; color: var(--text); letter-spacing: -.03em; }
+    .page-header p { font-size: 0.8rem; color: var(--muted); margin-top: 0.2rem; }
 
     /* ── Buttons ── */
     .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.5rem 1.1rem; border: none; border-radius: 8px; font-family: inherit; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: background 0.15s, box-shadow 0.15s, transform 0.1s; white-space: nowrap; }
@@ -120,26 +140,26 @@
     .table-card { background: var(--white); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(14,76,45,0.08); overflow: hidden; }
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-    thead { background: var(--gray-50); }
-    th { padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; border-bottom: 1px solid var(--border); }
-    td { padding: 0.875rem 1rem; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+    thead { background: var(--surface2); }
+    th { padding: 0.75rem 1rem; text-align: left; font-size: .62rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; white-space: nowrap; border-bottom: 1px solid var(--border2); }
+    td { padding: 0.875rem 1rem; border-bottom: 1px solid var(--border2); vertical-align: middle; font-size: .78rem; color: var(--sub); }
     tr:last-child td { border-bottom: none; }
     tbody tr { transition: background 0.1s; }
-    tbody tr:hover { background: var(--gray-50); }
+    tbody tr:hover td { background: var(--surface2); }
 
     /* Avatar */
-    .avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--green); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0; }
+    .avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--green-bg); color: var(--green); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; flex-shrink: 0; }
     .employee-cell { display: flex; align-items: center; gap: 0.75rem; }
-    .employee-info .name { font-weight: 600; color: var(--gray-900); }
-    .employee-info .email { font-size: 0.78rem; color: var(--gray-400); margin-top: 0.1rem; }
+    .employee-info .name { font-weight: 700; color: var(--text); }
+    .employee-info .email { font-size: 0.78rem; color: var(--muted); margin-top: 0.1rem; }
 
     /* Badges */
     .badge { display: inline-flex; align-items: center; padding: 0.2rem 0.6rem; border-radius: 99px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
-    .badge-active   { background: var(--success-bg); color: var(--success); }
-    .badge-inactive { background: var(--gray-100);   color: var(--gray-600); }
+    .badge-active   { background: #dcfce7; color: #15803d; }
+    .badge-inactive { background: var(--border2); color: var(--muted); }
     .badge-admin    { background: #E8EAF6; color: #3949AB; }
-    .badge-manager  { background: #FFF3E0; color: #E65100; }
-    .badge-employee { background: var(--green-light); color: var(--green-dark); }
+    .badge-manager  { background: var(--yellow-bg); color: #92400e; }
+    .badge-employee { background: var(--green-bg); color: var(--green); }
 
     /* Row actions */
     .actions { display: flex; gap: 0.35rem; }
@@ -277,7 +297,7 @@
 <!-- ── Top Nav ── -->
 <header class="topnav">
   <a href="dashboard.html" class="brand">
-    <img src="logo2.png" alt="SouthWest Landscape" style="height:40px;width:auto;display:block;object-fit:contain;" />
+    <img src="logo2.png" alt="SouthWest Landscape" style="height:40px;width:auto;display:block;object-fit:contain;">
   </a>
   <nav class="nav-links">
     <a class="nav-link" href="dashboard.html">Dashboard</a>
@@ -346,11 +366,11 @@
         <div class="cycle-fields">
           <div class="cycle-field">
             <label for="cycle-name-input">Cycle Name</label>
-            <input type="text" id="cycle-name-input" class="cycle-name-input" placeholder="e.g. 2025 Annual Review" />
+            <input type="text" id="cycle-name-input" class="cycle-name-input" placeholder="e.g. 2025 Annual Review">
           </div>
           <div class="cycle-field">
             <label for="cycle-deadline-input">Deadline</label>
-            <input type="date" id="cycle-deadline-input" />
+            <input type="date" id="cycle-deadline-input">
           </div>
           <button class="btn btn-open-cycle" id="open-cycle-btn">▶ Open Cycle</button>
         </div>
@@ -370,7 +390,7 @@
     <div class="toolbar">
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
-        <input type="text" id="search-input" placeholder="Search by name, email, or position…" />
+        <input type="text" id="search-input" placeholder="Search by name, email, or position…">
       </div>
       <select class="filter-select" id="filter-branch">
         <option value="">All Branches</option>
@@ -429,7 +449,7 @@
     <div class="comp-data-card">
       <div class="comp-data-header">
         <div class="comp-data-header-title">
-          <svg width="18" height="18" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <svg width="18" height="18" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
           Competitor Salary Data
         </div>
         <span style="color:rgba(255,255,255,0.65);font-size:0.8rem">Research &amp; enter competitor pay ranges — visible to all executives</span>
@@ -439,7 +459,7 @@
 
         <!-- Add custom role inline form -->
         <div class="comp-new-role-form" id="comp-new-role-form">
-          <input type="text" id="new-role-input" placeholder="Role name, e.g. Equipment Operator" maxlength="60" />
+          <input type="text" id="new-role-input" placeholder="Role name, e.g. Equipment Operator" maxlength="60">
           <button class="comp-add-btn" id="new-role-save-btn" style="white-space:nowrap">Save Role</button>
           <button class="btn btn-secondary" id="new-role-cancel-btn" style="padding:0.45rem 0.85rem;font-size:0.8125rem">Cancel</button>
         </div>
@@ -447,23 +467,23 @@
         <div class="comp-entry-form" id="comp-entry-form" style="grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr auto">
           <div>
             <label>Company Name</label>
-            <input type="text" id="cmp-company" placeholder="e.g. BrightView" />
+            <input type="text" id="cmp-company" placeholder="e.g. BrightView">
           </div>
           <div>
             <label>Source (where you found it)</label>
-            <input type="text" id="cmp-source" placeholder="e.g. Indeed — June 2025" />
+            <input type="text" id="cmp-source" placeholder="e.g. Indeed — June 2025">
           </div>
           <div>
             <label>Low ($/yr)</label>
-            <input type="number" id="cmp-low" placeholder="36000" min="0" step="1000" />
+            <input type="number" id="cmp-low" placeholder="36000" min="0" step="1000">
           </div>
           <div>
             <label>Average ($/yr)</label>
-            <input type="number" id="cmp-mid" placeholder="43000" min="0" step="1000" />
+            <input type="number" id="cmp-mid" placeholder="43000" min="0" step="1000">
           </div>
           <div>
             <label>High ($/yr)</label>
-            <input type="number" id="cmp-high" placeholder="59000" min="0" step="1000" />
+            <input type="number" id="cmp-high" placeholder="59000" min="0" step="1000">
           </div>
           <div>
             <label>&nbsp;</label>
@@ -513,17 +533,17 @@
 
         <div class="form-group">
           <label for="f-first">First Name <span class="req">*</span></label>
-          <input class="form-control" type="text" id="f-first" placeholder="e.g. David" />
+          <input class="form-control" type="text" id="f-first" placeholder="e.g. David">
           <span class="field-error hidden" id="err-first"></span>
         </div>
         <div class="form-group">
           <label for="f-last">Last Name <span class="req">*</span></label>
-          <input class="form-control" type="text" id="f-last" placeholder="e.g. Smith" />
+          <input class="form-control" type="text" id="f-last" placeholder="e.g. Smith">
           <span class="field-error hidden" id="err-last"></span>
         </div>
         <div class="form-group span-2">
           <label for="f-email">Email Address <span class="req">*</span></label>
-          <input class="form-control" type="email" id="f-email" placeholder="employee@southwestlandscape.com" />
+          <input class="form-control" type="email" id="f-email" placeholder="employee@southwestlandscape.com">
           <span class="field-error hidden" id="err-email"></span>
         </div>
 
@@ -532,7 +552,7 @@
 
         <div class="form-group">
           <label for="f-position">Position / Title <span class="req">*</span></label>
-          <input class="form-control" type="text" id="f-position" placeholder="e.g. Crew Leader" />
+          <input class="form-control" type="text" id="f-position" placeholder="e.g. Crew Leader">
           <span class="field-error hidden" id="err-position"></span>
         </div>
         <div class="form-group">
@@ -565,7 +585,7 @@
         </div>
         <div class="form-group">
           <label for="f-hire-date">Hire Date</label>
-          <input class="form-control" type="date" id="f-hire-date" />
+          <input class="form-control" type="date" id="f-hire-date">
         </div>
         <div class="form-group">
           <label for="f-manager">Assigned Manager</label>
@@ -596,7 +616,7 @@
         </div>
         <div class="form-group">
           <label for="f-rate">Current Rate <span class="req">*</span></label>
-          <input class="form-control" type="number" id="f-rate" min="0" step="0.01" placeholder="0.00" />
+          <input class="form-control" type="number" id="f-rate" min="0" step="0.01" placeholder="0.00">
           <span class="form-hint" id="rate-hint">Enter hourly rate or annual salary.</span>
           <span class="field-error hidden" id="err-rate"></span>
         </div>
@@ -1288,5 +1308,6 @@
   loadCompData();
 
 </script>
-</body>
-</html>
+
+
+</body></html>
