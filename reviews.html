@@ -1,8 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reviews — SWL Performance Management</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -10,28 +8,50 @@
     :root {
       --green:        #0E4C2D;
       --green-dark:   #0A3B22;
-      --green-light:  #EDF2EF;
-      --accent:       #8B6914;
-      --accent-bg:    #FDF6E3;
+      --green-deep:   #072818;
+      --green-mid:    #16a34a;
+      --green-lt:     #22c55e;
+      --green-bg:     #f0fdf4;
+      --green-border: #bbf7d0;
+      --green-light:  #f0fdf4;
+      --sage:         #D3DED7;
       --bg:           #f0f4f8;
-      --border:       #C4D5CC;
+      --surface:      #ffffff;
+      --surface2:     #f8fafc;
+      --border:       #e2e8f0;
+      --border2:      #f1f5f9;
+      --text:         #0f172a;
+      --sub:          #475569;
+      --muted:        #94a3b8;
+      --yellow:       #d97706;
+      --yellow-bg:    #fef3c7;
+      --yellow-border:#fde68a;
+      --red:          #dc2626;
+      --red-bg:       #fee2e2;
+      --purple:       #6d28d9;
+      --purple-bg:    #ede9fe;
       --white:        #ffffff;
-      --gray-50:      #F9FAF8;
-      --gray-100:     #EEF1EB;
-      --gray-400:     #7A9485;
-      --gray-600:     #456055;
-      --gray-900:     #0D1F16;
-      --success:      #0E4C2D;
-      --success-bg:   #EDF2EF;
-      --error:        #C62828;
-      --error-bg:     #FFEBEE;
-      --warning:      #E65100;
-      --warning-bg:   #FFF3E0;
-      --info:         #1565C0;
-      --info-bg:      #E3F2FD;
+      /* ── legacy compat ── */
+      --accent:       #d97706;
+      --accent-bg:    #fef3c7;
+      --success:      #16a34a;
+      --success-bg:   #dcfce7;
+      --error:        #dc2626;
+      --error-bg:     #fee2e2;
+      --warning:      #d97706;
+      --warning-bg:   #fef3c7;
+      --info:         #1d4ed8;
+      --info-bg:      #dbeafe;
+      --gray-50:      #f8fafc;
+      --gray-100:     #f1f5f9;
+      --gray-400:     #94a3b8;
+      --gray-500:     #94a3b8;
+      --gray-600:     #475569;
+      --gray-700:     #334155;
+      --gray-900:     #0f172a;
     }
 
-    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--gray-900); min-height: 100vh; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
     /* ── Nav ── */
     .topnav { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: var(--green); display: flex; align-items: center; padding: 0 1.5rem; gap: 1.5rem; z-index: 200; box-shadow: 0 2px 12px rgba(7,40,24,.35); }
@@ -57,13 +77,13 @@
     .mobile-divider { height: 1px; background: rgba(211,222,215,.12); margin: .35rem 0; }
 
     /* ── Layout ── */
-    .page { padding-top: 64px; min-height: 100vh; }
-    .content { max-width: 1280px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .page { padding-top: 60px; min-height: 100vh; }
+    .content { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
 
     /* ── Page Header ── */
     .page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
-    .page-title h1 { font-size: 1.625rem; font-weight: 700; color: var(--green-dark); }
-    .page-title p { font-size: 0.875rem; color: var(--gray-600); margin-top: 0.2rem; }
+    .page-title h1 { font-size: 1.5rem; font-weight: 900; color: var(--text); letter-spacing: -.03em; }
+    .page-title p { font-size: 0.8rem; color: var(--muted); margin-top: 0.2rem; }
     .header-actions { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
 
     /* ── Cycle Banner ── */
@@ -76,45 +96,45 @@
     .year-select { padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.875rem; background: var(--white); color: var(--gray-900); cursor: pointer; }
 
     /* ── Stats Row ── */
-    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
-    .stat-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; box-shadow: 0 1px 4px rgba(14,76,45,0.08); }
-    .stat-num { font-size: 1.875rem; font-weight: 700; color: var(--green); line-height: 1; }
-    .stat-label { font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.2rem; }
-    .stat-card.done .stat-num { color: var(--success); }
-    .stat-card.progress .stat-num { color: var(--accent); }
-    .stat-card.pending .stat-num { color: var(--gray-400); }
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; margin-bottom: 1.5rem; background: var(--border); border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+    .stat-card { background: var(--surface); padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: .25rem; }
+    .stat-num { font-size: 2rem; font-weight: 900; color: var(--text); line-height: 1; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+    .stat-label { font-size: .65rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+    .stat-card.done .stat-num { color: var(--green-mid); }
+    .stat-card.progress .stat-num { color: var(--yellow); }
+    .stat-card.pending .stat-num { color: var(--muted); }
 
     /* ── Toolbar ── */
     .toolbar { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
     .search-wrap { position: relative; flex: 1; min-width: 220px; }
     .search-wrap svg { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--gray-400); pointer-events: none; }
-    .search-input { width: 100%; padding: 0.5rem 0.75rem 0.5rem 2.25rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.875rem; background: var(--white); }
-    .search-input:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px rgba(14,76,45,0.12); }
-    .filter-select { padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.875rem; background: var(--white); color: var(--gray-900); min-width: 140px; }
+    .search-input { width: 100%; padding: 0.5rem 0.75rem 0.5rem 2.25rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.875rem; background: var(--surface); color: var(--text); }
+    .search-input:focus { outline: none; border-color: var(--green-mid); box-shadow: 0 0 0 3px rgba(22,163,74,0.12); }
+    .filter-select { padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.875rem; background: var(--surface); color: var(--text); min-width: 140px; }
 
     /* ── Table ── */
     .table-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(14,76,45,0.08); }
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-    thead th { background: var(--gray-50); padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 1px solid var(--border); white-space: nowrap; }
-    tbody tr { border-bottom: 1px solid var(--gray-100); transition: background 0.12s; }
+    thead th { background: var(--surface2); padding: 0.75rem 1rem; text-align: left; font-size: .62rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; border-bottom: 1px solid var(--border2); white-space: nowrap; }
+    tbody tr { border-bottom: 1px solid var(--border2); transition: background 0.12s; }
     tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: var(--gray-50); }
-    td { padding: 0.875rem 1rem; vertical-align: middle; }
+    tbody tr:hover td { background: var(--surface2); }
+    td { padding: 0.875rem 1rem; vertical-align: middle; font-size: .78rem; color: var(--sub); }
 
     /* Employee cell */
     .emp-cell { display: flex; align-items: center; gap: 0.75rem; }
-    .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--green); color: var(--white); font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; text-transform: uppercase; }
-    .emp-name { font-weight: 600; color: var(--gray-900); }
-    .emp-pos { font-size: 0.75rem; color: var(--gray-600); }
+    .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--green-bg); color: var(--green); font-size: 0.75rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; text-transform: uppercase; }
+    .emp-name { font-weight: 700; color: var(--text); }
+    .emp-pos { font-size: 0.75rem; color: var(--muted); }
 
     /* Status badges */
     .badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.6rem; border-radius: 99px; font-size: 0.72rem; font-weight: 600; white-space: nowrap; }
-    .badge-not-started { background: var(--gray-100); color: var(--gray-600); }
-    .badge-draft { background: var(--info-bg); color: var(--info); }
-    .badge-submitted { background: var(--warning-bg); color: var(--warning); }
-    .badge-in-review { background: var(--accent-bg); color: var(--accent); }
-    .badge-completed { background: var(--success-bg); color: var(--success); }
+    .badge-not-started { background: var(--border2); color: var(--muted); }
+    .badge-draft { background: #dbeafe; color: #1d4ed8; }
+    .badge-submitted { background: var(--yellow-bg); color: #92400e; }
+    .badge-in-review { background: var(--yellow-bg); color: #92400e; }
+    .badge-completed { background: #dcfce7; color: #15803d; }
 
     .score-cell { font-weight: 700; color: var(--green); }
     .score-cell.na { color: var(--gray-400); font-weight: 400; }
@@ -243,7 +263,7 @@
     .tab-panel.active { display: block; }
 
     /* Form sections */
-    .section-title { font-size: 0.875rem; font-weight: 700; color: var(--green-dark); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+    .section-title { font-size: 0.875rem; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
     .competency-grid { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; }
     .competency-row { background: var(--gray-50); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
     .competency-row-top { display: grid; grid-template-columns: 1fr auto; align-items: start; gap: 1rem; padding: 0.75rem 1rem; }
@@ -693,7 +713,7 @@
 <!-- Nav -->
 <header class="topnav">
   <a href="dashboard.html" class="brand">
-    <img src="logo2.png" alt="SouthWest Landscape" style="height:40px;width:auto;display:block;object-fit:contain;" />
+    <img src="logo2.png" alt="SouthWest Landscape" style="height:40px;width:auto;display:block;object-fit:contain;">
   </a>
   <nav class="nav-links">
     <a class="nav-link" id="nav-dashboard" href="dashboard.html" style="display:none">Dashboard</a>
@@ -761,8 +781,8 @@
     <!-- Toolbar -->
     <div class="toolbar" id="toolbar" style="display:none">
       <div class="search-wrap">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        <input class="search-input" id="search-input" type="text" placeholder="Search employees…" />
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
+        <input class="search-input" id="search-input" type="text" placeholder="Search employees…">
       </div>
       <select class="filter-select" id="filter-dept">
         <option value="">All Departments</option>
@@ -811,7 +831,7 @@
     <!-- No cycle state -->
     <div id="no-cycle-card" class="table-card" style="display:none">
       <div class="empty-state">
-        <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg>
+        <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"></path></svg>
         <p>No review cycle for <strong id="no-cycle-year"></strong></p>
         <small>Create a cycle to generate reviews for all active employees.</small>
         <div style="margin-top:1.25rem">
@@ -835,7 +855,7 @@
   <!-- B2 Top Nav -->
   <div class="fp-nav">
     <button class="fp-back-btn" id="modal-close">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"></path></svg>
       Reviews
     </button>
     <div class="fp-nav-center">
@@ -846,7 +866,7 @@
     <div class="fp-nav-actions">
       <span class="fp-save-status" id="modal-footer-status"></span>
       <button class="btn btn-secondary fp-nbtn" id="modal-print" style="display:none">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:3px"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:3px"><path d="M6 9V2h12v7"></path><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
         Print
       </button>
       <button class="btn btn-secondary fp-nbtn" id="modal-save-draft" style="display:none">Save Draft</button>
@@ -891,7 +911,7 @@
           <div class="fp-sub-label" style="margin-top:1rem">Goals for Next Year</div>
           <div class="goal-list-wrap" id="self-goal-list"></div>
           <button class="add-goal-btn" id="self-add-goal-btn" type="button">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
             Add Goal
           </button>
           <div class="fp-sub-label" style="margin-top:0.75rem">Support Requested from Manager</div>
@@ -959,19 +979,19 @@
           <textarea class="form-control" id="mgr-comments" rows="4" placeholder="Provide overall feedback and context for your ratings…"></textarea>
 
           <div class="fp-sub-label">Employee's Accomplishments (from Self-Eval)</div>
-          <textarea class="form-control readonly-field" id="mgr-view-q1" rows="2" readonly></textarea>
+          <textarea class="form-control readonly-field" id="mgr-view-q1" rows="2" readonly=""></textarea>
           <div class="fp-sub-label">Employee's Challenges (from Self-Eval)</div>
-          <textarea class="form-control readonly-field" id="mgr-view-q2" rows="2" readonly></textarea>
+          <textarea class="form-control readonly-field" id="mgr-view-q2" rows="2" readonly=""></textarea>
 
           <div class="fp-sub-label">Employee's Goals for Next Year</div>
           <div class="goal-list-wrap" id="self-goal-list-mgr-view"></div>
           <div class="fp-sub-label">Support Requested by Employee</div>
-          <textarea class="form-control readonly-field" id="mgr-view-q4" rows="2" readonly placeholder="(Not provided)"></textarea>
+          <textarea class="form-control readonly-field" id="mgr-view-q4" rows="2" readonly="" placeholder="(Not provided)"></textarea>
 
           <div class="fp-sub-label" style="margin-top:1rem">Manager's Suggested Goals for Next Year</div>
           <div class="goal-list-wrap" id="mgr-goal-list"></div>
           <button class="add-goal-btn" id="mgr-add-goal-btn" type="button">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
             Add Suggested Goal
           </button>
           <div class="fp-sub-label" style="margin-top:0.75rem">How Will You Support This Employee?</div>
@@ -1084,7 +1104,7 @@
           <div class="fp-sub-label" style="margin-top:0.75rem">Executive Goals for Employee</div>
           <div class="goal-list-wrap" id="exec-goal-list"></div>
           <button class="add-goal-btn" id="exec-add-goal-btn" type="button">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
             Add Executive Goal
           </button>
 
@@ -1109,14 +1129,14 @@
     <!-- RIGHT: sticky comp panel -->
     <div class="fp-right">
       <div class="fp-right-placeholder" id="fp-right-placeholder">
-        <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="opacity:.3;margin-bottom:.5rem"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="opacity:.3;margin-bottom:.5rem"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
         <div style="font-size:.8rem;color:var(--gray-400);text-align:center">Compensation analysis<br>appears when a score is set</div>
       </div>
       <!-- Comp Panel (shown when score is set) -->
       <div class="comp-panel hidden" id="comp-panel">
           <div class="comp-panel-header">
             <div class="comp-panel-title">
-              <svg width="18" height="18" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              <svg width="18" height="18" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
               Compensation Analysis — OC/LA Metro Market Data
             </div>
             <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
@@ -1129,7 +1149,7 @@
             <div class="comp-input-row">
               <div class="comp-input-group">
                 <label>Proposed Increase (%)</label>
-                <input type="number" class="comp-input-field" id="comp-pct-input" min="0" max="50" step="0.1" placeholder="e.g. 3.5" />
+                <input type="number" class="comp-input-field" id="comp-pct-input" min="0" max="50" step="0.1" placeholder="e.g. 3.5">
                 <div class="comp-input-hint">Enter the % raise you want to propose</div>
               </div>
               <div class="comp-input-group">
@@ -1255,7 +1275,7 @@
       </div><!-- end comp-panel -->
     </div><!-- end fp-right -->
   </div><!-- end fp-body -->
-</div><!-- end fp-review -->
+<!-- end fp-review -->
 
 <!-- ── Initialize Cycle Modal ── -->
 <div class="modal-overlay" id="init-modal">
@@ -1263,7 +1283,7 @@
     <div class="modal-header">
       <div><h2 id="init-modal-title">Initialize Review Cycle</h2></div>
       <button class="modal-close" id="init-modal-close">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"></path></svg>
       </button>
     </div>
     <div class="init-body">
@@ -3698,5 +3718,6 @@
     setTimeout(() => t.remove(), 4000);
   }
 </script>
-</body>
-</html>
+
+
+</body></html>
