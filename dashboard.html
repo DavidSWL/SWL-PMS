@@ -550,7 +550,7 @@
         </div>
         <table class="tbl">
           <thead>
-            <tr><th>Employee</th><th>Manager</th><th>Dept</th><th>Score</th><th>Current Pay</th><th>Suggested Raise</th><th>New Pay</th><th>Actions</th></tr>
+            <tr><th>Employee</th><th>Manager</th><th>Dept</th><th>Score</th><th>Current Pay</th><th>Exec Proposed</th><th>Actual Given</th><th>New Pay</th><th>Actions</th></tr>
           </thead>
           <tbody id="adm-comp-body"><tr><td colspan="8" style="padding:1.5rem;color:var(--muted)">Loading…</td></tr></tbody>
         </table>
@@ -1093,16 +1093,19 @@ function renderAdminView(firstName) {
 
   const compBody = document.getElementById('adm-comp-body');
   if (!finalized.length) {
-    compBody.innerHTML = '<tr><td colspan="8" style="padding:1.5rem;color:var(--muted)">No finalized reviews yet.</td></tr>';
+    compBody.innerHTML = '<tr><td colspan="9" style="padding:1.5rem;color:var(--muted)">No finalized reviews yet.</td></tr>';
   } else {
     compBody.innerHTML = finalized.map(r => {
       const emp  = allEmployees[r.employeeId];
       const mgr  = emp ? Object.values(allEmployees).find(e => e.id === emp.managerId) : null;
       const s    = avgScore(r.executiveEval) || avgScore(r.managerEval);
       const sCls = !s ? '' : s >= 4 ? 'score-hi' : s >= 3 ? 'score-md' : 'score-lo';
-      // Suggested raise based on score
-      const raisePct = !s ? 3 : s >= 4.5 ? 8 : s >= 4 ? 5 : s >= 3 ? 3 : 0;
-      const pillCls  = raisePct >= 5 ? 'inc-high' : raisePct >= 3 ? 'inc-mid' : 'inc-low';
+      // Exec-proposed raise % based on score (score-driven suggestion)
+      const proposedPct = !s ? null : s >= 4.5 ? 8 : s >= 4 ? 5 : s >= 3 ? 3 : 0;
+      const propCls     = proposedPct === null ? '' : proposedPct >= 5 ? 'inc-high' : proposedPct >= 3 ? 'inc-mid' : 'inc-low';
+      // Actual raise % given (from approvedIncrease saved by exec)
+      const actualPct   = r.approvedIncrease?.pct != null ? Number(r.approvedIncrease.pct) : null;
+      const actCls      = actualPct === null ? '' : actualPct >= 5 ? 'inc-high' : actualPct >= 3 ? 'inc-mid' : 'inc-low';
       const dept = emp ? `${emp.department||''}${emp.branch?' · '+emp.branch:''}` : '';
       const empId = r.employeeId;
       const actionBtns = `<button class="abtn abtn-letter" onclick="location.href='letters.html?empId=${empId}'">✉ Letter</button>`;
@@ -1113,14 +1116,14 @@ function renderAdminView(firstName) {
         ? '$' + v.toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:0}) + '/yr'
         : '$' + v.toFixed(2) + '/hr';
       const curPayTxt = fmtPay(curRate);
-      // New pay: use approvedIncrease if present, else suggest from raisePct
+      // New pay: use approvedIncrease if present, else suggest from proposedPct
       let newPayTxt = '—';
       if (r.approvedIncrease?.newRate) {
         newPayTxt = fmtPay(Number(r.approvedIncrease.newRate));
-      } else if (curRate !== null) {
+      } else if (curRate !== null && proposedPct !== null) {
         const suggested = isSalary
-          ? Math.round(curRate * (1 + raisePct / 100))
-          : Math.round(curRate * (1 + raisePct / 100) * 100) / 100;
+          ? Math.round(curRate * (1 + proposedPct / 100))
+          : Math.round(curRate * (1 + proposedPct / 100) * 100) / 100;
         newPayTxt = '<span style="opacity:.6">' + fmtPay(suggested) + '</span>';
       }
       return `<tr>
@@ -1129,7 +1132,8 @@ function renderAdminView(firstName) {
         <td style="font-size:.75rem">${escHtml(emp?.department||'—')}</td>
         <td>${s!==null?`<span class="${sCls}">${s.toFixed(1)}</span><span style="font-size:.65rem;color:var(--muted)">/5</span>`:'—'}</td>
         <td style="font-variant-numeric:tabular-nums;font-weight:600;color:var(--text)">${curPayTxt}</td>
-        <td><span class="inc-pill ${pillCls}">↑ ${raisePct}%</span></td>
+        <td>${proposedPct!==null?`<span class="inc-pill ${propCls}">↑ ${proposedPct}%</span>`:'—'}</td>
+        <td>${actualPct!==null?`<span class="inc-pill ${actCls}">↑ ${actualPct.toFixed(1)}%</span>`:'<span style="font-size:.72rem;color:var(--muted)">Pending</span>'}</td>
         <td style="font-variant-numeric:tabular-nums;font-weight:800;color:var(--text)">${newPayTxt}</td>
         <td><div class="row-actions">${actionBtns}</div></td>
       </tr>`;
