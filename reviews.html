@@ -1290,7 +1290,7 @@
     </div><!-- end fp-left -->
 
     <!-- RIGHT: sticky comp panel -->
-    <div class="fp-right">
+    <div class="fp-right" id="fp-right-col">
       <div class="fp-right-placeholder" id="fp-right-placeholder">
         <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="opacity:.3;margin-bottom:.5rem"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         <div style="font-size:.8rem;color:var(--gray-400);text-align:center">Compensation analysis<br>appears when a score is set</div>
@@ -2958,6 +2958,12 @@
     activeTab = 'self';
   }
   function showCompPanel(show) {
+    const employeeOnly = isOwn && !isMgrOfEmp && !isExecOfEmp && !isAdmin;
+    if (employeeOnly) {
+      document.getElementById('fp-right-col').style.display = 'none';
+      return;
+    }
+    document.getElementById('fp-right-col').style.display = '';
     document.getElementById('comp-panel').classList.toggle('hidden', !show);
     document.getElementById('fp-right-placeholder').classList.toggle('hidden', show);
   }
@@ -3788,6 +3794,11 @@
 
   async function updateCompPanel() {
     if (!currentReview) return;
+    // Never show comp panel to employees viewing their own review
+    if (isOwn && !isMgrOfEmp && !isExecOfEmp && !isAdmin) {
+      document.getElementById('fp-right-col').style.display = 'none';
+      return;
+    }
     const score = document.getElementById('exec-overall-score').value;
     const action = document.getElementById('exec-action').value;
     const panel = document.getElementById('comp-panel');
@@ -4033,6 +4044,7 @@
       document.getElementById('fp-sec-self').style.display    = '';
       document.getElementById('fp-sec-mgr').style.display     = '';
       document.getElementById('fp-sec-exec').style.display    = '';
+      document.getElementById('fp-right-col').style.display   = '';
       return;
     }
     // Employee only: show tracker, hide full sections, hide action buttons
@@ -4043,6 +4055,7 @@
     document.getElementById('modal-save-draft').style.display = 'none';
     document.getElementById('modal-submit').style.display     = 'none';
     document.getElementById('modal-print').style.display      = 'none';
+    document.getElementById('fp-right-col').style.display     = 'none';
     showCompPanel(false);
 
     const r = currentReview;
