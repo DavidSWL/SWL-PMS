@@ -550,7 +550,6 @@
       <div class="summary-bar" id="adm-summary-bar">
         <div class="sbar-item"><div class="sbar-label">Reviews Complete</div><div class="sbar-val" id="adm-sb-done">—</div></div>
         <div class="sbar-div"></div>
-        <div class="sbar-item"><div class="sbar-label">Letters Generated</div><div class="sbar-val" id="adm-sb-letters">0</div></div>
         <div class="sbar-div"></div>
         <div class="sbar-item"><div class="sbar-label">Avg Score</div><div class="sbar-val" id="adm-sb-avg">—</div></div>
         <div class="sbar-div"></div>
@@ -641,16 +640,12 @@
               <input class="ctrl-input" id="ltr-title" type="text" placeholder="e.g. Executive Director" oninput="updateLetter()">
             </div>
           </div>
-          <button class="btn-full btn-full-sec" onclick="updateLetter()">Preview Changes</button>
-          <button class="btn-full btn-full-pri" onclick="finalizeAndSend()">✉ Finalize &amp; Send to Manager</button>
+          <button class="btn-full btn-full-pri" onclick="window.print()">↓ Print Letter</button>
         </div>
 
         <!-- Letter preview -->
         <div class="letter-preview">
-          <div class="preview-label">
-            Letter Preview
-            <span class="preview-unsent" id="ltr-sent-badge">Not yet sent</span>
-          </div>
+          <div class="preview-label">Letter Preview</div>
           <div class="letter-doc" id="letter-doc-inner"></div>
         </div>
       </div>
@@ -1222,12 +1217,6 @@ window._openLetter = function(employeeId) {
   document.getElementById('ltr-title').value           = '';
   document.getElementById('ltr-current-pay').value     = '';
 
-  const sentKey = `letter_sent_${employeeId}_${currentYear}`;
-  const alreadySent = localStorage.getItem(sentKey);
-  const badge = document.getElementById('ltr-sent-badge');
-  badge.textContent = alreadySent ? 'Sent' : 'Not yet sent';
-  badge.className   = alreadySent ? 'preview-sent' : 'preview-unsent';
-
   window.updateLetter();
 };
 
@@ -1270,17 +1259,6 @@ window.updateLetter = function() {
     emp, score, today, eff !== '—' ? eff : '',
     currentSalary, increaseAmt, newSalary, pctLabel, signer, title
   );
-};
-
-window.finalizeAndSend = function() {
-  if (!letterEmployee) return;
-  const sentKey = `letter_sent_${letterEmployee.id}_${currentYear}`;
-  localStorage.setItem(sentKey, 'true');
-  const badge = document.getElementById('ltr-sent-badge');
-  badge.textContent = 'Sent';
-  badge.className   = 'preview-sent';
-  document.getElementById('adm-sb-letters').textContent =
-    parseInt(document.getElementById('adm-sb-letters').textContent||'0') + 1;
 };
 
 window.backToAdmin = function() {
