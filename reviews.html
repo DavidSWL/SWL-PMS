@@ -694,6 +694,41 @@
     .score-comp-rating { margin-left: auto; font-size: 0.75rem; font-weight: 700; color: var(--gray-400); }
     .score-none { font-size: 0.8125rem; color: var(--gray-400); font-style: italic; }
 
+    /* ── Employee Status Tracker ── */
+    #emp-tracker-view { display: none; padding: 1.5rem; max-width: 640px; margin: 0 auto; }
+    .tracker-title { font-size: 1rem; font-weight: 800; color: var(--text); margin-bottom: 1.25rem; letter-spacing: -.02em; }
+    .tracker-steps { display: flex; flex-direction: column; gap: 0; }
+    .tracker-step { display: flex; gap: 1rem; align-items: flex-start; padding: 1rem 0; border-bottom: 1px solid var(--border2); }
+    .tracker-step:last-child { border-bottom: none; }
+    .tracker-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; margin-top: 2px; }
+    .tracker-icon.done   { background: #dcfce7; }
+    .tracker-icon.active { background: #dbeafe; }
+    .tracker-icon.wait   { background: var(--border2); }
+    .tracker-step-body { flex: 1; min-width: 0; }
+    .tracker-step-label { font-size: 0.825rem; font-weight: 700; color: var(--text); }
+    .tracker-step-label .step-num { color: var(--muted); font-weight: 600; margin-right: 0.35rem; }
+    .tracker-step-sub { font-size: 0.775rem; color: var(--muted); margin-top: 0.15rem; line-height: 1.4; }
+    .tracker-step-sub.highlight { color: var(--green-dark); font-weight: 600; }
+    .tracker-status-chip { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.15rem 0.55rem; border-radius: 99px; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; margin-left: 0.5rem; }
+    .chip-done   { background: #dcfce7; color: #15803d; }
+    .chip-active { background: #dbeafe; color: #1d4ed8; }
+    .chip-wait   { background: var(--border2); color: var(--muted); }
+    /* Self-eval answers (read-only for employee) */
+    .tracker-self-answers { margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .tracker-answer-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 0.15rem; }
+    .tracker-answer-text { font-size: 0.8rem; color: var(--gray-700); background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; padding: 0.5rem 0.75rem; line-height: 1.5; white-space: pre-wrap; }
+
+    /* ── Meeting Scheduler (exec tab) ── */
+    .meeting-sched-wrap { margin-top: 1.25rem; border-top: 2px solid var(--border); padding-top: 1rem; }
+    .meeting-sched-title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--green-dark); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem; }
+    .meeting-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 0.75rem; }
+    .meeting-field-group label { display: block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gray-600); margin-bottom: 0.25rem; }
+    .meeting-field-group input { width: 100%; box-sizing: border-box; padding: 0.35rem 0.65rem; border: 1.5px solid var(--border); border-radius: 7px; font-size: 0.85rem; font-family: inherit; }
+    .meeting-field-group input:focus { outline: none; border-color: var(--green); }
+    .meeting-confirmed { background: #EEF7EE; border: 1.5px solid #6DBF6D; border-radius: 10px; padding: 0.65rem 0.875rem; font-size: 0.8rem; color: #1a6b1a; font-weight: 600; margin-bottom: 0.75rem; }
+    .meeting-email-btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.4rem 0.875rem; border-radius: 7px; font-size: 0.8rem; font-weight: 600; background: var(--surface2); border: 1px solid var(--border); color: var(--text); cursor: pointer; text-decoration: none; margin-top: 0.4rem; }
+    .meeting-email-btn:hover { background: var(--border2); }
+
     /* ── Final Increase Approval ── */
     .inc-approval-wrap {
       margin-top: 1.25rem; border-top: 2px solid var(--border);
@@ -934,6 +969,64 @@
     <!-- LEFT: three section cards -->
     <div class="fp-left">
 
+      <!-- ── Employee Tracker View (only visible to the employee themselves) ── -->
+      <div id="emp-tracker-view">
+        <div class="tracker-title">Your Review Progress</div>
+        <div class="tracker-steps">
+
+          <!-- Step 1: Self-Eval -->
+          <div class="tracker-step">
+            <div class="tracker-icon done" id="trk-icon-1">✅</div>
+            <div class="tracker-step-body">
+              <div class="tracker-step-label"><span class="step-num">Step 1</span> Self-Evaluation <span class="tracker-status-chip chip-done" id="trk-chip-1">Submitted</span></div>
+              <div class="tracker-step-sub" id="trk-sub-1">Your self-evaluation has been received.</div>
+              <div class="tracker-self-answers" id="trk-self-answers" style="display:none">
+                <div>
+                  <div class="tracker-answer-label">Key Accomplishments</div>
+                  <div class="tracker-answer-text" id="trk-ans-q1">—</div>
+                </div>
+                <div>
+                  <div class="tracker-answer-label">Challenges &amp; How You Handled Them</div>
+                  <div class="tracker-answer-text" id="trk-ans-q2">—</div>
+                </div>
+                <div id="trk-ans-q4-wrap" style="display:none">
+                  <div class="tracker-answer-label">Support Requested</div>
+                  <div class="tracker-answer-text" id="trk-ans-q4">—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Manager Review -->
+          <div class="tracker-step">
+            <div class="tracker-icon" id="trk-icon-2">📋</div>
+            <div class="tracker-step-body">
+              <div class="tracker-step-label"><span class="step-num">Step 2</span> Manager Review <span class="tracker-status-chip" id="trk-chip-2">Pending</span></div>
+              <div class="tracker-step-sub" id="trk-sub-2">Your manager is completing their review.</div>
+            </div>
+          </div>
+
+          <!-- Step 3: In-Person Meeting -->
+          <div class="tracker-step">
+            <div class="tracker-icon" id="trk-icon-3">📅</div>
+            <div class="tracker-step-body">
+              <div class="tracker-step-label"><span class="step-num">Step 3</span> In-Person Meeting <span class="tracker-status-chip" id="trk-chip-3">Pending</span></div>
+              <div class="tracker-step-sub" id="trk-sub-3">Your executive will schedule a meeting to discuss your review.</div>
+            </div>
+          </div>
+
+          <!-- Step 4: Review Complete -->
+          <div class="tracker-step">
+            <div class="tracker-icon" id="trk-icon-4">🏁</div>
+            <div class="tracker-step-body">
+              <div class="tracker-step-label"><span class="step-num">Step 4</span> Review Complete <span class="tracker-status-chip" id="trk-chip-4">Pending</span></div>
+              <div class="tracker-step-sub" id="trk-sub-4">Your annual review will be finalized by the executive.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
       <!-- ── Section 1: Self-Evaluation ── -->
       <div class="fp-section-card" id="fp-sec-self">
         <div class="fp-section-hdr fp-hdr-self">
@@ -1155,6 +1248,32 @@
           <div id="exec-section-actions" style="display:none;gap:0.75rem;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border);justify-content:flex-end">
             <button class="btn btn-secondary" id="exec-save-draft-btn" type="button">Save Draft</button>
             <button class="btn btn-primary" id="exec-submit-btn" type="button">Complete Assessment</button>
+          </div>
+
+          <!-- ── Schedule In-Person Meeting ── -->
+          <div class="meeting-sched-wrap" id="meeting-sched-wrap">
+            <div class="meeting-sched-title">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              Schedule In-Person Meeting
+            </div>
+            <div id="meeting-confirmed-banner" style="display:none" class="meeting-confirmed">
+              📅 Meeting scheduled: <span id="meeting-confirmed-text"></span>
+            </div>
+            <div class="meeting-fields">
+              <div class="meeting-field-group">
+                <label>Date</label>
+                <input type="date" id="meeting-date" />
+              </div>
+              <div class="meeting-field-group">
+                <label>Time</label>
+                <input type="time" id="meeting-time" />
+              </div>
+            </div>
+            <button class="btn btn-secondary" id="meeting-save-btn" style="font-size:0.82rem;padding:0.4rem 0.875rem">Save Meeting Date</button>
+            <a id="meeting-email-link" class="meeting-email-btn" style="display:none" target="_blank">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+              Send Email to Employee
+            </a>
           </div>
 
           <!-- Hidden compatibility elements -->
@@ -2101,6 +2220,8 @@
     // For exec/admin: if manager step is done and exec step isn't, go straight to executive
     if ((isExecOfEmp || isAdmin) && mgrDone && !execDone) defaultTab = 'executive';
     switchTab(defaultTab);
+    renderEmployeeTracker();
+    renderMeetingScheduler();
     document.getElementById('fp-review').classList.add('open');
   }
 
@@ -3675,6 +3796,7 @@
 
     showCompPanel(true);
     renderIncreaseApproval();
+    renderMeetingScheduler();
 
     const emp = allEmployees[currentReview.employeeId];
     const role = await matchBLSRoleLive(emp?.position);
@@ -3900,6 +4022,173 @@
     allReviews[currentReview.id] = currentReview;
     toast('Increase approved and saved!', 'success');
     renderIncreaseApproval();
+  });
+
+  // ── Employee Tracker View ──
+  function renderEmployeeTracker() {
+    const trackerView = document.getElementById('emp-tracker-view');
+    const employeeOnly = isOwn && !isMgrOfEmp && !isExecOfEmp && !isAdmin;
+    if (!employeeOnly) {
+      trackerView.style.display = 'none';
+      document.getElementById('fp-sec-self').style.display    = '';
+      document.getElementById('fp-sec-mgr').style.display     = '';
+      document.getElementById('fp-sec-exec').style.display    = '';
+      return;
+    }
+    // Employee only: show tracker, hide full sections, hide action buttons
+    trackerView.style.display = 'block';
+    document.getElementById('fp-sec-self').style.display    = 'none';
+    document.getElementById('fp-sec-mgr').style.display     = 'none';
+    document.getElementById('fp-sec-exec').style.display    = 'none';
+    document.getElementById('modal-save-draft').style.display = 'none';
+    document.getElementById('modal-submit').style.display     = 'none';
+    document.getElementById('modal-print').style.display      = 'none';
+    showCompPanel(false);
+
+    const r = currentReview;
+    const selfDone = !!r.selfEval?.submitted;
+    const mgrDone  = !!r.managerEval?.completedAt;
+    const execDone = r.status === 'completed';
+    const meeting  = r.scheduledMeeting;
+
+    // Step 1 — Self Eval
+    const icon1 = document.getElementById('trk-icon-1');
+    const chip1 = document.getElementById('trk-chip-1');
+    const sub1  = document.getElementById('trk-sub-1');
+    const answers = document.getElementById('trk-self-answers');
+    if (selfDone) {
+      icon1.className = 'tracker-icon done'; icon1.textContent = '✅';
+      chip1.className = 'tracker-status-chip chip-done'; chip1.textContent = 'Submitted';
+      sub1.textContent = 'Your self-evaluation has been received.';
+      // Show their own submitted answers
+      answers.style.display = 'flex';
+      document.getElementById('trk-ans-q1').textContent = r.selfEval?.q1 || '—';
+      document.getElementById('trk-ans-q2').textContent = r.selfEval?.q2 || '—';
+      const q4 = r.selfEval?.q4;
+      if (q4) { document.getElementById('trk-ans-q4').textContent = q4; document.getElementById('trk-ans-q4-wrap').style.display = 'block'; }
+      else document.getElementById('trk-ans-q4-wrap').style.display = 'none';
+    } else {
+      icon1.className = 'tracker-icon active'; icon1.textContent = '✏️';
+      chip1.className = 'tracker-status-chip chip-active'; chip1.textContent = 'In Progress';
+      sub1.textContent = r.selfEval?.savedAt ? 'Draft saved. Submit when ready.' : 'Not yet started.';
+      answers.style.display = 'none';
+    }
+
+    // Step 2 — Manager Review
+    const icon2 = document.getElementById('trk-icon-2');
+    const chip2 = document.getElementById('trk-chip-2');
+    const sub2  = document.getElementById('trk-sub-2');
+    if (mgrDone) {
+      icon2.className = 'tracker-icon done'; icon2.textContent = '✅';
+      chip2.className = 'tracker-status-chip chip-done'; chip2.textContent = 'Complete';
+      sub2.textContent = 'Your manager has completed their review.';
+    } else if (selfDone) {
+      icon2.className = 'tracker-icon active'; icon2.textContent = '📋';
+      chip2.className = 'tracker-status-chip chip-active'; chip2.textContent = 'In Progress';
+      sub2.textContent = 'Your manager is reviewing your submission.';
+    } else {
+      icon2.className = 'tracker-icon wait'; icon2.textContent = '📋';
+      chip2.className = 'tracker-status-chip chip-wait'; chip2.textContent = 'Waiting';
+      sub2.textContent = 'Waiting for your self-evaluation to be submitted first.';
+    }
+
+    // Step 3 — In-Person Meeting
+    const icon3 = document.getElementById('trk-icon-3');
+    const chip3 = document.getElementById('trk-chip-3');
+    const sub3  = document.getElementById('trk-sub-3');
+    if (meeting?.date) {
+      const d = new Date(meeting.date + (meeting.time ? 'T' + meeting.time : ''));
+      const fmt = d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+      const timeFmt = meeting.time ? ' at ' + d.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' }) : '';
+      icon3.className = 'tracker-icon done'; icon3.textContent = '📅';
+      chip3.className = 'tracker-status-chip chip-done'; chip3.textContent = 'Scheduled';
+      sub3.className = 'tracker-step-sub highlight';
+      sub3.textContent = fmt + timeFmt;
+    } else if (mgrDone) {
+      icon3.className = 'tracker-icon active'; icon3.textContent = '📅';
+      chip3.className = 'tracker-status-chip chip-active'; chip3.textContent = 'Being Arranged';
+      sub3.className = 'tracker-step-sub';
+      sub3.textContent = 'Your executive will schedule your in-person meeting soon.';
+    } else {
+      icon3.className = 'tracker-icon wait'; icon3.textContent = '📅';
+      chip3.className = 'tracker-status-chip chip-wait'; chip3.textContent = 'Pending';
+      sub3.className = 'tracker-step-sub';
+      sub3.textContent = 'Your executive will schedule a meeting to discuss your review.';
+    }
+
+    // Step 4 — Complete
+    const icon4 = document.getElementById('trk-icon-4');
+    const chip4 = document.getElementById('trk-chip-4');
+    const sub4  = document.getElementById('trk-sub-4');
+    if (execDone) {
+      icon4.className = 'tracker-icon done'; icon4.textContent = '🏁';
+      chip4.className = 'tracker-status-chip chip-done'; chip4.textContent = 'Complete';
+      sub4.textContent = 'Your annual review has been finalized.';
+    } else {
+      icon4.className = 'tracker-icon wait'; icon4.textContent = '🏁';
+      chip4.className = 'tracker-status-chip chip-wait'; chip4.textContent = 'Pending';
+      sub4.textContent = 'Your annual review will be finalized by the executive.';
+    }
+  }
+
+  // ── Meeting Scheduler ──
+  function renderMeetingScheduler() {
+    const wrap = document.getElementById('meeting-sched-wrap');
+    if (!wrap) return;
+    if (!isExecOfEmp && !isAdmin) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+
+    const meeting = currentReview?.scheduledMeeting;
+    const banner  = document.getElementById('meeting-confirmed-banner');
+    const emailLink = document.getElementById('meeting-email-link');
+
+    if (meeting?.date) {
+      document.getElementById('meeting-date').value = meeting.date;
+      document.getElementById('meeting-time').value = meeting.time || '';
+      const d = new Date(meeting.date + (meeting.time ? 'T' + meeting.time : ''));
+      const fmt = d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+      const timeFmt = meeting.time ? ' at ' + d.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' }) : '';
+      banner.style.display = 'block';
+      document.getElementById('meeting-confirmed-text').textContent = fmt + timeFmt;
+    } else {
+      banner.style.display = 'none';
+    }
+
+    // Build email link
+    const emp = currentReview ? allEmployees[currentReview.employeeId] : null;
+    if (emp?.email) {
+      const empName = `${emp.firstName} ${emp.lastName}`;
+      const dateStr = document.getElementById('meeting-date').value;
+      const timeStr = document.getElementById('meeting-time').value;
+      const subject = encodeURIComponent(`Your Annual Performance Review Meeting — ${selectedYear}`);
+      let body = `Dear ${empName},\n\nI would like to schedule your annual performance review meeting`;
+      if (dateStr) {
+        const d = new Date(dateStr + (timeStr ? 'T' + timeStr : ''));
+        const fmt = d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+        const timeFmt = timeStr ? ' at ' + d.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' }) : '';
+        body += ` for ${fmt}${timeFmt}`;
+      }
+      body += `.\n\nWe will review your performance evaluation, discuss your goals, and share feedback on your ${selectedYear} review.\n\nPlease confirm your availability.\n\nThank you,`;
+      emailLink.href = `mailto:${emp.email}?subject=${subject}&body=${encodeURIComponent(body)}`;
+      emailLink.style.display = 'inline-flex';
+    } else {
+      emailLink.style.display = 'none';
+    }
+  }
+
+  document.getElementById('meeting-save-btn').addEventListener('click', async () => {
+    const date = document.getElementById('meeting-date').value;
+    const time = document.getElementById('meeting-time').value;
+    if (!date) { toast('Please select a meeting date.', 'error'); return; }
+    const btn = document.getElementById('meeting-save-btn');
+    btn.disabled = true; btn.textContent = 'Saving…';
+    const scheduledMeeting = { date, time: time || null, savedAt: serverTimestamp() };
+    await updateDoc(doc(db, 'reviews', currentReview.id), { scheduledMeeting, updatedAt: serverTimestamp() });
+    currentReview = { ...currentReview, scheduledMeeting };
+    allReviews[currentReview.id] = currentReview;
+    btn.disabled = false; btn.textContent = 'Save Meeting Date';
+    toast('Meeting date saved!', 'success');
+    renderMeetingScheduler();
   });
 
   // ── Toast ──
