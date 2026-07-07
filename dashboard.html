@@ -1100,9 +1100,12 @@ function renderAdminView(firstName) {
       const mgr  = emp ? Object.values(allEmployees).find(e => e.id === emp.managerId) : null;
       const s    = avgScore(r.executiveEval) || avgScore(r.managerEval);
       const sCls = !s ? '' : s >= 4 ? 'score-hi' : s >= 3 ? 'score-md' : 'score-lo';
-      // Exec-proposed raise % based on score (score-driven suggestion)
-      const proposedPct = !s ? null : s >= 4.5 ? 8 : s >= 4 ? 5 : s >= 3 ? 3 : 0;
-      const propCls     = proposedPct === null ? '' : proposedPct >= 5 ? 'inc-high' : proposedPct >= 3 ? 'inc-mid' : 'inc-low';
+      // Suggested raise — use explicitly set overallScore (integer 1-5), matches comp panel logic
+      const SCORE_SUGGEST = { 5: '5–7%', 4: '4–5%', 3: '2–3%', 2: '1–2%', 1: '0–1%' };
+      const overallScore  = r.executiveEval?.overallScore || r.managerEval?.overallScore;
+      const suggestTxt    = overallScore ? SCORE_SUGGEST[+overallScore] : null;
+      const proposedPct   = overallScore ? +overallScore : null;
+      const propCls       = !proposedPct ? '' : proposedPct >= 4 ? 'inc-high' : proposedPct >= 3 ? 'inc-mid' : 'inc-low';
       // Actual raise % given (from approvedIncrease saved by exec)
       const actualPct   = r.approvedIncrease?.pct != null ? Number(r.approvedIncrease.pct) : null;
       const actCls      = actualPct === null ? '' : actualPct >= 5 ? 'inc-high' : actualPct >= 3 ? 'inc-mid' : 'inc-low';
@@ -1120,10 +1123,12 @@ function renderAdminView(firstName) {
       let newPayTxt = '—';
       if (r.approvedIncrease?.newRate) {
         newPayTxt = fmtPay(Number(r.approvedIncrease.newRate));
-      } else if (curRate !== null && proposedPct !== null) {
+      } else if (curRate !== null && overallScore) {
+        // Use midpoint of suggested range for the estimate
+        const midPct = { 5: 6, 4: 4.5, 3: 2.5, 2: 1.5, 1: 0.5 }[+overallScore] || 0;
         const suggested = isSalary
-          ? Math.round(curRate * (1 + proposedPct / 100))
-          : Math.round(curRate * (1 + proposedPct / 100) * 100) / 100;
+          ? Math.round(curRate * (1 + midPct / 100))
+          : Math.round(curRate * (1 + midPct / 100) * 100) / 100;
         newPayTxt = '<span style="opacity:.6">' + fmtPay(suggested) + '</span>';
       }
       return `<tr>
@@ -1132,7 +1137,7 @@ function renderAdminView(firstName) {
         <td style="font-size:.75rem">${escHtml(emp?.department||'—')}</td>
         <td>${s!==null?`<span class="${sCls}">${s.toFixed(1)}</span><span style="font-size:.65rem;color:var(--muted)">/5</span>`:'—'}</td>
         <td style="font-variant-numeric:tabular-nums;font-weight:600;color:var(--text)">${curPayTxt}</td>
-        <td>${proposedPct!==null?`<span class="inc-pill ${propCls}">↑ ${proposedPct}%</span>`:'—'}</td>
+        <td>${suggestTxt?`<span class="inc-pill ${propCls}">↑ ${suggestTxt}</span>`:'—'}</td>
         <td>${actualPct!==null?`<span class="inc-pill ${actCls}">↑ ${actualPct.toFixed(1)}%</span>`:'<span style="font-size:.72rem;color:var(--muted)">Pending</span>'}</td>
         <td style="font-variant-numeric:tabular-nums;font-weight:800;color:var(--text)">${newPayTxt}</td>
         <td><div class="row-actions">${actionBtns}</div></td>
