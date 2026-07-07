@@ -1081,6 +1081,11 @@
             Add Executive Goal
           </button>
 
+          <div id="exec-section-actions" style="display:none;gap:0.75rem;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border);justify-content:flex-end">
+            <button class="btn btn-secondary" id="exec-save-draft-btn" type="button">Save Draft</button>
+            <button class="btn btn-primary" id="exec-submit-btn" type="button">Complete Assessment</button>
+          </div>
+
           <!-- Hidden compatibility elements -->
           <div style="display:none">
             <div id="exec-view-q1"></div><div id="exec-view-q2"></div><div id="exec-view-q4"></div>
@@ -1751,7 +1756,7 @@
     const mgr = emp?.managerId ? allEmployees[emp.managerId] : null;
     isOwn      = currentEmployee?.id === currentReview.employeeId;
     isMgrOfEmp = currentEmployee?.id === emp?.managerId;
-    isExecOfEmp= currentEmployee?.id === emp?.executiveId;
+    isExecOfEmp= currentEmployee?.role === 'executive' || currentEmployee?.id === emp?.executiveId;
     isAdmin    = !currentEmployee || currentEmployee.role === 'admin';
     const testRoleVal = document.getElementById('fp-test-role')?.value;
     if (testRoleVal === 'employee')  { isOwn = true;  isMgrOfEmp = false; isExecOfEmp = false; isAdmin = false; }
@@ -1792,7 +1797,7 @@
     const canEditMgrGoals  = (isMgrOfEmp || isAdmin) && currentReview.status !== 'completed';
 
     buildCompetencies('self-competencies', selfRatings, isOwn && !currentReview.selfEval?.submitted, 'self');
-    buildCompetencies('mgr-competencies',  mgrRatings,  (isMgrOfEmp || isAdmin) && currentReview.status !== 'completed', 'mgr');
+    buildCompetencies('mgr-competencies',  mgrRatings,  (isMgrOfEmp || isAdmin) && currentReview.status !== 'completed', 'mgr', { ratings: selfRatings, notes: selfNotes });
 
     renderGoalList('self', selfGoals, canEditSelfGoals);
     renderGoalList('mgr',  mgrGoals,  canEditMgrGoals);
@@ -1923,7 +1928,7 @@
     // Build exec's own editable competency grid
     execRatings = { ...(currentReview.executiveEval?.competencyRatings || {}) };
     execNotes   = { ...(currentReview.executiveEval?.competencyNotes || {}) };
-    buildCompetencies('exec-own-competencies', execRatings, canEditExec, 'exec-own');
+    buildCompetencies('exec-own-competencies', execRatings, canEditExec, 'exec-own', { ratings: mgrRatings, notes: mgrNotes });
     updateExecScoreSuggestion();
     // Populate B2 score overview chips
     {
@@ -1939,6 +1944,9 @@
 
     // Exec goals
     renderGoalList('exec', execGoals, canEditExec);
+    // Show/hide exec section action buttons
+    const execSectionActions = document.getElementById('exec-section-actions');
+    if (execSectionActions) execSectionActions.style.display = canEditExec ? 'flex' : 'none';
 
     const en = document.getElementById('exec-status-note');
     if (completed) {
@@ -1965,9 +1973,13 @@
     updateScoreSummaryCard();
 
     // Determine which tab to open
+    const mgrDone = !!currentReview.managerEval?.completedAt;
+    const execDone = currentReview.status === 'completed';
     let defaultTab = 'self';
     if (!isOwn && (isMgrOfEmp || isAdmin)) defaultTab = 'manager';
     if (isExecOfEmp && !isMgrOfEmp && !isOwn) defaultTab = 'executive';
+    // For exec/admin: if manager step is done and exec step isn't, go straight to executive
+    if ((isExecOfEmp || isAdmin) && mgrDone && !execDone) defaultTab = 'executive';
     switchTab(defaultTab);
     document.getElementById('fp-review').classList.add('open');
   }
@@ -1992,8 +2004,9 @@
   }
 
   // ── Build Competency Rating Rows ──
-  function buildCompetencies(containerId, ratingsObj, editable, prefix) {
-    const notesObj = prefix === 'self' ? selfNotes : (prefix === 'exec-own' ? execNotes : (prefix === 'mgr' ? mgrNotes : {}));
+  // selfContext: {ratings, notes} — when set, shows employee's self-rating + explanation below each row (for manager/exec views)
+  function buildCompetencies(containerId, ratingsObj, editable, prefix, selfContext) {
+    const notesObj = (prefix === 'self' || prefix === 'exec-self') ? selfNotes : (prefix === 'exec-own' ? execNotes : (prefix === 'mgr' || prefix === 'exec-mgr' ? mgrNotes : {}));
     const container = document.getElementById(containerId);
     container.innerHTML = COMPETENCIES.map(c => {
       const hasRating = !!ratingsObj[c.key];
@@ -2024,6 +2037,11 @@
           <div class="comp-note-label">Explanation for this rating</div>
           ${readonlyNote}
         </div>
+        ${selfContext && selfContext.ratings[c.key] ? `
+        <div style="margin:0 0 0.5rem;padding:0.5rem 0.75rem 0.5rem 0.875rem;background:var(--info-bg);border-left:3px solid var(--info);border-radius:0 6px 6px 0;font-size:0.78rem;">
+          <span style="font-weight:700;color:var(--info)">Employee self-rated ${selfContext.ratings[c.key]}/5</span>
+          ${selfContext.notes[c.key] ? `<span style="color:var(--gray-600)"> — "${escHtml(selfContext.notes[c.key])}"</span>` : '<span style="color:var(--gray-400);font-style:italic"> — no explanation provided</span>'}
+        </div>` : ''}
       </div>`;
     }).join('');
 
@@ -2397,6 +2415,10 @@
   document.getElementById('mgr-add-goal-btn').addEventListener('click',  () => showGoalForm('mgr'));
   document.getElementById('exec-add-goal-btn').addEventListener('click', () => showGoalForm('exec'));
 
+  // Inline exec section buttons
+  document.getElementById('exec-save-draft-btn').addEventListener('click', () => saveExecDraft());
+  document.getElementById('exec-submit-btn').addEventListener('click', () => completeExecutiveAssessment());
+
   // ── Save Draft ──
   document.getElementById('modal-save-draft').addEventListener('click', async () => {
     if (activeTab === 'self') await saveSelfDraft();
@@ -2498,10 +2520,21 @@
     if (!q1 || !q2) { toast('Please answer at least the first two questions.', 'error'); return; }
     const allRated = COMPETENCIES.every(c => selfRatings[c.key]);
     if (!allRated) { toast('Please rate all competencies before submitting.', 'error'); return; }
+    const missingNotes = COMPETENCIES.filter(c => selfRatings[c.key] && !selfNotes[c.key]?.trim()).map(c => c.label);
+    if (missingNotes.length) {
+      toast(`Please add an explanation for: ${missingNotes.join(', ')}`, 'error');
+      // Highlight missing note fields
+      missingNotes.forEach(label => {
+        const c = COMPETENCIES.find(x => x.label === label);
+        if (c) { const el = document.getElementById(`self-note-${c.key}`); if (el) { el.style.borderColor = 'var(--error)'; el.focus(); } }
+      });
+      return;
+    }
 
     const payload = {
       selfEval: {
         ratings: selfRatings,
+        competencyNotes: selfNotes,
         q1, q2,
         goals: selfGoals,
         q4: document.getElementById('self-q4').value.trim(),
@@ -2524,6 +2557,15 @@
     if (!comments) { toast('Please add manager comments before completing.', 'error'); return; }
     const allRated = COMPETENCIES.every(c => mgrRatings[c.key]);
     if (!allRated) { toast('Please rate all competencies.', 'error'); return; }
+    const missingMgrNotes = COMPETENCIES.filter(c => mgrRatings[c.key] && !mgrNotes[c.key]?.trim()).map(c => c.label);
+    if (missingMgrNotes.length) {
+      toast(`Please add an explanation for: ${missingMgrNotes.join(', ')}`, 'error');
+      missingMgrNotes.forEach(label => {
+        const c = COMPETENCIES.find(x => x.label === label);
+        if (c) { const el = document.getElementById(`mgr-note-${c.key}`); if (el) { el.style.borderColor = 'var(--error)'; el.focus(); } }
+      });
+      return;
+    }
     if (!mgrScoreChoice) { toast('Please make a score recommendation before completing.', 'error'); return; }
     if (mgrScoreChoice === 'own') {
       if (!document.getElementById('mgr-score-recommendation').value) { toast('Please select your recommended score.', 'error'); return; }
@@ -2533,6 +2575,7 @@
     const payload = {
       managerEval: {
         ratings: mgrRatings,
+        competencyNotes: mgrNotes,
         comments,
         goals: mgrGoals,
         managerSupport: document.getElementById('mgr-support').value.trim(),
@@ -2559,6 +2602,17 @@
       toast('Please provide a reason for your score choice.', 'error'); return;
     }
     if (!comments) { toast('Please add executive comments before completing.', 'error'); return; }
+    const allExecRated = COMPETENCIES.every(c => execRatings[c.key]);
+    if (!allExecRated) { toast('Please rate all competencies.', 'error'); return; }
+    const missingExecNotes = COMPETENCIES.filter(c => execRatings[c.key] && !execNotes[c.key]?.trim()).map(c => c.label);
+    if (missingExecNotes.length) {
+      toast(`Please add an explanation for: ${missingExecNotes.join(', ')}`, 'error');
+      missingExecNotes.forEach(label => {
+        const c = COMPETENCIES.find(x => x.label === label);
+        if (c) { const el = document.getElementById(`exec-own-note-${c.key}`); if (el) { el.style.borderColor = 'var(--error)'; el.focus(); } }
+      });
+      return;
+    }
 
     const payload = {
       executiveEval: {
