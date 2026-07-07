@@ -1,8 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reports — SWL Performance Management</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -10,29 +8,50 @@
     :root {
       --green:        #0E4C2D;
       --green-dark:   #0A3B22;
-      --green-deeper: #072818;
-      --green-light:  #EDF2EF;
-      --accent:       #8B6914;
-      --accent-bg:    #FDF6E3;
+      --green-deep:   #072818;
+      --green-mid:    #16a34a;
+      --green-lt:     #22c55e;
+      --green-bg:     #f0fdf4;
+      --green-border: #bbf7d0;
+      --green-light:  #f0fdf4;
+      --sage:         #D3DED7;
       --bg:           #f0f4f8;
-      --border:       #C4D5CC;
+      --surface:      #ffffff;
+      --surface2:     #f8fafc;
+      --border:       #e2e8f0;
+      --border2:      #f1f5f9;
+      --text:         #0f172a;
+      --sub:          #475569;
+      --muted:        #94a3b8;
+      --yellow:       #d97706;
+      --yellow-bg:    #fef3c7;
+      --yellow-border:#fde68a;
+      --red:          #dc2626;
+      --red-bg:       #fee2e2;
+      --purple:       #6d28d9;
+      --purple-bg:    #ede9fe;
       --white:        #ffffff;
-      --gray-50:      #F9FAF8;
-      --gray-100:     #EEF1EB;
-      --gray-400:     #7A9485;
-      --gray-600:     #456055;
-      --gray-900:     #0D1F16;
-      --success:      #0E4C2D;
-      --success-bg:   #EDF2EF;
-      --error:        #C62828;
-      --error-bg:     #FFEBEE;
-      --warning:      #E65100;
-      --warning-bg:   #FFF3E0;
-      --info:         #1565C0;
-      --info-bg:      #E3F2FD;
+      /* ── legacy compat ── */
+      --accent:       #d97706;
+      --accent-bg:    #fef3c7;
+      --success:      #16a34a;
+      --success-bg:   #dcfce7;
+      --error:        #dc2626;
+      --error-bg:     #fee2e2;
+      --warning:      #d97706;
+      --warning-bg:   #fef3c7;
+      --info:         #1d4ed8;
+      --info-bg:      #dbeafe;
+      --gray-50:      #f8fafc;
+      --gray-100:     #f1f5f9;
+      --gray-400:     #94a3b8;
+      --gray-500:     #94a3b8;
+      --gray-600:     #475569;
+      --gray-700:     #334155;
+      --gray-900:     #0f172a;
     }
 
-    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--gray-900); min-height: 100vh; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
     /* ── Nav ── */
     .topnav { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: var(--green); display: flex; align-items: center; padding: 0 1.5rem; gap: 1.5rem; z-index: 200; box-shadow: 0 2px 12px rgba(7,40,24,.35); }
@@ -58,13 +77,13 @@
     .mobile-divider { height: 1px; background: rgba(211,222,215,.12); margin: .35rem 0; }
 
     /* ── Layout ── */
-    .page { padding-top: 64px; min-height: 100vh; }
-    .content { max-width: 1280px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .page { padding-top: 60px; min-height: 100vh; }
+    .content { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
 
     /* ── Page Header ── */
     .page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.75rem; }
-    .page-title h1 { font-size: 1.625rem; font-weight: 700; color: var(--green-dark); }
-    .page-title p { font-size: 0.875rem; color: var(--gray-600); margin-top: 0.2rem; }
+    .page-title h1 { font-size: 1.5rem; font-weight: 900; color: var(--text); letter-spacing: -.03em; }
+    .page-title p { font-size: 0.8rem; color: var(--muted); margin-top: 0.2rem; }
     .header-actions { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
     .year-select { padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.875rem; background: var(--white); color: var(--gray-900); cursor: pointer; }
     .btn { padding: 0.5rem 1.125rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; cursor: pointer; border: none; transition: background 0.15s; }
@@ -72,30 +91,30 @@
     .btn-secondary:hover { background: var(--gray-100); }
 
     /* ── KPI Row ── */
-    .kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 1.75rem; }
-    .kpi-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; box-shadow: 0 2px 8px rgba(14,76,45,0.08); display: flex; flex-direction: column; gap: 0.4rem; }
+    .kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; margin-bottom: 1.75rem; background: var(--border); border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+    .kpi-card { background: var(--surface); padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: .25rem; }
     .kpi-icon { font-size: 1.4rem; line-height: 1; }
-    .kpi-label { font-size: 0.7rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.05em; }
-    .kpi-value { font-size: 2rem; font-weight: 800; color: var(--green); line-height: 1; }
-    .kpi-sub { font-size: 0.75rem; color: var(--gray-400); }
-    .kpi-card.c-done .kpi-value { color: var(--success); }
-    .kpi-card.c-prog .kpi-value { color: var(--accent); }
-    .kpi-card.c-pend .kpi-value { color: var(--gray-400); }
+    .kpi-label { font-size: .65rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+    .kpi-value { font-size: 2rem; font-weight: 900; color: var(--text); line-height: 1; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+    .kpi-sub { font-size: 0.7rem; color: var(--muted); }
+    .kpi-card.c-done .kpi-value { color: var(--green-mid); }
+    .kpi-card.c-prog .kpi-value { color: var(--yellow); }
+    .kpi-card.c-pend .kpi-value { color: var(--muted); }
     .kpi-card.c-score .kpi-value { color: var(--info); }
 
     /* ── Section ── */
-    .section-label { font-size: 0.75rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+    .section-label { font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
 
     /* ── Two-col Grid ── */
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
-    .report-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 8px rgba(14,76,45,0.08); }
-    .report-card h2 { font-size: 0.9375rem; font-weight: 700; color: var(--green-dark); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
+    .report-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,.05); }
+    .report-card h2 { font-size: 0.8rem; font-weight: 800; color: var(--text); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
 
     /* ── Horizontal Bar Chart ── */
     .bar-chart { display: flex; flex-direction: column; gap: 0.875rem; }
     .bar-row { display: grid; grid-template-columns: 130px 1fr 48px; align-items: center; gap: 0.75rem; }
-    .bar-row-label { font-size: 0.8125rem; font-weight: 500; color: var(--gray-900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .bar-track { height: 10px; background: var(--gray-100); border-radius: 99px; overflow: hidden; }
+    .bar-row-label { font-size: 0.8125rem; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bar-track { height: 10px; background: var(--border2); border-radius: 99px; overflow: hidden; }
     .bar-fill { height: 100%; border-radius: 99px; background: var(--green); transition: width 0.6s ease; }
     .bar-fill.done   { background: var(--success); }
     .bar-fill.prog   { background: var(--accent); }
@@ -129,8 +148,8 @@
 
     /* ── Dept score table ── */
     .score-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-    .score-table th { text-align: left; font-size: 0.7rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.04em; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); background: var(--gray-50); }
-    .score-table td { padding: 0.625rem 0.75rem; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+    .score-table th { text-align: left; font-size: .62rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border2); background: var(--surface2); }
+    .score-table td { padding: 0.625rem 0.75rem; border-bottom: 1px solid var(--border2); vertical-align: middle; color: var(--sub); }
     .score-table tr:last-child td { border-bottom: none; }
     .score-pill { display: inline-flex; align-items: center; padding: 0.2rem 0.6rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; }
     .sp-high { background: var(--success-bg); color: var(--success); }
@@ -141,8 +160,8 @@
 
     /* ── Compensation summary table ── */
     .comp-sum-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-    .comp-sum-table th { text-align: left; font-size: 0.7rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.04em; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); background: var(--gray-50); white-space: nowrap; }
-    .comp-sum-table td { padding: 0.625rem 0.75rem; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+    .comp-sum-table th { text-align: left; font-size: .62rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border2); background: var(--surface2); white-space: nowrap; }
+    .comp-sum-table td { padding: 0.625rem 0.75rem; border-bottom: 1px solid var(--border2); vertical-align: middle; color: var(--sub); }
     .comp-sum-table tr:last-child td { border-bottom: none; }
     .type-badge { display: inline-flex; padding: 0.15rem 0.55rem; border-radius: 99px; font-size: 0.7rem; font-weight: 700; background: var(--green-light); color: var(--green-dark); }
 
@@ -195,7 +214,7 @@
 
 <header class="topnav">
   <a href="dashboard.html" class="brand">
-    <img src="logo2.png" alt="SouthWest Landscape" style="height:40px;width:auto;display:block;object-fit:contain;" />
+    <img src="logo2.png" alt="SouthWest Landscape" style="height:40px;width:auto;display:block;object-fit:contain;">
   </a>
   <nav class="nav-links">
     <a class="nav-link" id="nav-dashboard" href="dashboard.html">Dashboard</a>
@@ -235,7 +254,7 @@
       <div class="header-actions">
         <select class="year-select" id="year-select"></select>
         <button class="btn btn-secondary" onclick="window.print()">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:inline;vertical-align:middle;margin-right:4px"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:inline;vertical-align:middle;margin-right:4px"><path d="M6 9V2h12v7"></path><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
           Print / Export
         </button>
       </div>
@@ -282,7 +301,7 @@
       <!-- Cycle completion stacked bar -->
       <div class="report-card" style="margin-bottom:1.5rem">
         <h2>
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
           <span id="report-cycle-title">Review Cycle Overview</span>
         </h2>
         <div class="stacked-bar-wrap">
@@ -299,14 +318,14 @@
       <div class="two-col">
         <div class="report-card">
           <h2>
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             Completion by Department
           </h2>
           <div class="bar-chart" id="dept-chart"><div class="empty-block">No data</div></div>
         </div>
         <div class="report-card">
           <h2>
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
             Completion by Branch
           </h2>
           <div class="bar-chart" id="branch-chart"><div class="empty-block">No data</div></div>
@@ -317,7 +336,7 @@
       <div class="two-col">
         <div class="report-card">
           <h2>
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
             Performance Score Distribution
           </h2>
           <div class="score-dist" id="score-dist">
@@ -327,7 +346,7 @@
         </div>
         <div class="report-card">
           <h2>
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M3 9h18M9 21V9"></path></svg>
             Average Score by Department
           </h2>
           <table class="score-table">
@@ -340,7 +359,7 @@
       <!-- Compensation summary -->
       <div class="report-card" style="margin-bottom:1.5rem">
         <h2>
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
           Compensation Changes — <span id="comp-year-label">Year</span>
         </h2>
         <div id="comp-kpi-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.25rem">
@@ -374,7 +393,7 @@
       <div class="two-col">
         <div class="report-card">
           <h2>
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4l3 3"></path></svg>
             Goal Status Breakdown
           </h2>
           <div class="goal-donut-row" id="goal-donut-row">
@@ -383,7 +402,7 @@
         </div>
         <div class="report-card">
           <h2>
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h14"/></svg>
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h14"></path></svg>
             Goals by Category
           </h2>
           <div class="bar-chart" id="goal-cat-chart"><div class="empty-block">No goals data</div></div>
@@ -768,5 +787,6 @@
     setTimeout(() => t.remove(), 4000);
   }
 </script>
-</body>
-</html>
+
+
+</body></html>
