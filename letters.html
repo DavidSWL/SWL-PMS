@@ -464,7 +464,7 @@
   import { initializeApp }       from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
   import { getAuth, onAuthStateChanged, signOut }
                                  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-  import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteField }
+  import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteField, query, where, orderBy, limit }
                                  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
   const firebaseConfig = {
@@ -649,8 +649,42 @@
     // Auto-set position for salary
     if (emp.position) document.getElementById('position-title').value = emp.position;
 
+    // Auto-fill approved rate from completed review
+    tryAutoFillApprovedRate(id);
+
     letterReady = false;
     showEmpty();
+  }
+
+  async function tryAutoFillApprovedRate(empId) {
+    const rateField = document.getElementById('new-rate');
+    rateField.placeholder = 'e.g. 22.50';
+    try {
+      const year = new Date().getFullYear();
+      const q = query(
+        collection(db, 'reviews'),
+        where('employeeId', '==', empId),
+        where('year', '==', year),
+        limit(1)
+      );
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        const review = snap.docs[0].data();
+        const approved = review.approvedIncrease;
+        if (approved?.newRate) {
+          rateField.value = Number(approved.newRate).toFixed(2);
+          rateField.dispatchEvent(new Event('input'));
+          rateField.style.borderColor = '#16a34a';
+          rateField.title = `Auto-filled from approved increase (${year} review)`;
+        } else {
+          rateField.value = '';
+          rateField.style.borderColor = '';
+          rateField.title = '';
+        }
+      }
+    } catch (e) {
+      // silently ignore — manual entry still works
+    }
   }
 
   // ── Branch change ──
