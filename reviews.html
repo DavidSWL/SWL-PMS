@@ -694,6 +694,48 @@
     .score-comp-rating { margin-left: auto; font-size: 0.75rem; font-weight: 700; color: var(--gray-400); }
     .score-none { font-size: 0.8125rem; color: var(--gray-400); font-style: italic; }
 
+    /* ── Final Increase Approval ── */
+    .inc-approval-wrap {
+      margin-top: 1.25rem; border-top: 2px solid var(--border);
+      padding-top: 1rem;
+    }
+    .inc-approval-title {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--green-dark); margin-bottom: 0.75rem;
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+    .inc-row {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem; margin-bottom: 0.75rem;
+    }
+    .inc-stat { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.75rem; }
+    .inc-stat.highlight { background: #EEF7EE; border-color: #A8D8A8; }
+    .inc-stat-label { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 0.2rem; }
+    .inc-stat-value { font-size: 1.05rem; font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums; }
+    .inc-stat.highlight .inc-stat-value { color: var(--green-dark); }
+    .inc-input-row { display: flex; align-items: flex-end; gap: 0.75rem; margin-bottom: 0.75rem; }
+    .inc-input-group { flex: 1; }
+    .inc-input-group label { display: block; font-size: 0.72rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem; }
+    .inc-input-field {
+      width: 100%; padding: 0.45rem 0.75rem; border: 1.5px solid var(--border); border-radius: 8px;
+      font-size: 1rem; font-weight: 700; color: var(--text); background: var(--white);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .inc-input-field:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px rgba(14,76,45,0.12); }
+    .inc-submit-btn {
+      width: 100%; padding: 0.55rem; border-radius: 8px; border: none; cursor: pointer;
+      font-weight: 700; font-size: 0.875rem; background: var(--green-dark); color: white;
+      transition: background 0.15s; letter-spacing: 0.01em;
+    }
+    .inc-submit-btn:hover { background: var(--green); }
+    .inc-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .inc-approved-banner {
+      background: #EEF7EE; border: 1.5px solid #6DBF6D; border-radius: 10px; padding: 0.75rem 1rem;
+      display: flex; align-items: flex-start; gap: 0.6rem;
+    }
+    .inc-approved-icon { font-size: 1.25rem; line-height: 1; flex-shrink: 0; }
+    .inc-approved-title { font-size: 0.8rem; font-weight: 700; color: #1a6b1a; }
+    .inc-approved-detail { font-size: 0.75rem; color: #2d7a2d; margin-top: 0.15rem; line-height: 1.4; }
+
     @media (max-width: 900px) { .stats-row { grid-template-columns: repeat(2,1fr); } }
     @media (max-width: 768px) {
       .nav-links, .nav-right { display: none; }
@@ -1272,6 +1314,52 @@
               </div>
             </div>
           </div>
+
+          <!-- ── Final Increase Approval ── -->
+          <div class="inc-approval-wrap" id="inc-approval-wrap" style="display:none">
+            <div class="inc-approval-title">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+              Final Increase Approval
+            </div>
+
+            <!-- Locked / confirmed state -->
+            <div id="inc-approved-state" style="display:none">
+              <div class="inc-approved-banner">
+                <div class="inc-approved-icon">✅</div>
+                <div>
+                  <div class="inc-approved-title">Increase Approved</div>
+                  <div class="inc-approved-detail" id="inc-approved-detail"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Input state -->
+            <div id="inc-input-state">
+              <div class="inc-input-row">
+                <div class="inc-input-group">
+                  <label>Final Approved Rate</label>
+                  <input type="number" class="inc-input-field" id="inc-new-rate" min="0" step="0.01" placeholder="e.g. 24.50" />
+                </div>
+              </div>
+              <div class="inc-row" id="inc-calcs" style="display:none">
+                <div class="inc-stat highlight">
+                  <div class="inc-stat-label">New Rate</div>
+                  <div class="inc-stat-value" id="inc-display-rate">—</div>
+                </div>
+                <div class="inc-stat">
+                  <div class="inc-stat-label">Dollar Increase</div>
+                  <div class="inc-stat-value" id="inc-display-dollar">—</div>
+                </div>
+                <div class="inc-stat">
+                  <div class="inc-stat-label">% Increase</div>
+                  <div class="inc-stat-value" id="inc-display-pct">—</div>
+                </div>
+              </div>
+              <button class="inc-submit-btn" id="inc-submit-btn" disabled>Submit Increase Approval</button>
+            </div>
+          </div>
+
+        </div>
         </div>
 
       </div><!-- end comp-panel -->
@@ -2734,6 +2822,10 @@
     document.getElementById('fp-test-role').value = '';
     showCompPanel(false);
     document.getElementById('comp-pct-input').value = '';
+    document.getElementById('inc-new-rate').value = '';
+    document.getElementById('inc-calcs').style.display = 'none';
+    document.getElementById('inc-submit-btn').disabled = true;
+    document.getElementById('inc-approval-wrap').style.display = 'none';
     document.getElementById('score-suggest-banner').classList.remove('show');
     document.getElementById('score-summary-card').classList.remove('show');
     document.getElementById('modal-print').style.display = 'none';
@@ -3581,6 +3673,7 @@
     if (!score && action !== 'merit-increase') { showCompPanel(false); return; }
 
     showCompPanel(true);
+    renderIncreaseApproval();
 
     const emp = allEmployees[currentReview.employeeId];
     const role = await matchBLSRoleLive(emp?.position);
@@ -3708,6 +3801,81 @@
       currentSalary = emp.payType === 'hourly' ? rate * 2080 : rate;
     }
     recalcProposed(currentSalary, low, high, median);
+  });
+
+  // ── Final Increase Approval ──
+  function renderIncreaseApproval() {
+    const wrap = document.getElementById('inc-approval-wrap');
+    if (!wrap) return;
+    const isExec = isExecOfEmp || isAdmin;
+    if (!isExec) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+
+    const approved = currentReview?.approvedIncrease;
+    const approvedState = document.getElementById('inc-approved-state');
+    const inputState    = document.getElementById('inc-input-state');
+
+    if (approved?.newRate) {
+      approvedState.style.display = 'block';
+      inputState.style.display    = 'none';
+      const fmt = v => v != null ? (v >= 100 ? '$' + Number(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '$' + Number(v).toFixed(2)) : '—';
+      const pctStr = approved.pct != null ? approved.pct.toFixed(2) + '%' : '';
+      const dolStr = approved.dollarIncrease != null ? '+' + fmt(approved.dollarIncrease) : '';
+      document.getElementById('inc-approved-detail').textContent =
+        `New rate: ${fmt(approved.newRate)} / hr  ·  ${dolStr}  ·  ${pctStr} increase`;
+    } else {
+      approvedState.style.display = 'none';
+      inputState.style.display    = 'block';
+    }
+  }
+
+  document.getElementById('inc-new-rate').addEventListener('input', () => {
+    const emp = currentReview ? allEmployees[currentReview.employeeId] : null;
+    const currentRate = emp?.currentRate ? parseFloat(emp.currentRate) : null;
+    const newRate     = parseFloat(document.getElementById('inc-new-rate').value);
+    const btn         = document.getElementById('inc-submit-btn');
+    const calcs       = document.getElementById('inc-calcs');
+    if (!newRate || newRate <= 0) { calcs.style.display = 'none'; btn.disabled = true; return; }
+    calcs.style.display = 'grid';
+    btn.disabled = false;
+    const fmt = v => v >= 100 ? '$' + v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '$' + v.toFixed(2);
+    document.getElementById('inc-display-rate').textContent = fmt(newRate);
+    if (currentRate) {
+      const dollar = newRate - currentRate;
+      const pct    = (dollar / currentRate) * 100;
+      document.getElementById('inc-display-dollar').textContent = (dollar >= 0 ? '+' : '') + fmt(dollar);
+      document.getElementById('inc-display-pct').textContent    = (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%';
+    } else {
+      document.getElementById('inc-display-dollar').textContent = '—';
+      document.getElementById('inc-display-pct').textContent    = '—';
+    }
+  });
+
+  document.getElementById('inc-submit-btn').addEventListener('click', async () => {
+    const emp = currentReview ? allEmployees[currentReview.employeeId] : null;
+    const newRate     = parseFloat(document.getElementById('inc-new-rate').value);
+    if (!newRate || newRate <= 0) { toast('Enter a valid new rate.', 'error'); return; }
+    const currentRate = emp?.currentRate ? parseFloat(emp.currentRate) : null;
+    const dollarIncrease = currentRate != null ? +(newRate - currentRate).toFixed(4) : null;
+    const pct            = currentRate != null ? +((dollarIncrease / currentRate) * 100).toFixed(4) : null;
+
+    const btn = document.getElementById('inc-submit-btn');
+    btn.disabled = true; btn.textContent = 'Saving…';
+
+    const approvedIncrease = {
+      newRate: +newRate.toFixed(4),
+      currentRate: currentRate ?? null,
+      dollarIncrease,
+      pct,
+      payType: emp?.payType || null,
+      approvedAt: serverTimestamp(),
+      approvedBy: currentUser?.uid || null
+    };
+    await updateDoc(doc(db, 'reviews', currentReview.id), { approvedIncrease, updatedAt: serverTimestamp() });
+    currentReview = { ...currentReview, approvedIncrease };
+    allReviews[currentReview.id] = currentReview;
+    toast('Increase approved and saved!', 'success');
+    renderIncreaseApproval();
   });
 
   // ── Toast ──
