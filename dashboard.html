@@ -356,28 +356,10 @@
         <div class="emp-note">Once you submit, your manager will complete their review. You'll meet with them in person to go over the final results.</div>
       </div>
 
-      <div class="next-steps card">
-        <div class="card-head"><div class="card-title">What happens next</div></div>
-        <div class="next-step-row">
-          <div class="step-num active">1</div>
-          <div>
-            <div style="font-size:.78rem;font-weight:700;color:var(--text)">You submit your self-evaluation</div>
-            <div style="font-size:.72rem;color:var(--muted);margin-top:.15rem">Rate each competency and explain your scores</div>
-          </div>
-        </div>
-        <div class="next-step-row">
-          <div class="step-num inactive">2</div>
-          <div>
-            <div style="font-size:.78rem;font-weight:700;color:var(--muted)">Your manager completes their review</div>
-            <div style="font-size:.72rem;color:var(--muted);margin-top:.15rem">They review your ratings and add their assessment</div>
-          </div>
-        </div>
-        <div class="next-step-row">
-          <div class="step-num inactive">3</div>
-          <div>
-            <div style="font-size:.78rem;font-weight:700;color:var(--muted)">In-person review meeting</div>
-            <div style="font-size:.72rem;color:var(--muted);margin-top:.15rem">Your manager will meet with you to discuss final results</div>
-          </div>
+      <div class="next-steps card" id="dash-tracker-card">
+        <div class="card-head"><div class="card-title">Review Progress</div></div>
+        <div id="dash-tracker-steps">
+          <!-- rendered by JS -->
         </div>
       </div>
     </div>
@@ -814,13 +796,13 @@ function renderEmployeeView(firstName) {
 
   if (status === 'completed') {
     titleEl.textContent = 'Review Complete';
-    subEl.textContent   = 'Your annual review has been finalized. Your manager will meet with you in person to discuss the results.';
+    subEl.textContent   = 'Your annual review has been finalized. Management will reach out to schedule your in-person meeting.';
     dueRow.style.display = 'none';
     actionEl.textContent = 'View Your Review';
     actionEl.style.background = '#166534';
-  } else if (['submitted','in-review'].includes(status)) {
-    titleEl.textContent = 'Self-Evaluation Submitted';
-    subEl.textContent   = 'Your self-evaluation is complete. Your manager is now working on their review.';
+  } else if (['submitted','in-review','mgr-complete'].includes(status)) {
+    titleEl.textContent = 'Review Submitted';
+    subEl.textContent   = 'Your self-evaluation has been submitted. Management will reach out with next steps.';
     dueRow.style.display = 'none';
     actionEl.textContent = 'View Your Submission';
     actionEl.style.background = '#1d4ed8';
@@ -831,6 +813,64 @@ function renderEmployeeView(firstName) {
   } else {
     // not started — default state already in HTML
   }
+
+  // Live tracker
+  renderDashTracker(myReview);
+}
+
+function renderDashTracker(review) {
+  const steps = document.getElementById('dash-tracker-steps');
+  if (!steps) return;
+  const r = review || {};
+  const selfDone = !!r.selfEval?.submitted;
+  const mgrDone  = !!r.managerEval?.completedAt;
+  const execDone = r.status === 'completed';
+  const meeting  = r.scheduledMeeting;
+
+  function chip(done, active, label) {
+    const cls = done ? 'background:#dcfce7;color:#15803d' : active ? 'background:#dbeafe;color:#1d4ed8' : 'background:#f1f5f9;color:#94a3b8';
+    return `<span style="display:inline-flex;align-items:center;padding:.1rem .5rem;border-radius:99px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-left:.4rem;${cls}">${label}</span>`;
+  }
+
+  const rows = [
+    {
+      icon: selfDone ? '✅' : '✏️',
+      label: 'Self-Evaluation' + chip(selfDone, !selfDone, selfDone ? 'Submitted' : 'Pending'),
+      sub: selfDone ? 'Your self-evaluation has been received.' : 'Complete and submit your self-evaluation.'
+    },
+    {
+      icon: mgrDone ? '✅' : '📋',
+      label: 'Manager Review' + chip(mgrDone, selfDone && !mgrDone, mgrDone ? 'Complete' : selfDone ? 'In Progress' : 'Waiting'),
+      sub: mgrDone ? 'Your manager has completed their review.' : selfDone ? 'Your manager is reviewing your submission.' : 'Waiting for your self-evaluation.'
+    },
+    {
+      icon: meeting?.date ? '📅' : '📅',
+      label: 'In-Person Meeting' + chip(!!meeting?.date, mgrDone && !meeting?.date, meeting?.date ? 'Scheduled' : 'Pending'),
+      sub: (() => {
+        if (meeting?.date) {
+          const d = new Date(meeting.date + (meeting.time ? 'T' + meeting.time : ''));
+          const fmt = d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+          const t = meeting.time ? ' at ' + d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}) : '';
+          return `<strong style="color:#15803d">${fmt}${t}</strong>`;
+        }
+        return mgrDone ? 'Your executive will schedule your meeting soon.' : 'Scheduled after manager review is complete.';
+      })()
+    },
+    {
+      icon: execDone ? '🏁' : '🏁',
+      label: 'Review Finalized' + chip(execDone, false, execDone ? 'Complete' : 'Pending'),
+      sub: execDone ? 'Your annual review has been finalized.' : 'Will be finalized by the executive after your meeting.'
+    }
+  ];
+
+  steps.innerHTML = rows.map(s => `
+    <div style="display:flex;gap:.875rem;align-items:flex-start;padding:.7rem 0;border-bottom:1px solid #f1f5f9">
+      <div style="font-size:1rem;line-height:1;margin-top:2px;flex-shrink:0">${s.icon}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.8rem;font-weight:700;color:#0f172a">${s.label}</div>
+        <div style="font-size:.73rem;color:#64748b;margin-top:.15rem;line-height:1.4">${s.sub}</div>
+      </div>
+    </div>`).join('');
 }
 
 // ── MANAGER ──────────────────────────────────────
@@ -1066,14 +1106,31 @@ function renderAdminView(firstName) {
       const dept = emp ? `${emp.department||''}${emp.branch?' · '+emp.branch:''}` : '';
       const empId = r.employeeId;
       const actionBtns = `<button class="abtn abtn-letter" onclick="location.href='letters.html?empId=${empId}'">✉ Letter</button>`;
+      // Current pay and new pay
+      const isSalary = emp?.payType === 'salary';
+      const curRate  = emp?.currentRate ? Number(emp.currentRate) : null;
+      const fmtPay   = (v) => v === null ? '—' : isSalary
+        ? '$' + v.toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:0}) + '/yr'
+        : '$' + v.toFixed(2) + '/hr';
+      const curPayTxt = fmtPay(curRate);
+      // New pay: use approvedIncrease if present, else suggest from raisePct
+      let newPayTxt = '—';
+      if (r.approvedIncrease?.newRate) {
+        newPayTxt = fmtPay(Number(r.approvedIncrease.newRate));
+      } else if (curRate !== null) {
+        const suggested = isSalary
+          ? Math.round(curRate * (1 + raisePct / 100))
+          : Math.round(curRate * (1 + raisePct / 100) * 100) / 100;
+        newPayTxt = '<span style="opacity:.6">' + fmtPay(suggested) + '</span>';
+      }
       return `<tr>
         <td><div style="display:flex;align-items:center"><span class="emp-av">${emp?initials(emp):'?'}</span><div><div class="row-name">${escHtml(emp?fullName(emp):'Unknown')}</div><div class="row-dept">${escHtml(dept)}</div></div></div></td>
         <td style="font-size:.75rem">${mgr?fullName(mgr):'—'}</td>
         <td style="font-size:.75rem">${escHtml(emp?.department||'—')}</td>
         <td>${s!==null?`<span class="${sCls}">${s.toFixed(1)}</span><span style="font-size:.65rem;color:var(--muted)">/5</span>`:'—'}</td>
-        <td style="font-variant-numeric:tabular-nums;font-weight:600;color:var(--text)" id="cur-pay-${empId}">—</td>
-        <td><span class="inc-pill ${pillCls}">↑ ${raisePct}% <span class="inc-amt"></span></span></td>
-        <td style="font-variant-numeric:tabular-nums;font-weight:800;color:var(--text)" id="new-pay-${empId}">—</td>
+        <td style="font-variant-numeric:tabular-nums;font-weight:600;color:var(--text)">${curPayTxt}</td>
+        <td><span class="inc-pill ${pillCls}">↑ ${raisePct}%</span></td>
+        <td style="font-variant-numeric:tabular-nums;font-weight:800;color:var(--text)">${newPayTxt}</td>
         <td><div class="row-actions">${actionBtns}</div></td>
       </tr>`;
     }).join('');
@@ -1083,8 +1140,8 @@ function renderAdminView(firstName) {
     document.getElementById('adm-foot-avg').textContent   = avgSc;
   }
 
-  // In-progress table
-  const progRevs = allReviews.filter(r => r.status !== 'completed');
+  // In-progress table — skip reviews with no matching employee doc
+  const progRevs = allReviews.filter(r => r.status !== 'completed' && allEmployees[r.employeeId]);
   const progBody = document.getElementById('adm-prog-body');
   progBody.innerHTML = !progRevs.length
     ? '<tr><td colspan="7" style="padding:1.5rem;color:var(--muted)">All reviews are complete.</td></tr>'
@@ -1094,12 +1151,14 @@ function renderAdminView(firstName) {
         const dept = emp ? `${emp.department||''}${emp.branch?' · '+emp.branch:''}` : '';
         const selfDone = r.status !== 'not-started';
         const mgrDone  = !!r.managerEval?.completedAt;
-        const execDone = r.status === 'completed';
+        const execDone = !!(r.executiveEval?.completedAt);
         const blocking = !selfDone
           ? `<span style="font-size:.72rem;color:var(--red);font-weight:700">⚠ Employee not started</span>`
           : !mgrDone
           ? `<span style="font-size:.72rem;color:var(--yellow);font-weight:700">⏳ Awaiting manager</span>`
-          : `<span style="font-size:.72rem;color:var(--yellow);font-weight:700">⏳ Awaiting exec sign-off</span>`;
+          : !execDone
+          ? `<span style="font-size:.72rem;color:var(--yellow);font-weight:700">⏳ Awaiting exec sign-off</span>`
+          : `<span style="font-size:.72rem;color:var(--green-mid);font-weight:700">✓ Pending finalization</span>`;
         return `<tr>
           <td><div style="display:flex;align-items:center"><span class="emp-av">${emp?initials(emp):'?'}</span><div><div class="row-name">${escHtml(emp?fullName(emp):'Unknown')}</div><div class="row-dept">${escHtml(dept)}</div></div></div></td>
           <td style="font-size:.75rem">${mgr?fullName(mgr):'—'}</td>
