@@ -205,8 +205,9 @@
     .modal-footer { display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; padding: 0.6rem 1.25rem; border-top: 1px solid var(--border); flex-shrink: 0; }
 
     /* ── Form grid ── */
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .42rem 1rem; }
-    .form-grid .span-2 { grid-column: 1 / -1; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .42rem 0.75rem; }
+    .form-grid .span-2 { grid-column: span 2; }
+    .form-grid .span-3 { grid-column: 1 / -1; }
     .form-section-title { font-size: 0.67rem; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0; padding-bottom: 0.2rem; border-bottom: 1px solid var(--border); grid-column: 1 / -1; margin-top: 0.05rem; }
     .form-group { display: flex; flex-direction: column; gap: 1px; min-width: 0; overflow: hidden; }
     .form-group label { font-size: 0.73rem; font-weight: 500; color: var(--gray-600); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -543,7 +544,11 @@
           <input class="form-control" type="text" id="f-last" placeholder="e.g. Smith" />
           <span class="field-error hidden" id="err-last"></span>
         </div>
-        <div class="form-group span-2">
+        <div class="form-group">
+          <label for="f-hire-date">Hire Date</label>
+          <input class="form-control" type="date" id="f-hire-date" />
+        </div>
+        <div class="form-group span-3">
           <label for="f-email">Email Address <span class="req">*</span></label>
           <input class="form-control" type="email" id="f-email" placeholder="employee@southwestlandscape.com" />
           <span class="field-error hidden" id="err-email"></span>
@@ -586,26 +591,20 @@
           <span class="field-error hidden" id="err-branch"></span>
         </div>
         <div class="form-group">
-          <label for="f-hire-date">Hire Date</label>
-          <input class="form-control" type="date" id="f-hire-date" />
-        </div>
-        <div class="form-group">
           <label for="f-manager">Assigned Manager</label>
           <select class="form-control" id="f-manager">
             <option value="">— Unassigned —</option>
           </select>
-          <span class="form-hint">Managers and admins listed. Does competency ratings &amp; goals.</span>
         </div>
         <div class="form-group">
           <label for="f-executive">Assigned Executive</label>
           <select class="form-control" id="f-executive">
             <option value="">— Unassigned —</option>
           </select>
-          <span class="form-hint">Executives and admins listed. Sets final score &amp; raise decision.</span>
         </div>
 
-        <!-- Compensation -->
-        <div class="form-section-title">Compensation</div>
+        <!-- Compensation & System on same row -->
+        <div class="form-section-title">Compensation &amp; Access</div>
 
         <div class="form-group">
           <label for="f-pay-type">Pay Type <span class="req">*</span></label>
@@ -619,14 +618,17 @@
         <div class="form-group">
           <label for="f-rate">Current Rate <span class="req">*</span></label>
           <input class="form-control" type="number" id="f-rate" min="0" step="0.01" placeholder="0.00" />
-          <span class="form-hint" id="rate-hint">Enter hourly rate or annual salary.</span>
+          <span class="form-hint" id="rate-hint">Hourly rate or annual salary.</span>
           <span class="field-error hidden" id="err-rate"></span>
         </div>
-
-        <!-- System -->
-        <div class="form-section-title">System Access</div>
-
         <div class="form-group">
+          <label for="f-status">Status</label>
+          <select class="form-control" id="f-status">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+        <div class="form-group span-3">
           <label for="f-role">System Role <span class="req">*</span></label>
           <select class="form-control" id="f-role">
             <option value="">— Select —</option>
@@ -636,13 +638,6 @@
             <option value="admin">Admin — full system access</option>
           </select>
           <span class="field-error hidden" id="err-role"></span>
-        </div>
-        <div class="form-group">
-          <label for="f-status">Status</label>
-          <select class="form-control" id="f-status">
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
         </div>
 
       </div>
