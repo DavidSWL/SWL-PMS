@@ -35,23 +35,27 @@
     body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--gray-900); min-height: 100vh; }
 
     /* ── Nav ── */
-    .topnav { position: fixed; top: 0; left: 0; right: 0; height: 64px; background: var(--green); display: flex; align-items: center; padding: 0 1.5rem; gap: 1.5rem; z-index: 200; box-shadow: 0 2px 8px rgba(0,0,0,0.20); }
-    .brand { display: flex; align-items: center; gap: 0.65rem; text-decoration: none; flex-shrink: 0; }
+    .topnav { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: var(--green); display: flex; align-items: center; padding: 0 1.5rem; gap: 1.5rem; z-index: 200; box-shadow: 0 2px 12px rgba(7,40,24,.35); }
+    .brand { display: flex; align-items: center; gap: .65rem; text-decoration: none; flex-shrink: 0; }
     .brand img { height: 40px; max-height: 40px; width: auto; display: block; object-fit: contain; }
     .brand-name { font-size: 1.05rem; font-weight: 700; color: var(--white); letter-spacing: -0.02em; }
-    .nav-links { display: flex; align-items: center; gap: 0.25rem; flex: 1; }
-    .nav-link { padding: 0.375rem 0.75rem; border-radius: 8px; font-size: 0.875rem; font-weight: 500; color: rgba(211,222,215,0.72); text-decoration: none; transition: background 0.15s, color 0.15s; white-space: nowrap; }
-    .nav-link:hover, .nav-link.active { background: rgba(255,255,255,0.15); color: var(--white); }
-    .nav-right { display: flex; align-items: center; gap: 0.75rem; margin-left: auto; }
-    .user-name { font-size: 0.875rem; color: rgba(255,255,255,0.88); font-weight: 500; }
-    .btn-logout { padding: 0.375rem 0.875rem; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; color: rgba(255,255,255,0.85); font-size: 0.8125rem; font-weight: 600; cursor: pointer; transition: background 0.15s; }
-    .btn-logout:hover { background: rgba(255,255,255,0.22); }
-    .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 0.5rem; margin-left: auto; }
-    .hamburger span { display: block; width: 22px; height: 2px; background: var(--white); border-radius: 99px; }
-    .mobile-menu { display: none; position: fixed; top: 64px; left: 0; right: 0; background: var(--green-dark); padding: 0.75rem; flex-direction: column; gap: 0.25rem; z-index: 199; box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
+    .nav-links { display: flex; align-items: center; gap: .15rem; flex: 1; }
+    .nav-link { padding: .35rem .75rem; border-radius: 7px; font-size: .875rem; font-weight: 500; color: rgba(211,222,215,.7); text-decoration: none; transition: background .15s, color .15s; white-space: nowrap; }
+    .nav-link:hover, .nav-link.active { background: rgba(211,222,215,.15); color: #fff; }
+    .nav-link.active { font-weight: 600; }
+    .nav-right { display: flex; align-items: center; gap: .75rem; margin-left: auto; }
+    .user-chip { display: flex; align-items: center; gap: .5rem; padding: .3rem .65rem .3rem .35rem; background: rgba(211,222,215,.12); border: 1px solid rgba(211,222,215,.18); border-radius: 99px; }
+    .user-avatar { width: 26px; height: 26px; border-radius: 50%; background: rgba(211,222,215,.25); color: #fff; display: flex; align-items: center; justify-content: center; font-size: .65rem; font-weight: 800; flex-shrink: 0; }
+    .user-name { font-size: .8125rem; color: rgba(255,255,255,.85); font-weight: 500; }
+    .btn-logout { padding: .35rem .875rem; background: rgba(211,222,215,.1); border: 1px solid rgba(211,222,215,.22); border-radius: 7px; color: rgba(211,222,215,.8); font-size: .8rem; font-weight: 600; cursor: pointer; transition: background .15s; font-family: inherit; }
+    .btn-logout:hover { background: rgba(211,222,215,.2); color: #fff; }
+    .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: .5rem; margin-left: auto; }
+    .hamburger span { display: block; width: 22px; height: 2px; background: #fff; border-radius: 99px; }
+    .mobile-menu { display: none; position: fixed; top: 60px; left: 0; right: 0; background: var(--green-dark); padding: .75rem; flex-direction: column; gap: .25rem; z-index: 99; box-shadow: 0 4px 12px rgba(0,0,0,.3); }
     .mobile-menu.open { display: flex; }
-    .mobile-menu .nav-link { display: block; padding: 0.65rem 0.875rem; }
-    .mobile-divider { height: 1px; background: rgba(255,255,255,0.15); margin: 0.35rem 0; }
+    .mobile-menu .nav-link { display: block; padding: .65rem .875rem; color: rgba(211,222,215,.75); }
+    .mobile-menu .nav-link:hover, .mobile-menu .nav-link.active { background: rgba(211,222,215,.12); color: #fff; }
+    .mobile-divider { height: 1px; background: rgba(211,222,215,.12); margin: .35rem 0; }
 
     /* ── Layout ── */
     .page { padding-top: 64px; min-height: 100vh; }
@@ -200,7 +204,10 @@
     <a class="nav-link" id="nav-admin" href="adminemployees.html" style="display:none">Administration</a>
   </nav>
   <div class="nav-right">
-    <span class="user-name" id="user-name"></span>
+    <div class="user-chip">
+      <div class="user-avatar" id="user-avatar"></div>
+      <span class="user-name" id="user-name"></span>
+    </div>
     <button class="btn-logout" id="logout-btn">Sign out</button>
   </div>
   <button class="hamburger" id="hamburger" aria-label="Open menu">
@@ -415,7 +422,10 @@
   // ── Auth Guard ──
   onAuthStateChanged(auth, async user => {
     if (!user) { window.location.href = 'index.html'; return; }
-    document.getElementById('user-name').textContent = user.displayName || user.email.split('@')[0];
+    const _rName = user.displayName || user.email.split('@')[0];
+    document.getElementById('user-name').textContent = _rName;
+    const _rAv = document.getElementById('user-avatar');
+    if (_rAv) _rAv.textContent = _rName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
     const snap = await getDocs(query(collection(db, 'employees'), where('email', '==', user.email)));
     if (!snap.empty) currentEmployee = { id: snap.docs[0].id, ...snap.docs[0].data() };
     // Role-based nav
