@@ -1335,9 +1335,10 @@
 
             <!-- Input state -->
             <div id="inc-input-state">
+              <div style="font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem" id="inc-current-rate-label"></div>
               <div class="inc-input-row">
                 <div class="inc-input-group">
-                  <label>Final Approved Rate</label>
+                  <label id="inc-rate-label">Final Approved Rate</label>
                   <input type="number" class="inc-input-field" id="inc-new-rate" min="0" step="0.01" placeholder="e.g. 24.50" />
                 </div>
               </div>
@@ -3804,12 +3805,35 @@
   });
 
   // ── Final Increase Approval ──
+  function fmtRate(v, payType) {
+    if (v == null) return '—';
+    if (payType === 'hourly') return '$' + Number(v).toFixed(2) + '/hr';
+    if (payType === 'salary') return '$' + Number(v).toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2}) + '/yr';
+    return v >= 100 ? '$' + Number(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '$' + Number(v).toFixed(2);
+  }
+
   function renderIncreaseApproval() {
     const wrap = document.getElementById('inc-approval-wrap');
     if (!wrap) return;
     const isExec = isExecOfEmp || isAdmin;
     if (!isExec) { wrap.style.display = 'none'; return; }
     wrap.style.display = 'block';
+
+    const emp = currentReview ? allEmployees[currentReview.employeeId] : null;
+    const payType = emp?.payType || null;
+    const currentRate = emp?.currentRate ? parseFloat(emp.currentRate) : null;
+
+    // Update label and current-rate hint
+    const rateLabel = document.getElementById('inc-rate-label');
+    const currentHint = document.getElementById('inc-current-rate-label');
+    if (rateLabel) {
+      rateLabel.textContent = payType === 'salary' ? 'Final Approved Annual Salary ($)' : 'Final Approved Hourly Rate ($/hr)';
+    }
+    if (currentHint && currentRate != null) {
+      currentHint.textContent = `Current: ${fmtRate(currentRate, payType)}`;
+    }
+    const input = document.getElementById('inc-new-rate');
+    if (input) input.placeholder = payType === 'salary' ? 'e.g. 52000' : 'e.g. 24.50';
 
     const approved = currentReview?.approvedIncrease;
     const approvedState = document.getElementById('inc-approved-state');
@@ -3818,11 +3842,10 @@
     if (approved?.newRate) {
       approvedState.style.display = 'block';
       inputState.style.display    = 'none';
-      const fmt = v => v != null ? (v >= 100 ? '$' + Number(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '$' + Number(v).toFixed(2)) : '—';
       const pctStr = approved.pct != null ? approved.pct.toFixed(2) + '%' : '';
-      const dolStr = approved.dollarIncrease != null ? '+' + fmt(approved.dollarIncrease) : '';
+      const dolStr = approved.dollarIncrease != null ? (approved.dollarIncrease >= 0 ? '+' : '') + fmtRate(Math.abs(approved.dollarIncrease), approved.payType) : '';
       document.getElementById('inc-approved-detail').textContent =
-        `New rate: ${fmt(approved.newRate)} / hr  ·  ${dolStr}  ·  ${pctStr} increase`;
+        `New rate: ${fmtRate(approved.newRate, approved.payType)}  ·  ${dolStr}  ·  +${pctStr} increase`;
     } else {
       approvedState.style.display = 'none';
       inputState.style.display    = 'block';
@@ -3831,6 +3854,7 @@
 
   document.getElementById('inc-new-rate').addEventListener('input', () => {
     const emp = currentReview ? allEmployees[currentReview.employeeId] : null;
+    const payType     = emp?.payType || null;
     const currentRate = emp?.currentRate ? parseFloat(emp.currentRate) : null;
     const newRate     = parseFloat(document.getElementById('inc-new-rate').value);
     const btn         = document.getElementById('inc-submit-btn');
@@ -3838,12 +3862,11 @@
     if (!newRate || newRate <= 0) { calcs.style.display = 'none'; btn.disabled = true; return; }
     calcs.style.display = 'grid';
     btn.disabled = false;
-    const fmt = v => v >= 100 ? '$' + v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '$' + v.toFixed(2);
-    document.getElementById('inc-display-rate').textContent = fmt(newRate);
-    if (currentRate) {
+    document.getElementById('inc-display-rate').textContent = fmtRate(newRate, payType);
+    if (currentRate != null) {
       const dollar = newRate - currentRate;
       const pct    = (dollar / currentRate) * 100;
-      document.getElementById('inc-display-dollar').textContent = (dollar >= 0 ? '+' : '') + fmt(dollar);
+      document.getElementById('inc-display-dollar').textContent = (dollar >= 0 ? '+' : '') + fmtRate(Math.abs(dollar), payType);
       document.getElementById('inc-display-pct').textContent    = (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%';
     } else {
       document.getElementById('inc-display-dollar').textContent = '—';
@@ -3855,6 +3878,7 @@
     const emp = currentReview ? allEmployees[currentReview.employeeId] : null;
     const newRate     = parseFloat(document.getElementById('inc-new-rate').value);
     if (!newRate || newRate <= 0) { toast('Enter a valid new rate.', 'error'); return; }
+    const payType     = emp?.payType || null;
     const currentRate = emp?.currentRate ? parseFloat(emp.currentRate) : null;
     const dollarIncrease = currentRate != null ? +(newRate - currentRate).toFixed(4) : null;
     const pct            = currentRate != null ? +((dollarIncrease / currentRate) * 100).toFixed(4) : null;
@@ -3867,7 +3891,7 @@
       currentRate: currentRate ?? null,
       dollarIncrease,
       pct,
-      payType: emp?.payType || null,
+      payType,
       approvedAt: serverTimestamp(),
       approvedBy: currentUser?.uid || null
     };
