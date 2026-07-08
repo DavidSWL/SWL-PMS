@@ -542,6 +542,71 @@
         <!-- populated by JS -->
       </div>
 
+      <!-- ── Payroll Impact ── -->
+      <div class="section-header">
+        <h3>Payroll Impact</h3>
+        <div class="section-badge">Current vs. Approved</div>
+        <div class="section-divider"></div>
+      </div>
+
+      <!-- Summary KPI strip -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:12px;overflow:hidden;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+        <div class="kpi-card">
+          <div class="kpi-label">Current Total Payroll</div>
+          <div class="kpi-value" id="pr-current" style="font-size:1.5rem;color:var(--text)">—</div>
+          <div class="kpi-sub" id="pr-current-sub">All active employees (annualized)</div>
+        </div>
+        <div class="kpi-card c-done">
+          <div class="kpi-label">Approved New Payroll</div>
+          <div class="kpi-value" id="pr-new" style="font-size:1.5rem">—</div>
+          <div class="kpi-sub" id="pr-new-sub">After approved increases</div>
+        </div>
+        <div class="kpi-card c-score">
+          <div class="kpi-label">Total Payroll Increase</div>
+          <div class="kpi-value" id="pr-diff" style="font-size:1.5rem">—</div>
+          <div class="kpi-sub" id="pr-diff-pct">—% increase</div>
+        </div>
+        <div class="kpi-card c-prog">
+          <div class="kpi-label">Approvals Pending</div>
+          <div class="kpi-value" id="pr-pending" style="font-size:1.5rem">0</div>
+          <div class="kpi-sub">Reviews finalized, raise not yet set</div>
+        </div>
+      </div>
+
+      <!-- Per-employee breakdown table -->
+      <div class="report-card" style="margin-bottom:1.5rem">
+        <h2>
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Employee Payroll Breakdown
+        </h2>
+        <div style="overflow-x:auto">
+          <table class="comp-sum-table">
+            <thead>
+              <tr>
+                <th>Employee</th>
+                <th>Dept</th>
+                <th>Pay Type</th>
+                <th>Current Rate</th>
+                <th>Current Annual</th>
+                <th>New Rate</th>
+                <th>New Annual</th>
+                <th>$ Increase</th>
+                <th>% Increase</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="payroll-tbody">
+              <tr><td colspan="10" class="empty-block">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="payroll-foot" style="display:none;padding:.75rem 1rem;background:var(--surface2);border-top:1px solid var(--border);font-size:.78rem;display:flex;gap:2rem;flex-wrap:wrap">
+          <span><strong>Current Total:</strong> <span id="pr-foot-current">—</span></span>
+          <span><strong>New Total:</strong> <span id="pr-foot-new">—</span></span>
+          <span><strong>Difference:</strong> <span id="pr-foot-diff" style="color:var(--green-mid);font-weight:700">—</span></span>
+        </div>
+      </div>
+
       <!-- ── Compensation summary ── -->
       <div class="section-header">
         <h3>Compensation Changes</h3>
@@ -835,6 +900,9 @@
 
     // ── Dept intelligence ──
     renderDeptIntel(reviews, completed, employees);
+
+    // ── Payroll impact ──
+    renderPayrollImpact(employees, reviews);
 
     // ── Compensation ──
     renderCompSection(compRecords, employees);
@@ -1251,6 +1319,99 @@
         <div style="font-size:0.7rem;color:var(--muted);margin-top:0.35rem">${compRate}% completion rate</div>
       </div>`;
     }).join('');
+  }
+
+  // ── Payroll Impact ────────────────────────────────────────────────────────
+  function renderPayrollImpact(employees, reviews) {
+    const HRS = 2080;
+    const fmt$ = v => '$' + Math.round(v).toLocaleString('en-US');
+    const fmtRate = (rate, isSal) => isSal
+      ? '$' + Math.round(rate).toLocaleString('en-US') + '/yr'
+      : '$' + Number(rate).toFixed(2) + '/hr';
+
+    // Build lookup: employeeId → completed review with approvedIncrease
+    const approvedMap = {};
+    const completedMap = {};
+    reviews.forEach(r => {
+      if (!r.employeeId) return;
+      if (r.status === 'completed') {
+        completedMap[r.employeeId] = r;
+        if (r.approvedIncrease?.newRate != null) {
+          approvedMap[r.employeeId] = r.approvedIncrease;
+        }
+      }
+    });
+
+    let curTotal = 0, newTotal = 0, pendingCount = 0;
+    const rows = [];
+
+    const empList = Object.values(employees).filter(e => e.status !== 'inactive');
+    empList.sort((a,b) => (a.lastName||'').localeCompare(b.lastName||''));
+
+    empList.forEach(emp => {
+      const isSal = emp.payType === 'salary';
+      const curRate = emp.currentRate ? Number(emp.currentRate) : null;
+      if (curRate == null) return; // skip employees with no pay data
+
+      const curAnnual = isSal ? curRate : curRate * HRS;
+      curTotal += curAnnual;
+
+      const ai = approvedMap[emp.id];
+      const hasReview = !!completedMap[emp.id];
+      let newRate = null, newAnnual = null, dollarInc = null, pctInc = null, status = '';
+
+      if (ai) {
+        newRate = Number(ai.newRate);
+        newAnnual = isSal ? newRate : newRate * HRS;
+        dollarInc = newAnnual - curAnnual;
+        pctInc = curAnnual > 0 ? (dollarInc / curAnnual) * 100 : 0;
+        newTotal += newAnnual;
+        status = '<span style="color:var(--green-mid);font-weight:600">Approved</span>';
+      } else {
+        newTotal += curAnnual; // no change approved yet
+        if (hasReview) {
+          pendingCount++;
+          status = '<span style="color:var(--amber,#f59e0b);font-weight:600">Pending</span>';
+        } else {
+          status = '<span style="color:var(--text-muted)">No Review</span>';
+        }
+      }
+
+      const pctCls = pctInc == null ? '' : pctInc >= 5 ? 'color:var(--green-mid)' : pctInc >= 2 ? 'color:var(--blue-mid,#3b82f6)' : 'color:var(--text-muted)';
+
+      rows.push(`<tr>
+        <td>${emp.firstName||''} ${emp.lastName||''}</td>
+        <td>${emp.department||'—'}</td>
+        <td>${isSal ? 'Salary' : 'Hourly'}</td>
+        <td>${fmtRate(curRate, isSal)}</td>
+        <td style="font-variant-numeric:tabular-nums">${fmt$(curAnnual)}</td>
+        <td>${newRate != null ? fmtRate(newRate, isSal) : '—'}</td>
+        <td style="font-variant-numeric:tabular-nums">${newAnnual != null ? fmt$(newAnnual) : '—'}</td>
+        <td style="font-variant-numeric:tabular-nums;${pctCls}">${dollarInc != null ? fmt$(dollarInc) : '—'}</td>
+        <td style="${pctCls}">${pctInc != null ? pctInc.toFixed(1) + '%' : '—'}</td>
+        <td>${status}</td>
+      </tr>`);
+    });
+
+    // KPI cards
+    const diffAmt = newTotal - curTotal;
+    const diffPct = curTotal > 0 ? (diffAmt / curTotal) * 100 : 0;
+    document.getElementById('pr-current').textContent = fmt$(curTotal);
+    document.getElementById('pr-new').textContent = fmt$(newTotal);
+    document.getElementById('pr-diff').textContent = fmt$(diffAmt);
+    document.getElementById('pr-diff-pct').textContent = diffPct.toFixed(1) + '% increase';
+    document.getElementById('pr-pending').textContent = pendingCount;
+
+    // Table
+    const tbody = document.getElementById('payroll-tbody');
+    tbody.innerHTML = rows.length ? rows.join('') : '<tr><td colspan="10" class="empty-block">No employee pay data found.</td></tr>';
+
+    // Footer
+    const foot = document.getElementById('payroll-foot');
+    foot.style.display = '';
+    document.getElementById('pr-foot-current').textContent = fmt$(curTotal);
+    document.getElementById('pr-foot-new').textContent = fmt$(newTotal);
+    document.getElementById('pr-foot-diff').textContent = (diffAmt >= 0 ? '+' : '') + fmt$(diffAmt) + ' (' + diffPct.toFixed(1) + '%)';
   }
 
   // ── Compensation ──────────────────────────────────────────────────────────
