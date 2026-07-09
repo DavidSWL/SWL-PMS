@@ -3045,8 +3045,8 @@
     activeTab = 'self';
   }
   function showCompPanel(show) {
-    const employeeOnly = isOwn && !isMgrOfEmp && !isExecOfEmp && !isAdmin;
-    if (employeeOnly) {
+    const execOrAdmin = isExecOfEmp || isAdmin;
+    if (!execOrAdmin) {
       document.getElementById('fp-right-col').style.display = 'none';
       return;
     }
@@ -3881,8 +3881,8 @@
 
   async function updateCompPanel() {
     if (!currentReview) return;
-    // Never show comp panel to employees viewing their own review
-    if (isOwn && !isMgrOfEmp && !isExecOfEmp && !isAdmin) {
+    // Only executives and admins see the compensation panel
+    if (!isExecOfEmp && !isAdmin) {
       document.getElementById('fp-right-col').style.display = 'none';
       return;
     }
