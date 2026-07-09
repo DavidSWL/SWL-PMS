@@ -1501,11 +1501,18 @@
   function renderManagerFeedback(reviews, employees) {
     const RATING_LABEL = { '5':'Excellent','4':'Good','3':'Average','2':'Below Average','1':'Poor' };
     const ratingColor  = r => r >= 4 ? 'var(--green-mid)' : r >= 3 ? 'var(--blue-mid,#3b82f6)' : 'var(--error,#ef4444)';
+    const CATS = [
+      { key: 'mfbR1', label: 'Communication & Expectations' },
+      { key: 'mfbR2', label: 'Support & Helpfulness' },
+      { key: 'mfbR3', label: 'Field Awareness' },
+      { key: 'mfbR4', label: 'Recognition & Fairness' },
+      { key: 'mfbRating', label: 'Overall Leadership' },
+    ];
 
-    // Collect all reviews that have manager feedback
     const withFeedback = reviews.filter(r =>
       employees[r.employeeId] &&
-      (r.selfEval?.mfbRating || r.selfEval?.mfb1 || r.selfEval?.mfb2)
+      (r.selfEval?.mfbRating || r.selfEval?.mfbR1 || r.selfEval?.mfbR2 ||
+       r.selfEval?.mfbR3 || r.selfEval?.mfbR4 || r.selfEval?.mfb1 || r.selfEval?.mfb2)
     );
 
     document.getElementById('mfb-count').textContent = withFeedback.length;
@@ -1518,13 +1525,17 @@
       return;
     }
 
-    // Avg overall rating
-    const rated = withFeedback.filter(r => r.selfEval?.mfbRating);
-    const avg = rated.length ? rated.reduce((s,r) => s + +r.selfEval.mfbRating, 0) / rated.length : null;
+    const catAvg = (entries, key) => {
+      const vals = entries.map(x => x.r.selfEval?.[key]).filter(v => v).map(Number);
+      return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
+    };
+
+    // Avg overall rating across all
+    const overallAvgs = withFeedback.map(r => r.selfEval?.mfbRating).filter(v=>v).map(Number);
+    const avg = overallAvgs.length ? overallAvgs.reduce((a,b)=>a+b,0)/overallAvgs.length : null;
     document.getElementById('mfb-avg').textContent = avg !== null ? avg.toFixed(1) : '—';
     if (avg !== null) document.getElementById('mfb-avg').style.color = ratingColor(avg);
 
-    // Group by manager
     const byMgr = {};
     withFeedback.forEach(r => {
       const emp = employees[r.employeeId];
@@ -1535,6 +1546,18 @@
 
     document.getElementById('mfb-mgr-count').textContent = Object.keys(byMgr).filter(k => k !== '__none__').length;
 
+    const ratingBar = (val) => {
+      if (val === null) return '<span style="color:var(--muted);font-size:.75rem">—</span>';
+      const pct = (val / 5 * 100).toFixed(0);
+      const col = ratingColor(val);
+      return `<div style="display:flex;align-items:center;gap:.5rem">
+        <div style="flex:1;height:6px;background:var(--border2);border-radius:99px;overflow:hidden">
+          <div style="height:6px;width:${pct}%;background:${col};border-radius:99px"></div>
+        </div>
+        <span style="font-size:.75rem;font-weight:700;color:${col};min-width:2rem">${val.toFixed(1)}</span>
+      </div>`;
+    };
+
     const grid = document.getElementById('mfb-mgr-grid');
     grid.innerHTML = Object.values(byMgr).map(({ mgrId, entries }) => {
       const mgr = employees[mgrId];
@@ -1542,47 +1565,62 @@
       const mgrRole = mgr?.position || mgr?.role || '';
       const mgrDept = mgr?.department || '';
 
-      const mgrRatings = entries.filter(x => x.r.selfEval?.mfbRating).map(x => +x.r.selfEval.mfbRating);
-      const mgrAvg = mgrRatings.length ? mgrRatings.reduce((a,b)=>a+b,0)/mgrRatings.length : null;
+      const mgrAvg = catAvg(entries, 'mfbRating');
 
+      // Category averages panel
+      const catBars = CATS.map(c => {
+        const val = catAvg(entries, c.key);
+        return `<div style="margin-bottom:.55rem">
+          <div style="font-size:.68rem;font-weight:600;color:var(--text);margin-bottom:.25rem">${c.label}</div>
+          ${ratingBar(val)}
+        </div>`;
+      }).join('');
+
+      // Per-employee response rows
       const rows = entries.map(({ r, emp }) => {
         const empName = `${emp.firstName||''} ${emp.lastName||''}`.trim();
-        const rating  = r.selfEval?.mfbRating;
-        const mfb1    = r.selfEval?.mfb1 || '';
-        const mfb2    = r.selfEval?.mfb2 || '';
-        return `<tr>
-          <td style="font-weight:600;color:var(--text);font-size:.8rem">${escHtml(empName)}<div style="font-size:.7rem;color:var(--muted)">${escHtml(emp.department||'')}</div></td>
-          <td style="text-align:center">
-            ${rating
-              ? `<span style="font-weight:700;font-size:1rem;color:${ratingColor(+rating)}">${rating}</span>
-                 <div style="font-size:.68rem;color:var(--muted)">${RATING_LABEL[rating]||''}</div>`
-              : '<span style="color:var(--muted)">—</span>'}
+        const cats = CATS.map(c => {
+          const v = r.selfEval?.[c.key];
+          return `<td style="text-align:center;padding:.4rem .35rem">
+            ${v ? `<span style="font-weight:700;color:${ratingColor(+v)}">${v}</span>` : '<span style="color:var(--muted)">—</span>'}
+          </td>`;
+        }).join('');
+        const mfb1 = r.selfEval?.mfb1 || '';
+        const mfb2 = r.selfEval?.mfb2 || '';
+        return `<tr style="border-bottom:1px solid var(--border2)">
+          <td style="padding:.5rem .5rem;font-weight:600;color:var(--text);font-size:.78rem;white-space:nowrap">
+            ${escHtml(empName)}
+            <div style="font-size:.68rem;color:var(--muted);font-weight:400">${escHtml(emp.department||'')}</div>
           </td>
-          <td style="font-size:.78rem;color:var(--sub);font-style:italic">${escHtml(mfb1)||'<span style="color:var(--muted)">—</span>'}</td>
-          <td style="font-size:.78rem;color:var(--sub);font-style:italic">${escHtml(mfb2)||'<span style="color:var(--muted)">—</span>'}</td>
+          ${cats}
+          <td style="padding:.5rem .5rem;font-size:.74rem;color:var(--sub);font-style:italic">${escHtml(mfb1)||'<span style="color:var(--muted)">—</span>'}</td>
+          <td style="padding:.5rem .5rem;font-size:.74rem;color:var(--sub);font-style:italic">${escHtml(mfb2)||'<span style="color:var(--muted)">—</span>'}</td>
         </tr>`;
       }).join('');
 
       const avgBadge = mgrAvg !== null
         ? `<span style="font-size:1.1rem;font-weight:700;color:${ratingColor(mgrAvg)}">${mgrAvg.toFixed(1)}</span>
-           <span style="font-size:.75rem;color:var(--muted);margin-left:.3rem">/ 5 avg</span>`
+           <span style="font-size:.75rem;color:var(--muted);margin-left:.3rem">/ 5 overall</span>`
         : '';
 
-      // Coaching callout
       let coaching = '';
       if (mgrAvg !== null && mgrAvg < 3) {
         coaching = `<div style="margin-top:.75rem;padding:.65rem .9rem;background:rgba(239,68,68,.08);border-left:3px solid var(--error,#ef4444);border-radius:0 6px 6px 0;font-size:.78rem;color:var(--text)">
-          <strong>Coaching Recommended:</strong> Average rating below 3.0 — consider a 1:1 leadership conversation and targeted development plan for ${escHtml(mgrName)}.
+          <strong>Coaching Recommended:</strong> Overall rating below 3.0 — schedule a 1:1 leadership conversation and build a targeted development plan for ${escHtml(mgrName)}.
         </div>`;
       } else if (mgrAvg !== null && mgrAvg < 4) {
         coaching = `<div style="margin-top:.75rem;padding:.65rem .9rem;background:rgba(245,158,11,.08);border-left:3px solid var(--amber,#f59e0b);border-radius:0 6px 6px 0;font-size:.78rem;color:var(--text)">
-          <strong>Development Opportunity:</strong> Rating between 3.0–3.9 — good foundation with room to grow. Discuss feedback themes in next check-in.
+          <strong>Development Opportunity:</strong> Rating 3.0–3.9 — solid foundation with clear areas to grow. Review the lowest-scoring categories and discuss in next check-in.
         </div>`;
       } else if (mgrAvg !== null) {
         coaching = `<div style="margin-top:.75rem;padding:.65rem .9rem;background:rgba(34,197,94,.08);border-left:3px solid var(--green-mid);border-radius:0 6px 6px 0;font-size:.78rem;color:var(--text)">
-          <strong>Strong Leadership:</strong> Team rates this manager 4.0+. Recognize performance and consider as a mentor for developing leaders.
+          <strong>Strong Leadership:</strong> Team rates this manager 4.0+. Recognize this performance and consider as a mentor for developing leaders.
         </div>`;
       }
+
+      const thCat = CATS.map(c =>
+        `<th style="text-align:center;padding:.35rem .35rem;font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap">${c.label}</th>`
+      ).join('');
 
       return `<div class="report-card" style="padding:1.25rem">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
@@ -1594,14 +1632,22 @@
             <span style="font-size:.72rem;color:var(--muted)">(${entries.length} response${entries.length!==1?'s':''})</span>
           </div>
         </div>
+
+        <!-- Category avg bars -->
+        <div style="background:var(--surface2);border-radius:8px;padding:.85rem 1rem;margin-bottom:1rem">
+          <div style="font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.65rem">Category Averages</div>
+          ${catBars}
+        </div>
+
+        <!-- Per-employee detail -->
         <div style="overflow-x:auto">
-          <table style="width:100%;border-collapse:collapse;font-size:.8rem">
+          <table style="width:100%;border-collapse:collapse;font-size:.78rem">
             <thead>
-              <tr style="border-bottom:1px solid var(--border2)">
-                <th style="text-align:left;padding:.4rem .5rem;font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Employee</th>
-                <th style="text-align:center;padding:.4rem .5rem;font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Rating</th>
-                <th style="text-align:left;padding:.4rem .5rem;font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Communication &amp; Feedback</th>
-                <th style="text-align:left;padding:.4rem .5rem;font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Growth &amp; Recognition</th>
+              <tr style="border-bottom:2px solid var(--border2)">
+                <th style="text-align:left;padding:.35rem .5rem;font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Employee</th>
+                ${thCat}
+                <th style="text-align:left;padding:.35rem .5rem;font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">What They Do Well</th>
+                <th style="text-align:left;padding:.35rem .5rem;font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">What Could Improve</th>
               </tr>
             </thead>
             <tbody>${rows}</tbody>
