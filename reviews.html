@@ -1059,19 +1059,62 @@
             Manager Feedback
             <span class="fp-hint" style="margin-left:.4rem">Shared with executive only — not visible to your manager</span>
           </div>
-          <div class="fp-sub-label" style="font-size:.75rem;margin-top:.5rem">How effectively does your manager communicate expectations and provide feedback?</div>
-          <textarea class="form-control" id="self-mfb1" rows="2" placeholder="Be specific — examples help…"></textarea>
-          <div class="fp-sub-label" style="font-size:.75rem;margin-top:.5rem">Does your manager support your growth and recognize your contributions?</div>
-          <textarea class="form-control" id="self-mfb2" rows="2" placeholder="Share what's working or what could improve…"></textarea>
-          <div class="fp-sub-label" style="font-size:.75rem;margin-top:.5rem">Overall, how would you rate your manager's leadership? (1 = Poor · 5 = Excellent)</div>
-          <select class="form-control" id="self-mfb-rating" style="max-width:200px">
-            <option value="">— Select —</option>
-            <option value="5">5 — Excellent</option>
-            <option value="4">4 — Good</option>
-            <option value="3">3 — Average</option>
-            <option value="2">2 — Below Average</option>
-            <option value="1">1 — Poor</option>
-          </select>
+
+          <!-- Rated questions grid -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem 1.25rem;margin-top:.75rem">
+            <div>
+              <div style="font-size:.73rem;font-weight:600;color:var(--text);margin-bottom:.3rem">Communication &amp; Expectations <span style="color:var(--muted);font-weight:400">(1–5)</span></div>
+              <div style="font-size:.68rem;color:var(--muted);margin-bottom:.4rem">How clearly does your manager set expectations and give feedback?</div>
+              <select class="form-control" id="self-mfb-r1">
+                <option value="">— Select —</option>
+                <option value="5">5 — Excellent</option><option value="4">4 — Good</option><option value="3">3 — Average</option><option value="2">2 — Below Average</option><option value="1">1 — Poor</option>
+              </select>
+            </div>
+            <div>
+              <div style="font-size:.73rem;font-weight:600;color:var(--text);margin-bottom:.3rem">Support &amp; Helpfulness <span style="color:var(--muted);font-weight:400">(1–5)</span></div>
+              <div style="font-size:.68rem;color:var(--muted);margin-bottom:.4rem">How available and helpful is your manager when you need assistance?</div>
+              <select class="form-control" id="self-mfb-r2">
+                <option value="">— Select —</option>
+                <option value="5">5 — Excellent</option><option value="4">4 — Good</option><option value="3">3 — Average</option><option value="2">2 — Below Average</option><option value="1">1 — Poor</option>
+              </select>
+            </div>
+            <div>
+              <div style="font-size:.73rem;font-weight:600;color:var(--text);margin-bottom:.3rem">Field Awareness <span style="color:var(--muted);font-weight:400">(1–5)</span></div>
+              <div style="font-size:.68rem;color:var(--muted);margin-bottom:.4rem">How well does your manager understand what's actually happening day-to-day on the job?</div>
+              <select class="form-control" id="self-mfb-r3">
+                <option value="">— Select —</option>
+                <option value="5">5 — Excellent</option><option value="4">4 — Good</option><option value="3">3 — Average</option><option value="2">2 — Below Average</option><option value="1">1 — Poor</option>
+              </select>
+            </div>
+            <div>
+              <div style="font-size:.73rem;font-weight:600;color:var(--text);margin-bottom:.3rem">Recognition &amp; Fairness <span style="color:var(--muted);font-weight:400">(1–5)</span></div>
+              <div style="font-size:.68rem;color:var(--muted);margin-bottom:.4rem">Does your manager recognize good work and treat the team fairly?</div>
+              <select class="form-control" id="self-mfb-r4">
+                <option value="">— Select —</option>
+                <option value="5">5 — Excellent</option><option value="4">4 — Good</option><option value="3">3 — Average</option><option value="2">2 — Below Average</option><option value="1">1 — Poor</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Open-ended questions -->
+          <div style="margin-top:.9rem">
+            <div class="fp-sub-label" style="font-size:.75rem">What is one thing your manager does well?</div>
+            <textarea class="form-control" id="self-mfb1" rows="2" placeholder="Be specific — examples help…"></textarea>
+            <div class="fp-sub-label" style="font-size:.75rem;margin-top:.5rem">What is one thing your manager could do better or differently?</div>
+            <textarea class="form-control" id="self-mfb2" rows="2" placeholder="Constructive feedback helps the team improve…"></textarea>
+          </div>
+
+          <div style="margin-top:.75rem">
+            <div class="fp-sub-label" style="font-size:.75rem">Overall Leadership Rating <span style="color:var(--muted);font-weight:400">(1–5)</span></div>
+            <select class="form-control" id="self-mfb-rating" style="max-width:220px">
+              <option value="">— Select —</option>
+              <option value="5">5 — Excellent</option>
+              <option value="4">4 — Good</option>
+              <option value="3">3 — Average</option>
+              <option value="2">2 — Below Average</option>
+              <option value="1">1 — Poor</option>
+            </select>
+          </div>
           </div><!-- end self-mfb-section -->
         </div>
       </div>
@@ -2088,6 +2131,10 @@
     setField('self-mfb1', currentReview.selfEval?.mfb1 || '', !canEditSelf);
     setField('self-mfb2', currentReview.selfEval?.mfb2 || '', !canEditSelf);
     setField('self-mfb-rating', currentReview.selfEval?.mfbRating || '', !canEditSelf, true);
+    setField('self-mfb-r1', currentReview.selfEval?.mfbR1 || '', !canEditSelf, true);
+    setField('self-mfb-r2', currentReview.selfEval?.mfbR2 || '', !canEditSelf, true);
+    setField('self-mfb-r3', currentReview.selfEval?.mfbR3 || '', !canEditSelf, true);
+    setField('self-mfb-r4', currentReview.selfEval?.mfbR4 || '', !canEditSelf, true);
     // Hide manager feedback section from managers (exec/admin can still read it)
     const mfbSection = document.getElementById('self-mfb-section');
     if (mfbSection) mfbSection.style.display = (isMgrOfEmp && !isExecOfEmp && !isAdmin) ? 'none' : '';
@@ -2705,6 +2752,10 @@
         mfb1: document.getElementById('self-mfb1').value.trim(),
         mfb2: document.getElementById('self-mfb2').value.trim(),
         mfbRating: document.getElementById('self-mfb-rating').value || null,
+        mfbR1: document.getElementById('self-mfb-r1').value || null,
+        mfbR2: document.getElementById('self-mfb-r2').value || null,
+        mfbR3: document.getElementById('self-mfb-r3').value || null,
+        mfbR4: document.getElementById('self-mfb-r4').value || null,
         submitted: false,
         savedAt: serverTimestamp()
       },
@@ -2811,6 +2862,10 @@
         mfb1: document.getElementById('self-mfb1').value.trim(),
         mfb2: document.getElementById('self-mfb2').value.trim(),
         mfbRating: document.getElementById('self-mfb-rating').value || null,
+        mfbR1: document.getElementById('self-mfb-r1').value || null,
+        mfbR2: document.getElementById('self-mfb-r2').value || null,
+        mfbR3: document.getElementById('self-mfb-r3').value || null,
+        mfbR4: document.getElementById('self-mfb-r4').value || null,
         submitted: true,
         submittedAt: serverTimestamp()
       },
