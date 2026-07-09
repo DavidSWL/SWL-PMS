@@ -646,6 +646,37 @@
         </div>
       </div>
 
+      <!-- ── SECTION: Manager Feedback (Upward) ── -->
+      <div class="section-header">
+        <h3>Manager Feedback &amp; Coaching</h3>
+        <div class="section-badge">Upward Feedback from Employees</div>
+        <div class="section-divider"></div>
+      </div>
+
+      <!-- KPI strip -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-radius:12px;overflow:hidden;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+        <div class="kpi-card">
+          <div class="kpi-label">Responses Submitted</div>
+          <div class="kpi-value" id="mfb-count" style="font-size:1.5rem">0</div>
+          <div class="kpi-sub">Employees who rated their manager</div>
+        </div>
+        <div class="kpi-card c-done">
+          <div class="kpi-label">Avg Manager Rating</div>
+          <div class="kpi-value" id="mfb-avg" style="font-size:1.5rem">—</div>
+          <div class="kpi-sub">Out of 5.0</div>
+        </div>
+        <div class="kpi-card c-score">
+          <div class="kpi-label">Managers Reviewed</div>
+          <div class="kpi-value" id="mfb-mgr-count" style="font-size:1.5rem">0</div>
+          <div class="kpi-sub">Unique managers with feedback</div>
+        </div>
+      </div>
+
+      <!-- Per-manager breakdown -->
+      <div id="mfb-mgr-grid" style="display:flex;flex-direction:column;gap:1rem;margin-bottom:2rem">
+        <!-- populated by JS -->
+      </div>
+
       <!-- ── SECTION: Forward-Looking Game Plan ── -->
       <div class="section-header">
         <h3>Forward-Looking Game Plan</h3>
@@ -906,6 +937,9 @@
 
     // ── Compensation ──
     renderCompSection(compRecords, employees);
+
+    // ── Manager upward feedback ──
+    renderManagerFeedback(reviews, employees);
 
     // ── Game plan ──
     renderGamePlan(completed, scored, employees, goals);
@@ -1221,8 +1255,11 @@
       alignRow.innerHTML = '<div class="report-card" style="grid-column:1/-1"><div class="empty-block">No self-evaluation data yet.</div></div>';
     }
 
-    // Voice table — all reviews with a self-eval submitted
-    const withSelf = reviews.filter(r => r.selfEval?.submitted || r.selfEval?.q1 || r.selfEval?.q2);
+    // Voice table — all reviews with a self-eval submitted and a known employee
+    const withSelf = reviews.filter(r =>
+      employees[r.employeeId] &&
+      (r.selfEval?.submitted || r.selfEval?.q1 || r.selfEval?.q2)
+    );
     const tbody = document.getElementById('voice-tbody');
     if (!withSelf.length) {
       tbody.innerHTML = '<tr><td colspan="7" class="empty-block">No submitted self-evaluations yet</td></tr>';
@@ -1457,6 +1494,121 @@
         <td style="color:var(--gray-400)">${r.effectiveDate || '—'}</td>
         <td style="color:var(--gray-600);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escHtml(r.notes||'')}">${escHtml(r.notes || '—')}</td>
       </tr>`;
+    }).join('');
+  }
+
+  // ── Manager Upward Feedback ───────────────────────────────────────────────
+  function renderManagerFeedback(reviews, employees) {
+    const RATING_LABEL = { '5':'Excellent','4':'Good','3':'Average','2':'Below Average','1':'Poor' };
+    const ratingColor  = r => r >= 4 ? 'var(--green-mid)' : r >= 3 ? 'var(--blue-mid,#3b82f6)' : 'var(--error,#ef4444)';
+
+    // Collect all reviews that have manager feedback
+    const withFeedback = reviews.filter(r =>
+      employees[r.employeeId] &&
+      (r.selfEval?.mfbRating || r.selfEval?.mfb1 || r.selfEval?.mfb2)
+    );
+
+    document.getElementById('mfb-count').textContent = withFeedback.length;
+
+    if (!withFeedback.length) {
+      document.getElementById('mfb-avg').textContent = '—';
+      document.getElementById('mfb-mgr-count').textContent = '0';
+      document.getElementById('mfb-mgr-grid').innerHTML =
+        '<div class="report-card"><div class="empty-block">No manager feedback submitted yet.</div></div>';
+      return;
+    }
+
+    // Avg overall rating
+    const rated = withFeedback.filter(r => r.selfEval?.mfbRating);
+    const avg = rated.length ? rated.reduce((s,r) => s + +r.selfEval.mfbRating, 0) / rated.length : null;
+    document.getElementById('mfb-avg').textContent = avg !== null ? avg.toFixed(1) : '—';
+    if (avg !== null) document.getElementById('mfb-avg').style.color = ratingColor(avg);
+
+    // Group by manager
+    const byMgr = {};
+    withFeedback.forEach(r => {
+      const emp = employees[r.employeeId];
+      const mgrId = emp?.managerId || '__none__';
+      if (!byMgr[mgrId]) byMgr[mgrId] = { mgrId, entries: [] };
+      byMgr[mgrId].entries.push({ r, emp });
+    });
+
+    document.getElementById('mfb-mgr-count').textContent = Object.keys(byMgr).filter(k => k !== '__none__').length;
+
+    const grid = document.getElementById('mfb-mgr-grid');
+    grid.innerHTML = Object.values(byMgr).map(({ mgrId, entries }) => {
+      const mgr = employees[mgrId];
+      const mgrName = mgr ? `${mgr.firstName||''} ${mgr.lastName||''}`.trim() : 'Unassigned';
+      const mgrRole = mgr?.position || mgr?.role || '';
+      const mgrDept = mgr?.department || '';
+
+      const mgrRatings = entries.filter(x => x.r.selfEval?.mfbRating).map(x => +x.r.selfEval.mfbRating);
+      const mgrAvg = mgrRatings.length ? mgrRatings.reduce((a,b)=>a+b,0)/mgrRatings.length : null;
+
+      const rows = entries.map(({ r, emp }) => {
+        const empName = `${emp.firstName||''} ${emp.lastName||''}`.trim();
+        const rating  = r.selfEval?.mfbRating;
+        const mfb1    = r.selfEval?.mfb1 || '';
+        const mfb2    = r.selfEval?.mfb2 || '';
+        return `<tr>
+          <td style="font-weight:600;color:var(--text);font-size:.8rem">${escHtml(empName)}<div style="font-size:.7rem;color:var(--muted)">${escHtml(emp.department||'')}</div></td>
+          <td style="text-align:center">
+            ${rating
+              ? `<span style="font-weight:700;font-size:1rem;color:${ratingColor(+rating)}">${rating}</span>
+                 <div style="font-size:.68rem;color:var(--muted)">${RATING_LABEL[rating]||''}</div>`
+              : '<span style="color:var(--muted)">—</span>'}
+          </td>
+          <td style="font-size:.78rem;color:var(--sub);font-style:italic">${escHtml(mfb1)||'<span style="color:var(--muted)">—</span>'}</td>
+          <td style="font-size:.78rem;color:var(--sub);font-style:italic">${escHtml(mfb2)||'<span style="color:var(--muted)">—</span>'}</td>
+        </tr>`;
+      }).join('');
+
+      const avgBadge = mgrAvg !== null
+        ? `<span style="font-size:1.1rem;font-weight:700;color:${ratingColor(mgrAvg)}">${mgrAvg.toFixed(1)}</span>
+           <span style="font-size:.75rem;color:var(--muted);margin-left:.3rem">/ 5 avg</span>`
+        : '';
+
+      // Coaching callout
+      let coaching = '';
+      if (mgrAvg !== null && mgrAvg < 3) {
+        coaching = `<div style="margin-top:.75rem;padding:.65rem .9rem;background:rgba(239,68,68,.08);border-left:3px solid var(--error,#ef4444);border-radius:0 6px 6px 0;font-size:.78rem;color:var(--text)">
+          <strong>Coaching Recommended:</strong> Average rating below 3.0 — consider a 1:1 leadership conversation and targeted development plan for ${escHtml(mgrName)}.
+        </div>`;
+      } else if (mgrAvg !== null && mgrAvg < 4) {
+        coaching = `<div style="margin-top:.75rem;padding:.65rem .9rem;background:rgba(245,158,11,.08);border-left:3px solid var(--amber,#f59e0b);border-radius:0 6px 6px 0;font-size:.78rem;color:var(--text)">
+          <strong>Development Opportunity:</strong> Rating between 3.0–3.9 — good foundation with room to grow. Discuss feedback themes in next check-in.
+        </div>`;
+      } else if (mgrAvg !== null) {
+        coaching = `<div style="margin-top:.75rem;padding:.65rem .9rem;background:rgba(34,197,94,.08);border-left:3px solid var(--green-mid);border-radius:0 6px 6px 0;font-size:.78rem;color:var(--text)">
+          <strong>Strong Leadership:</strong> Team rates this manager 4.0+. Recognize performance and consider as a mentor for developing leaders.
+        </div>`;
+      }
+
+      return `<div class="report-card" style="padding:1.25rem">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
+          <div>
+            <div style="font-size:.9rem;font-weight:700;color:var(--text)">${escHtml(mgrName)}</div>
+            <div style="font-size:.72rem;color:var(--muted)">${escHtml(mgrRole)}${mgrRole && mgrDept ? ' · ' : ''}${escHtml(mgrDept)}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.4rem">${avgBadge}
+            <span style="font-size:.72rem;color:var(--muted)">(${entries.length} response${entries.length!==1?'s':''})</span>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:.8rem">
+            <thead>
+              <tr style="border-bottom:1px solid var(--border2)">
+                <th style="text-align:left;padding:.4rem .5rem;font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Employee</th>
+                <th style="text-align:center;padding:.4rem .5rem;font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Rating</th>
+                <th style="text-align:left;padding:.4rem .5rem;font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Communication &amp; Feedback</th>
+                <th style="text-align:left;padding:.4rem .5rem;font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Growth &amp; Recognition</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+        ${coaching}
+      </div>`;
     }).join('');
   }
 
