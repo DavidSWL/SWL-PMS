@@ -4172,7 +4172,27 @@
       chip1.className = 'tracker-status-chip chip-active'; chip1.textContent = 'In Progress';
       sub1.textContent = r.selfEval?.savedAt ? 'Draft saved. Submit when ready.' : 'Not yet started.';
       answers.style.display = 'none';
+      // Show Start / Continue button
+      let trk1Btn = document.getElementById('trk-start-btn');
+      if (!trk1Btn) {
+        trk1Btn = document.createElement('button');
+        trk1Btn.id = 'trk-start-btn';
+        trk1Btn.style.cssText = 'margin-top:.6rem;padding:.45rem 1rem;background:var(--accent,#2563eb);color:#fff;border:none;border-radius:6px;font-size:.78rem;font-weight:700;cursor:pointer';
+        trk1Btn.addEventListener('click', () => {
+          trackerView.style.display = 'none';
+          document.getElementById('fp-sec-self').style.display = '';
+          document.getElementById('modal-save-draft').style.display = '';
+          document.getElementById('modal-submit').style.display = '';
+          switchTab('self');
+        });
+        sub1.parentNode.insertBefore(trk1Btn, sub1.nextSibling);
+      }
+      trk1Btn.textContent = r.selfEval?.savedAt ? 'Continue Self-Evaluation' : 'Start Self-Evaluation';
+      trk1Btn.style.display = '';
     }
+    // Hide start button if submitted
+    const existingBtn = document.getElementById('trk-start-btn');
+    if (existingBtn && selfDone) existingBtn.style.display = 'none';
 
     // Step 2 — Manager Review
     const icon2 = document.getElementById('trk-icon-2');
