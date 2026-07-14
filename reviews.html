@@ -1354,75 +1354,6 @@
                   <div class="comp-card-sub" id="cc-vs-median-sub"></div>
                 </div>
               </div>
-              <div class="value-section" id="value-section" style="display:none">
-                <div class="value-section-header">
-                  <div class="value-section-title">
-                    💼 Industry Value — What This Role Brings
-                    <span class="value-source-tag">Landscaping industry benchmarks · OC/LA Metro</span>
-                  </div>
-                </div>
-                <div class="value-cards">
-                  <div class="value-card highlight-value">
-                    <div class="value-card-label">Est. Annual Revenue Contribution</div>
-                    <div class="value-card-value" id="vc-revenue">—</div>
-                    <div class="value-card-sub" id="vc-revenue-sub"></div>
-                  </div>
-                  <div class="value-card">
-                    <div class="value-card-label">Value-to-Cost Ratio</div>
-                    <div class="value-card-value" id="vc-ratio">—</div>
-                    <div class="value-card-sub" id="vc-ratio-sub">Revenue generated per $1 of salary</div>
-                  </div>
-                  <div class="value-card">
-                    <div class="value-card-label">Scope of Responsibility</div>
-                    <div class="value-card-value" id="vc-scope">—</div>
-                    <div class="value-card-sub" id="vc-scope-sub"></div>
-                  </div>
-                </div>
-                <div class="value-roi-bar-wrap">
-                  <div class="value-roi-label">
-                    <span>Cost vs. Value</span>
-                    <span id="vc-roi-pct-label">—</span>
-                  </div>
-                  <div class="value-roi-track">
-                    <div class="value-roi-fill" id="vc-roi-fill" style="width:0%"></div>
-                  </div>
-                </div>
-                <div class="value-insight" id="vc-insight" style="margin-top:1rem"></div>
-                <div id="regional-comp-wrap" style="display:none;margin-top:1.5rem;border-top:1px solid var(--border);padding-top:1.25rem">
-                  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem">
-                    <div class="value-section-title">🗺️ Regional Market &amp; Competitor Comparison</div>
-                    <div class="region-tabs" id="region-tabs">
-                      <button class="region-tab active" onclick="switchRegion('ocla')">OC / LA Metro</button>
-                      <button class="region-tab" onclick="switchRegion('ie')">Inland Empire</button>
-                    </div>
-                  </div>
-                  <div id="regional-bls-block" style="margin-bottom:1rem">
-                    <div style="font-size:0.7rem;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem">
-                      BLS Market Range — <span id="regional-bls-label"></span>
-                      <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--gray-400)"> · BLS OES May 2023 (latest available)</span>
-                    </div>
-                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:.5rem">
-                      <div style="background:#F4F6F2;border:1px solid var(--border);border-radius:8px;padding:.75rem;text-align:center">
-                        <div style="font-size:.65rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.05em">10th %ile</div>
-                        <div style="font-size:1.1rem;font-weight:800;color:var(--gray-600)" id="regional-bls-low">—</div>
-                      </div>
-                      <div style="background:#EEF5E8;border:1px solid #B8D4A8;border-radius:8px;padding:.75rem;text-align:center">
-                        <div style="font-size:.65rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.05em">Median</div>
-                        <div style="font-size:1.1rem;font-weight:800;color:var(--green-dark)" id="regional-bls-med">—</div>
-                      </div>
-                      <div style="background:#F4F6F2;border:1px solid var(--border);border-radius:8px;padding:.75rem;text-align:center">
-                        <div style="font-size:.65rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.05em">90th %ile</div>
-                        <div style="font-size:1.1rem;font-weight:800;color:var(--gray-600)" id="regional-bls-high">—</div>
-                      </div>
-                    </div>
-                    <div id="regional-bls-vs-swl" style="font-size:.78rem;color:var(--green-dark);background:#F0F6EC;border:1px solid #C5DDB8;border-radius:6px;padding:.5rem .75rem"></div>
-                  </div>
-                  <div style="font-size:.7rem;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem">
-                    Competitor Pay — <span id="regional-comp-region-label"></span>
-                  </div>
-                  <div id="regional-comp-rows"></div>
-                </div>
-              </div>
             </div>
 
             <!-- ── Final Increase Approval ── -->
@@ -1594,74 +1525,65 @@
                 <div class="comp-card-sub" id="cc-vs-median-sub"></div>
               </div>
             </div>
-            <div class="value-section" id="value-section" style="display:none">
-              <div class="value-section-header">
-                <div class="value-section-title">
-                  💼 Industry Value — What This Role Brings
-                  <span class="value-source-tag">Landscaping industry benchmarks · OC/LA Metro</span>
+            <!-- ── Retention Risk ── -->
+            <div id="retention-section" style="display:none;margin-top:1.25rem;border-top:1px solid var(--border);padding-top:1.25rem">
+              <div style="font-size:.7rem;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem">⚠️ Retention Risk &amp; Cost to Replace</div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:.85rem" id="retention-cards"></div>
+              <div id="retention-bar-wrap" style="margin-bottom:.75rem">
+                <div style="display:flex;justify-content:space-between;font-size:.68rem;color:var(--gray-500);margin-bottom:.3rem">
+                  <span>Annual Raise Cost</span><span id="ret-raise-label">—</span>
+                  <span style="margin-left:auto">vs. Replacement Cost</span><span id="ret-replace-label" style="margin-left:.4rem">—</span>
+                </div>
+                <div style="position:relative;height:10px;background:var(--border2);border-radius:99px;overflow:hidden">
+                  <div id="ret-raise-bar" style="position:absolute;left:0;top:0;height:10px;background:#3b82f6;border-radius:99px;width:0%;transition:width .4s"></div>
+                  <div id="ret-replace-bar" style="position:absolute;left:0;top:0;height:10px;background:#ef4444;border-radius:99px;opacity:.35;width:100%"></div>
+                </div>
+                <div style="font-size:.68rem;color:var(--muted);margin-top:.3rem" id="ret-bar-note"></div>
+              </div>
+              <div id="retention-insight" style="font-size:.78rem;line-height:1.55;color:var(--gray-700);background:#FEF9EC;border:1px solid #FDE68A;border-radius:8px;padding:.65rem .85rem"></div>
+            </div>
+
+            <!-- ── Role Benchmark Scorecard ── -->
+            <div id="benchmark-section" style="display:none;margin-top:1.25rem;border-top:1px solid var(--border);padding-top:1.25rem">
+              <div style="font-size:.7rem;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem">📋 Role Benchmark Scorecard — What We Expect &amp; How to Grow</div>
+              <div id="benchmark-rows" style="display:flex;flex-direction:column;gap:.5rem"></div>
+              <div id="benchmark-growth" style="margin-top:.85rem;padding:.65rem .85rem;background:#EEF5E8;border:1px solid #B8D4A8;border-radius:8px;font-size:.78rem;color:var(--green-dark);line-height:1.55"></div>
+            </div>
+
+            <!-- Regional comparison (kept) -->
+            <div id="regional-comp-wrap" style="display:none;margin-top:1.5rem;border-top:1px solid var(--border);padding-top:1.25rem">
+              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem">
+                <div class="value-section-title">🗺️ Regional Market &amp; Competitor Comparison</div>
+                <div class="region-tabs" id="region-tabs">
+                  <button class="region-tab active" onclick="switchRegion('ocla')">OC / LA Metro</button>
+                  <button class="region-tab" onclick="switchRegion('ie')">Inland Empire</button>
                 </div>
               </div>
-              <div class="value-cards">
-                <div class="value-card highlight-value">
-                  <div class="value-card-label">Est. Annual Revenue Contribution</div>
-                  <div class="value-card-value" id="vc-revenue">—</div>
-                  <div class="value-card-sub" id="vc-revenue-sub"></div>
+              <div id="regional-bls-block" style="margin-bottom:1rem">
+                <div style="font-size:0.7rem;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem">
+                  BLS Market Range — <span id="regional-bls-label"></span>
+                  <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--gray-400)"> · BLS OES May 2023 (latest available)</span>
                 </div>
-                <div class="value-card">
-                  <div class="value-card-label">Value-to-Cost Ratio</div>
-                  <div class="value-card-value" id="vc-ratio">—</div>
-                  <div class="value-card-sub" id="vc-ratio-sub">Revenue generated per $1 of salary</div>
-                </div>
-                <div class="value-card">
-                  <div class="value-card-label">Scope of Responsibility</div>
-                  <div class="value-card-value" id="vc-scope">—</div>
-                  <div class="value-card-sub" id="vc-scope-sub"></div>
-                </div>
-              </div>
-              <div class="value-roi-bar-wrap">
-                <div class="value-roi-label">
-                  <span>Cost vs. Value</span>
-                  <span id="vc-roi-pct-label">—</span>
-                </div>
-                <div class="value-roi-track">
-                  <div class="value-roi-fill" id="vc-roi-fill" style="width:0%"></div>
-                </div>
-              </div>
-              <div class="value-insight" id="vc-insight" style="margin-top:1rem"></div>
-              <div id="regional-comp-wrap" style="display:none;margin-top:1.5rem;border-top:1px solid var(--border);padding-top:1.25rem">
-                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem">
-                  <div class="value-section-title">🗺️ Regional Market &amp; Competitor Comparison</div>
-                  <div class="region-tabs" id="region-tabs">
-                    <button class="region-tab active" onclick="switchRegion('ocla')">OC / LA Metro</button>
-                    <button class="region-tab" onclick="switchRegion('ie')">Inland Empire</button>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:.5rem">
+                  <div style="background:#F4F6F2;border:1px solid var(--border);border-radius:8px;padding:.75rem;text-align:center">
+                    <div style="font-size:.65rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.05em">10th %ile</div>
+                    <div style="font-size:1.1rem;font-weight:800;color:var(--gray-600)" id="regional-bls-low">—</div>
+                  </div>
+                  <div style="background:#EEF5E8;border:1px solid #B8D4A8;border-radius:8px;padding:.75rem;text-align:center">
+                    <div style="font-size:.65rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.05em">Median</div>
+                    <div style="font-size:1.1rem;font-weight:800;color:var(--green-dark)" id="regional-bls-med">—</div>
+                  </div>
+                  <div style="background:#F4F6F2;border:1px solid var(--border);border-radius:8px;padding:.75rem;text-align:center">
+                    <div style="font-size:.65rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.05em">90th %ile</div>
+                    <div style="font-size:1.1rem;font-weight:800;color:var(--gray-600)" id="regional-bls-high">—</div>
                   </div>
                 </div>
-                <div id="regional-bls-block" style="margin-bottom:1rem">
-                  <div style="font-size:0.7rem;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem">
-                    BLS Market Range — <span id="regional-bls-label"></span>
-                    <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--gray-400)"> · BLS OES May 2023 (latest available)</span>
-                  </div>
-                  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:.5rem">
-                    <div style="background:#F4F6F2;border:1px solid var(--border);border-radius:8px;padding:.75rem;text-align:center">
-                      <div style="font-size:.65rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.05em">10th %ile</div>
-                      <div style="font-size:1.1rem;font-weight:800;color:var(--gray-600)" id="regional-bls-low">—</div>
-                    </div>
-                    <div style="background:#EEF5E8;border:1px solid #B8D4A8;border-radius:8px;padding:.75rem;text-align:center">
-                      <div style="font-size:.65rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.05em">Median</div>
-                      <div style="font-size:1.1rem;font-weight:800;color:var(--green-dark)" id="regional-bls-med">—</div>
-                    </div>
-                    <div style="background:#F4F6F2;border:1px solid var(--border);border-radius:8px;padding:.75rem;text-align:center">
-                      <div style="font-size:.65rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.05em">90th %ile</div>
-                      <div style="font-size:1.1rem;font-weight:800;color:var(--gray-600)" id="regional-bls-high">—</div>
-                    </div>
-                  </div>
-                  <div id="regional-bls-vs-swl" style="font-size:.78rem;color:var(--green-dark);background:#F0F6EC;border:1px solid #C5DDB8;border-radius:6px;padding:.5rem .75rem"></div>
-                </div>
-                <div style="font-size:.7rem;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem">
-                  Competitor Pay — <span id="regional-comp-region-label"></span>
-                </div>
-                <div id="regional-comp-rows"></div>
+                <div id="regional-bls-vs-swl" style="font-size:.78rem;color:var(--green-dark);background:#F0F6EC;border:1px solid #C5DDB8;border-radius:6px;padding:.5rem .75rem"></div>
               </div>
+              <div style="font-size:.7rem;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem">
+                Competitor Pay — <span id="regional-comp-region-label"></span>
+              </div>
+              <div id="regional-comp-rows"></div>
             </div>
           </div>
 
@@ -3753,56 +3675,159 @@
     return best;
   }
 
+  // Role benchmark data keyed by keyword match
+  const ROLE_BENCHMARKS = {
+    'field worker|landscap|grounds|crew member|field tech': {
+      replaceMonths: 2, recruitCost: 3000, rampMonths: 1,
+      benchmarks: [
+        { label: 'Accounts Serviced / Week', target: '8–15 properties', challenge: 'Push toward 15+ with zero quality callbacks' },
+        { label: 'Safety Record', target: '0 incidents / year', challenge: 'Maintain 12-month clean record for pay increase eligibility' },
+        { label: 'Equipment Proficiency', target: 'All standard tools', challenge: 'Certify on irrigation & pest application equipment' },
+        { label: 'Callback Rate', target: '< 2% of jobs', challenge: 'Achieve < 1% to qualify for top-tier rating' },
+        { label: 'License / Certification', target: 'None required', challenge: 'Obtain Pesticide Handler or Irrigation cert for advancement' },
+      ],
+      growth: 'Field team members who hit < 1% callback rate and earn an equipment cert are first in line for Crew Leader promotion. That's a direct path to $47K–$61K+ and team leadership.'
+    },
+    'crew leader|crew lead|foreman': {
+      replaceMonths: 3, recruitCost: 6000, rampMonths: 2,
+      benchmarks: [
+        { label: 'Crew Size Managed', target: '3–5 members', challenge: 'Demonstrate capability to lead 6+ member crew efficiently' },
+        { label: 'Productivity (jobs/day)', target: '4–6 jobs/day', challenge: 'Achieve 6–8 jobs/day with zero quality issues' },
+        { label: 'Callback Rate', target: '< 3%', challenge: 'Drive to < 1.5% — top crew leaders average under 1%' },
+        { label: 'Client Feedback Score', target: 'No complaints', challenge: 'Generate 2+ positive client mentions per quarter' },
+        { label: 'Safety Compliance', target: '100% PPE & protocol', challenge: 'Lead weekly toolbox talks without prompting' },
+      ],
+      growth: 'Top crew leaders are the pipeline for Supervisor roles. Consistently managing 6+ crew members with low callback rates puts you on track for a $52K–$68K+ supervisor position.'
+    },
+    'supervisor|first-line|landscape supervisor': {
+      replaceMonths: 4, recruitCost: 9000, rampMonths: 3,
+      benchmarks: [
+        { label: 'Crews Supervised', target: '2–3 crews', challenge: 'Demonstrate effective oversight of 4+ crews' },
+        { label: 'Client Retention Rate', target: '90%+', challenge: 'Achieve 95%+ on your accounts through proactive service' },
+        { label: 'Schedule Adherence', target: '95% on-time', challenge: 'Hit 98%+ by optimizing routing and crew deployment' },
+        { label: 'Team Turnover', target: '< 25%/yr', challenge: 'Drive crew retention to < 15% — strong supervisors retain teams' },
+        { label: 'Budget Management', target: 'Within labor budget', challenge: 'Identify and deliver one cost-saving initiative per quarter' },
+      ],
+      growth: 'Supervisors who master multi-crew coordination and hit 95%+ client retention move into Branch Manager consideration. That jump represents a $68K–$110K+ compensation range.'
+    },
+    'branch manager|area manager': {
+      replaceMonths: 6, recruitCost: 20000, rampMonths: 4,
+      benchmarks: [
+        { label: 'Branch Revenue', target: '$1.5M–$4M / yr', challenge: 'Grow revenue 10%+ YoY through retention & new accounts' },
+        { label: 'Client Retention', target: '90%+ annually', challenge: 'Achieve 95%+ — top branches average 96–98%' },
+        { label: 'Labor Cost %', target: '< 38% of revenue', challenge: 'Drive to < 35% through scheduling efficiency & crew productivity' },
+        { label: 'Staff Headcount', target: '15–50 employees', challenge: 'Reduce turnover to < 20%/yr — hiring & training is your #1 cost' },
+        { label: 'P&L Ownership', target: 'Monthly review', challenge: 'Identify one margin improvement initiative per quarter' },
+        { label: 'New Business', target: '5–10 new accounts/yr', challenge: 'Drive 15+ net new accounts through referrals & local presence' },
+      ],
+      growth: 'Branch managers who grow revenue 10%+ YoY and hit < 35% labor cost are positioned for Regional Manager or multi-branch oversight — a $110K–$173K+ compensation trajectory.'
+    },
+    'account manager|account exec': {
+      replaceMonths: 4, recruitCost: 12000, rampMonths: 3,
+      benchmarks: [
+        { label: 'Accounts Managed', target: '20–40 accounts', challenge: 'Manage 50+ accounts while maintaining 90%+ renewal rate' },
+        { label: 'Renewal Rate', target: '85%+', challenge: 'Achieve 92%+ — top AMs close renewals 60 days in advance' },
+        { label: 'Upsell Revenue', target: '$50K+ / yr', challenge: 'Drive $100K+ in enhancement & add-on sales per year' },
+        { label: 'Response Time', target: '< 4 hrs client response', challenge: 'Same-day response as standard; proactive monthly check-ins' },
+        { label: 'NPS / Satisfaction', target: 'No escalations', challenge: 'Generate 5+ written referrals or reviews per year' },
+      ],
+      growth: 'Account managers with 92%+ renewal rates and $100K+ upsell production are candidates for Senior AM or Sales Manager roles — with comp moving into the $86K–$131K range.'
+    },
+    'irrigat|sprinkler': {
+      replaceMonths: 3, recruitCost: 7000, rampMonths: 2,
+      benchmarks: [
+        { label: 'Service Calls / Week', target: '10–18 calls', challenge: 'Handle 20+ calls/week with < 5% return visits' },
+        { label: 'Return Visit Rate', target: '< 8%', challenge: 'Drive to < 3% through first-call resolution discipline' },
+        { label: 'Certification', target: 'CA QAL / QAC preferred', challenge: 'Obtain IA Certified Irrigation Technician (CIT) within 12 months' },
+        { label: 'Install Revenue', target: '$50K+/yr', challenge: 'Build install pipeline to $100K+/yr alongside service' },
+        { label: 'Water Audit Completion', target: 'As requested', challenge: 'Proactively propose water audits on 20%+ of service accounts' },
+      ],
+      growth: 'CIT-certified techs who build install revenue to $100K+/yr and maintain < 3% return visits move into Lead Technician or branch irrigation specialist roles.'
+    },
+  };
+
+  function matchBenchmark(position) {
+    if (!position) return null;
+    const pos = position.toLowerCase();
+    for (const [pattern, data] of Object.entries(ROLE_BENCHMARKS)) {
+      if (pattern.split('|').some(k => pos.includes(k))) return data;
+    }
+    return null;
+  }
+
   function updateValueSection(currentSalary, position) {
-    const section = document.getElementById('value-section');
-    const val = matchIndustryValue(position);
-    if (!val) { section.style.display = 'none'; return; }
-    section.style.display = 'block';
+    const retSection   = document.getElementById('retention-section');
+    const benchSection = document.getElementById('benchmark-section');
+    const val          = matchIndustryValue(position);
+    const bench        = matchBenchmark(position);
 
-    // Revenue contribution
-    const hasRevenue = val.revLow > 0 || val.revHigh > 0;
-    if (hasRevenue) {
-      document.getElementById('vc-revenue').textContent = fmtCurrency(val.revLow) + ' – ' + fmtCurrency(val.revHigh);
-      document.getElementById('vc-revenue-sub').textContent = 'Estimated annual contribution to company revenue';
+    // ── Retention Risk ──
+    if (val && currentSalary) {
+      retSection.style.display = 'block';
+      const annualRaise3 = currentSalary * 0.03;
+      const annualRaise5 = currentSalary * 0.05;
+      const replaceCost  = bench ? bench.recruitCost + (currentSalary / 12 * bench.rampMonths) : currentSalary * 0.4;
+      const rampMonths   = bench?.rampMonths || 2;
+      const replaceMonths = bench?.replaceMonths || 3;
+
+      document.getElementById('retention-cards').innerHTML = `
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.65rem .7rem;text-align:center">
+          <div style="font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem">3% Raise / Year</div>
+          <div style="font-size:1rem;font-weight:800;color:#3b82f6">${fmtCurrency(annualRaise3)}</div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:.2rem">Annual cost to retain</div>
+        </div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.65rem .7rem;text-align:center">
+          <div style="font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem">5% Raise / Year</div>
+          <div style="font-size:1rem;font-weight:800;color:#3b82f6">${fmtCurrency(annualRaise5)}</div>
+          <div style="font-size:.65rem;color:var(--muted);margin-top:.2rem">Annual cost to retain</div>
+        </div>
+        <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:.65rem .7rem;text-align:center">
+          <div style="font-size:.6rem;font-weight:700;color:#b91c1c;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem">Cost to Replace</div>
+          <div style="font-size:1rem;font-weight:800;color:#ef4444">${fmtCurrency(replaceCost)}</div>
+          <div style="font-size:.65rem;color:#b91c1c;margin-top:.2rem">Recruiting + ramp-up (est.)</div>
+        </div>
+        <div style="background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:.65rem .7rem;text-align:center">
+          <div style="font-size:.6rem;font-weight:700;color:#b91c1c;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem">Productivity Gap</div>
+          <div style="font-size:1rem;font-weight:800;color:#ef4444">${replaceMonths} mos</div>
+          <div style="font-size:.65rem;color:#b91c1c;margin-top:.2rem">To find &amp; hire a replacement</div>
+        </div>`;
+
+      const raisePct = Math.min(95, Math.round((annualRaise3 / replaceCost) * 100));
+      document.getElementById('ret-raise-bar').style.width = raisePct + '%';
+      document.getElementById('ret-raise-label').textContent = fmtCurrency(annualRaise3) + '/yr';
+      document.getElementById('ret-replace-label').textContent = fmtCurrency(replaceCost);
+      document.getElementById('ret-bar-note').textContent = `A 3% raise is ${raisePct}% of what it costs to replace this employee — before accounting for ${rampMonths} months of reduced productivity.`;
+
+      const multiple = (replaceCost / annualRaise3).toFixed(1);
+      document.getElementById('retention-insight').innerHTML =
+        `Retaining this employee at a <strong>3% raise costs ${fmtCurrency(annualRaise3)}/yr</strong>. Replacing them is estimated at <strong>${fmtCurrency(replaceCost)}</strong> — that's <strong>${multiple}× the annual raise cost</strong>, plus ${rampMonths} months before a new hire reaches full productivity. Investing in retention is almost always the better financial decision.`;
     } else {
-      document.getElementById('vc-revenue').textContent = 'Indirect';
-      document.getElementById('vc-revenue-sub').textContent = 'Value through cost avoidance & operational efficiency';
+      retSection.style.display = 'none';
     }
 
-    // Value-to-cost ratio
-    if (hasRevenue && currentSalary) {
-      const midRev = (val.revLow + val.revHigh) / 2;
-      const ratio = (midRev / currentSalary).toFixed(1);
-      document.getElementById('vc-ratio').textContent = ratio + 'x';
-      document.getElementById('vc-ratio-sub').textContent = `Generates ~${fmtCurrency(midRev)} for every ${fmtCurrency(currentSalary)} in salary`;
-    } else if (hasRevenue) {
-      const midRev = (val.revLow + val.revHigh) / 2;
-      document.getElementById('vc-ratio').textContent = '—';
-      document.getElementById('vc-ratio-sub').textContent = `Mid-range revenue: ~${fmtCurrency(midRev)}`;
+    // ── Role Benchmark Scorecard ──
+    if (bench) {
+      benchSection.style.display = 'block';
+      document.getElementById('benchmark-rows').innerHTML = bench.benchmarks.map(b => `
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;padding:.55rem .65rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;align-items:start">
+          <div>
+            <div style="font-size:.68rem;font-weight:700;color:var(--text)">${b.label}</div>
+          </div>
+          <div>
+            <div style="font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.15rem">Standard Expectation</div>
+            <div style="font-size:.75rem;color:var(--green-dark);font-weight:600">${b.target}</div>
+          </div>
+          <div>
+            <div style="font-size:.6rem;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.15rem">Growth Challenge</div>
+            <div style="font-size:.73rem;color:#92400e">${b.challenge}</div>
+          </div>
+        </div>`).join('');
+      document.getElementById('benchmark-growth').innerHTML = `<strong>Career Path:</strong> ${bench.growth}`;
     } else {
-      document.getElementById('vc-ratio').textContent = 'N/A';
-      document.getElementById('vc-ratio-sub').textContent = 'Revenue generated per $1 of salary';
+      benchSection.style.display = 'none';
     }
 
-    // Scope
-    document.getElementById('vc-scope').textContent = val.scopeLabel;
-    document.getElementById('vc-scope-sub').textContent = val.scopeSub;
-
-    // ROI bar — salary as % of mid-revenue (capped at 100%)
-    if (hasRevenue && currentSalary) {
-      const midRev = (val.revLow + val.revHigh) / 2;
-      const costPct = Math.min(98, Math.round((currentSalary / midRev) * 100));
-      document.getElementById('vc-roi-fill').style.width = costPct + '%';
-      document.getElementById('vc-roi-pct-label').textContent = `Salary is ${costPct}% of estimated mid-revenue contribution`;
-    } else {
-      document.getElementById('vc-roi-fill').style.width = '0%';
-      document.getElementById('vc-roi-pct-label').textContent = '—';
-    }
-
-    // Insight
-    document.getElementById('vc-insight').innerHTML = val.insight;
-
-    // Regional comparison — store position/salary on the section for tab switching
+    // Regional comparison
     const regionalWrap = document.getElementById('regional-comp-wrap');
     regionalWrap.dataset.position = position || '';
     regionalWrap.dataset.salary   = currentSalary || '';
