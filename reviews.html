@@ -4337,7 +4337,7 @@
       const dateStr = document.getElementById('meeting-date').value;
       const timeStr = document.getElementById('meeting-time').value;
       const subject = encodeURIComponent(`Your Annual Performance Review Meeting — ${selectedYear}`);
-      let body = `Dear ${empName},\n\nI would like to schedule your annual performance review meeting`;
+      let body = `Hello ${empName},\n\nI would like to schedule your annual performance review meeting`;
       if (dateStr) {
         const d = new Date(dateStr + (timeStr ? 'T' + timeStr : ''));
         const fmt = d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
