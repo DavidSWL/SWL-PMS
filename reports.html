@@ -291,6 +291,110 @@
       .dept-card { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
       .two-col, .three-col, .four-col, .plan-grid { break-inside: avoid; }
     }
+
+    /* ── Admin Section Nav ── */
+    .admin-section-nav {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 1.75rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    }
+    .sec-nav-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      border-right: 1px solid var(--border);
+      padding: .75rem 1rem;
+      font-size: .8125rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: background .15s, color .15s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .2rem;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+    .sec-nav-btn:last-child { border-right: none; }
+    .sec-nav-btn:hover { background: var(--surface2); color: var(--text); }
+    .sec-nav-btn.active { background: var(--green); color: #fff; }
+    .sec-nav-btn .snb-icon { font-size: 1.1rem; }
+    .sec-nav-btn .snb-count {
+      font-size: .65rem;
+      font-weight: 700;
+      padding: .1rem .4rem;
+      border-radius: 99px;
+      background: rgba(255,255,255,.2);
+      display: none;
+    }
+    .sec-nav-btn.active .snb-count { display: inline; }
+
+    /* ── Report tab visibility ── */
+    /* Default: all tabs visible (non-admin). Admin JS adds .admin-tabs-enabled to #report-body which hides non-active tabs. */
+    .report-tab { display: block; }
+    #report-body.admin-tabs-enabled .report-tab { display: none; }
+    #report-body.admin-tabs-enabled .report-tab.active { display: block; }
+
+    /* ── Clickable KPI cards ── */
+    .kpi-card.is-clickable { cursor: pointer; transition: box-shadow .15s, transform .1s; }
+    .kpi-card.is-clickable:hover { box-shadow: 0 4px 16px rgba(0,0,0,.1); transform: translateY(-1px); }
+
+    /* ── Drawer ── */
+    .rpt-drawer-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 500;
+      opacity: 0; pointer-events: none;
+      transition: opacity .2s;
+    }
+    .rpt-drawer-overlay.open { opacity: 1; pointer-events: all; }
+    .rpt-drawer {
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: min(520px, 100vw);
+      background: var(--surface);
+      box-shadow: -4px 0 32px rgba(0,0,0,.18);
+      transform: translateX(100%);
+      transition: transform .25s cubic-bezier(.4,0,.2,1);
+      display: flex; flex-direction: column;
+      z-index: 501;
+    }
+    .rpt-drawer-overlay.open .rpt-drawer { transform: translateX(0); }
+    .rpt-drawer-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0;
+      background: var(--surface); z-index: 1;
+    }
+    .rpt-drawer-title { font-size: 1rem; font-weight: 800; color: var(--text); }
+    .rpt-drawer-close {
+      background: none; border: none; cursor: pointer;
+      color: var(--muted); font-size: 1.25rem; line-height: 1;
+      padding: .3rem .5rem; border-radius: 6px; font-family: inherit;
+    }
+    .rpt-drawer-close:hover { background: var(--surface2); color: var(--text); }
+    .rpt-drawer-body { padding: 1.5rem; overflow-y: auto; flex: 1; }
+    .rpt-drawer-section { margin-bottom: 1.5rem; }
+    .rpt-drawer-section-title {
+      font-size: .65rem; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .08em;
+      margin-bottom: .75rem;
+    }
+    .rpt-stat-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: .5rem 0; border-bottom: 1px solid var(--border2);
+      font-size: .875rem;
+    }
+    .rpt-stat-row:last-child { border-bottom: none; }
+    .rpt-stat-key { color: var(--sub); }
+    .rpt-stat-val { font-weight: 700; color: var(--text); }
   </style>
 </head>
 <body>
@@ -354,6 +458,12 @@
     <div id="loading-state" class="loading"><div class="spinner"></div> Loading report data…</div>
 
     <div id="report-body" style="display:none">
+
+      <!-- Admin section nav — injected by JS when isAdmin -->
+      <div id="admin-section-nav-wrap"></div>
+
+      <!-- ── TAB: Performance ── -->
+      <div id="tab-performance" class="report-tab active">
 
       <!-- ── KPI Row ── -->
       <div class="kpi-row">
@@ -495,6 +605,11 @@
         </div>
       </div>
 
+      </div><!-- /tab-performance -->
+
+      <!-- ── TAB: People ── -->
+      <div id="tab-people" class="report-tab">
+
       <!-- ── SECTION: Employee Voice ── -->
       <div class="section-header">
         <h3>Employee Voice — Self-Evaluations</h3>
@@ -541,6 +656,11 @@
       <div class="dept-grid" id="dept-intel-grid">
         <!-- populated by JS -->
       </div>
+
+      </div><!-- /tab-people -->
+
+      <!-- ── TAB: Financials ── -->
+      <div id="tab-financials" class="report-tab">
 
       <!-- ── Payroll Impact ── -->
       <div class="section-header">
@@ -646,6 +766,11 @@
         </div>
       </div>
 
+      </div><!-- /tab-financials -->
+
+      <!-- ── TAB: Manager Feedback ── -->
+      <div id="tab-mgr-feedback" class="report-tab">
+
       <!-- ── SECTION: Manager Feedback (Upward) ── -->
       <div class="section-header">
         <h3>Manager Feedback &amp; Coaching</h3>
@@ -676,6 +801,11 @@
       <div id="mfb-mgr-grid" style="display:flex;flex-direction:column;gap:1rem;margin-bottom:2rem">
         <!-- populated by JS -->
       </div>
+
+      </div><!-- /tab-mgr-feedback -->
+
+      <!-- ── TAB: Planning ── -->
+      <div id="tab-planning" class="report-tab">
 
       <!-- ── SECTION: Forward-Looking Game Plan ── -->
       <div class="section-header">
@@ -713,11 +843,24 @@
         </div>
       </div>
 
+      </div><!-- /tab-planning -->
+
     </div><!-- /report-body -->
   </div>
 </div>
 
 <div class="toast-wrap" id="toast-wrap"></div>
+
+<!-- Drawer (admin only) -->
+<div class="rpt-drawer-overlay" id="rpt-drawer-overlay">
+  <div class="rpt-drawer" id="rpt-drawer">
+    <div class="rpt-drawer-head">
+      <div class="rpt-drawer-title" id="rpt-drawer-title">Detail</div>
+      <button class="rpt-drawer-close" id="rpt-drawer-close">✕</button>
+    </div>
+    <div class="rpt-drawer-body" id="rpt-drawer-body"></div>
+  </div>
+</div>
 
 <script type="module">
   import { initializeApp }    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
@@ -946,6 +1089,161 @@
 
     // ── Goals ──
     renderGoalSection(goals);
+
+    // ── Admin section nav (admin/exec only) ──
+    if (isAdmin) initAdminLayout(reviews, employees, goals);
+  }
+
+  // ── Admin layout: section nav + clickable KPIs + drawer ─────────────────
+  function initAdminLayout(reviews, employees, goals) {
+    // Build section nav
+    const wrap = document.getElementById('admin-section-nav-wrap');
+    const completed = reviews.filter(r => r.status === 'completed');
+    const inProgress = reviews.filter(r => ['draft','submitted','in-review','mgr-complete'].includes(r.status));
+    const tabs = [
+      { id: 'performance',  icon: '📊', label: 'Performance',  count: reviews.length },
+      { id: 'people',       icon: '👥', label: 'People',       count: Object.values(employees).filter(e=>e.status==='active').length },
+      { id: 'financials',   icon: '💰', label: 'Financials',   count: reviews.filter(r=>r.approvedIncrease?.newRate).length },
+      { id: 'mgr-feedback', icon: '💬', label: 'Mgr Feedback', count: reviews.filter(r=>r.selfEval?.mfbRating).length },
+      { id: 'planning',     icon: '🎯', label: 'Planning',     count: goals.length },
+    ];
+
+    document.getElementById('report-body').classList.add('admin-tabs-enabled');
+
+    wrap.innerHTML = `<nav class="admin-section-nav" id="admin-section-nav">
+      ${tabs.map(t => `
+        <button class="sec-nav-btn${t.id==='performance'?' active':''}" data-tab="${t.id}" onclick="adminShowTab('${t.id}')">
+          <span class="snb-icon">${t.icon}</span>
+          ${t.label}
+          <span class="snb-count">${t.count}</span>
+        </button>`).join('')}
+    </nav>`;
+
+    // Hide all tabs except performance (default)
+    document.querySelectorAll('.report-tab').forEach(el => el.classList.remove('active'));
+    const perfTab = document.getElementById('tab-performance');
+    if (perfTab) perfTab.classList.add('active');
+
+    // Make KPI cards clickable with drawer content
+    wireKpiDrawers(reviews, employees, goals, completed);
+
+    // Set up drawer close
+    const overlay = document.getElementById('rpt-drawer-overlay');
+    const closeBtn = document.getElementById('rpt-drawer-close');
+    if (overlay) {
+      overlay.addEventListener('click', e => { if(e.target === overlay) closeRptDrawer(); });
+    }
+    if (closeBtn) closeBtn.addEventListener('click', closeRptDrawer);
+    document.addEventListener('keydown', e => { if(e.key==='Escape') closeRptDrawer(); });
+  }
+
+  window.adminShowTab = function adminShowTab(tabId) {
+    document.querySelectorAll('.report-tab').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.sec-nav-btn').forEach(b => b.classList.remove('active'));
+    const tab = document.getElementById('tab-' + tabId);
+    if (tab) tab.classList.add('active');
+    const btn = document.querySelector(`.sec-nav-btn[data-tab="${tabId}"]`);
+    if (btn) btn.classList.add('active');
+  };
+
+  function openRptDrawer(title, html) {
+    document.getElementById('rpt-drawer-title').textContent = title;
+    document.getElementById('rpt-drawer-body').innerHTML = html;
+    document.getElementById('rpt-drawer-overlay').classList.add('open');
+  }
+
+  function closeRptDrawer() {
+    const overlay = document.getElementById('rpt-drawer-overlay');
+    if (overlay) overlay.classList.remove('open');
+  }
+
+  function wireKpiDrawers(reviews, employees, goals, completed) {
+    const empList = Object.values(employees).filter(e => e.status === 'active');
+    const total = reviews.length;
+    const inProg = reviews.filter(r => ['draft','submitted','in-review','mgr-complete'].includes(r.status));
+    const notStarted = reviews.filter(r => r.status === 'not-started');
+
+    const scored = completed.map(r => {
+      const s = reviewScore(r); return s !== null ? { r, score: s } : null;
+    }).filter(Boolean);
+    const avgSc = scored.length ? (scored.reduce((a,x)=>a+x.score,0)/scored.length) : null;
+
+    const kpiMap = {
+      'kpi-emps': {
+        title: 'Active Employees',
+        html: () => {
+          const byDept = {};
+          empList.forEach(e => { const d=e.department||'Unassigned'; byDept[d]=(byDept[d]||0)+1; });
+          return `<div class="rpt-drawer-section">
+            <div class="rpt-drawer-section-title">By Department</div>
+            ${Object.entries(byDept).sort((a,b)=>b[1]-a[1]).map(([d,n])=>
+              `<div class="rpt-stat-row"><span class="rpt-stat-key">${escHtml(d)}</span><span class="rpt-stat-val">${n}</span></div>`
+            ).join('')}
+          </div>
+          <div class="rpt-drawer-section">
+            <div class="rpt-drawer-section-title">By Branch</div>
+            ${(()=>{const bb={};empList.forEach(e=>{const b=e.branch||'No Branch';bb[b]=(bb[b]||0)+1;});return Object.entries(bb).sort((a,b)=>b[1]-a[1]).map(([b,n])=>`<div class="rpt-stat-row"><span class="rpt-stat-key">${escHtml(b)}</span><span class="rpt-stat-val">${n}</span></div>`).join('');})()}
+          </div>`;
+        }
+      },
+      'kpi-total': {
+        title: `${selectedYear} Review Breakdown`,
+        html: () => `<div class="rpt-drawer-section">
+          <div class="rpt-drawer-section-title">Status Breakdown</div>
+          <div class="rpt-stat-row"><span class="rpt-stat-key">Completed</span><span class="rpt-stat-val" style="color:var(--success)">${completed.length}</span></div>
+          <div class="rpt-stat-row"><span class="rpt-stat-key">In Progress</span><span class="rpt-stat-val" style="color:var(--yellow)">${inProg.length}</span></div>
+          <div class="rpt-stat-row"><span class="rpt-stat-key">Not Started</span><span class="rpt-stat-val" style="color:var(--muted)">${notStarted.length}</span></div>
+          <div class="rpt-stat-row"><span class="rpt-stat-key">Total</span><span class="rpt-stat-val">${total}</span></div>
+          <div class="rpt-stat-row"><span class="rpt-stat-key">Completion Rate</span><span class="rpt-stat-val">${total?Math.round(completed.length/total*100)+'%':'—'}</span></div>
+        </div>`
+      },
+      'kpi-done': {
+        title: 'Completed Reviews',
+        html: () => {
+          const rows = completed.map(r => {
+            const e = employees[r.employeeId];
+            const s = reviewScore(r);
+            return `<div class="rpt-stat-row"><span class="rpt-stat-key">${escHtml(fullName(e))}<br><span style="font-size:.7rem;color:var(--muted)">${escHtml(e?.department||'')}</span></span><span class="rpt-stat-val">${s!==null?s.toFixed(1):'—'}</span></div>`;
+          }).join('') || '<div style="color:var(--muted);font-size:.875rem">No completed reviews yet</div>';
+          return `<div class="rpt-drawer-section"><div class="rpt-drawer-section-title">Completed Employees</div>${rows}</div>`;
+        }
+      },
+      'kpi-score': {
+        title: 'Score Analysis',
+        html: () => {
+          const dist = {1:0,2:0,3:0,4:0,5:0};
+          scored.forEach(x => { const b=Math.min(5,Math.max(1,Math.round(x.score))); dist[b]++; });
+          return `<div class="rpt-drawer-section">
+            <div class="rpt-drawer-section-title">Score Summary</div>
+            <div class="rpt-stat-row"><span class="rpt-stat-key">Average Score</span><span class="rpt-stat-val">${avgSc!==null?avgSc.toFixed(2):'—'}</span></div>
+            <div class="rpt-stat-row"><span class="rpt-stat-key">Highest</span><span class="rpt-stat-val">${scored.length?Math.max(...scored.map(x=>x.score)).toFixed(1):'—'}</span></div>
+            <div class="rpt-stat-row"><span class="rpt-stat-key">Lowest</span><span class="rpt-stat-val">${scored.length?Math.min(...scored.map(x=>x.score)).toFixed(1):'—'}</span></div>
+          </div>
+          <div class="rpt-drawer-section">
+            <div class="rpt-drawer-section-title">Distribution</div>
+            ${[5,4,3,2,1].map(s=>`<div class="rpt-stat-row"><span class="rpt-stat-key">Score ${s}</span><span class="rpt-stat-val">${dist[s]} employee${dist[s]!==1?'s':''}</span></div>`).join('')}
+          </div>`;
+        }
+      },
+      'kpi-goals': {
+        title: 'Goals Overview',
+        html: () => {
+          const byStatus = {};
+          goals.forEach(g => { byStatus[g.status]=(byStatus[g.status]||0)+1; });
+          return `<div class="rpt-drawer-section">
+            <div class="rpt-drawer-section-title">By Status</div>
+            ${Object.entries(byStatus).map(([s,n])=>`<div class="rpt-stat-row"><span class="rpt-stat-key">${escHtml(s)}</span><span class="rpt-stat-val">${n}</span></div>`).join('') || '<div style="color:var(--muted)">No goals</div>'}
+          </div>`;
+        }
+      },
+    };
+
+    Object.entries(kpiMap).forEach(([id, def]) => {
+      const card = document.getElementById(id)?.closest('.kpi-card');
+      if (!card) return;
+      card.classList.add('is-clickable');
+      card.addEventListener('click', () => openRptDrawer(def.title, def.html()));
+    });
   }
 
   // ── Stacked bar ──────────────────────────────────────────────────────────
