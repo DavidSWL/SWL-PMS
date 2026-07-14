@@ -183,19 +183,8 @@
     .modal-overlay.fp-mode .modal-footer { flex-shrink: 0; }
     .modal-overlay.fp-mode .modal-body { flex: 1; overflow: hidden; padding: 0; }
     .modal-overlay.fp-mode #tab-executive.active {
-      display: flex; flex-direction: row; height: 100%; overflow: hidden; padding: 0;
+      display: block; padding: 0;
     }
-    .modal-overlay.fp-mode .exec-main-content {
-      flex: 1; overflow-y: auto; padding: 1.5rem 1.75rem;
-    }
-    .modal-overlay.fp-mode #comp-panel {
-      width: 500px !important; flex-shrink: 0;
-      overflow-y: auto; display: flex !important; flex-direction: column;
-      border-left: 1px solid var(--border); border-radius: 0;
-      margin: 0 !important;
-    }
-    .modal-overlay.fp-mode .comp-panel-header { border-radius: 0; }
-    .modal-overlay.fp-mode .comp-panel-body { flex: 1; }
 
     /* ── B2 Full-Page Layout ── */
     #fp-review { display: none; position: fixed; inset: 0; z-index: 500; background: var(--bg); flex-direction: column; }
@@ -223,11 +212,10 @@
     .fp-pill-not-started { background: var(--gray-100); color: var(--gray-500); }
     .fp-body { flex: 1; display: flex; overflow: hidden; }
     .fp-left { flex: 1; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 1.25rem; }
-    .fp-right { width: 500px; flex-shrink: 0; border-left: 1px solid var(--border); overflow-y: auto; display: flex; flex-direction: column; background: var(--white); }
-    .fp-right-placeholder { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; }
-    #comp-panel { display: block; }
+    .fp-right { display: none; }
+    #comp-panel { display: block; margin-top: 1.25rem; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
     #comp-panel.hidden { display: none; }
-    #fp-right-placeholder.hidden { display: none; }
+    #fp-right-placeholder { display: none; }
     .fp-section-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; flex-shrink: 0; }
     .fp-section-hdr { padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.875rem; }
     .fp-hdr-self { background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%); }
@@ -1298,6 +1286,190 @@
             <option value="performance-plan">Performance Improvement Plan</option>
           </select>
 
+          <!-- ── Inline Compensation Analysis (shown on Merit Increase) ── -->
+          <div class="comp-panel hidden" id="comp-panel">
+            <div class="comp-panel-header">
+              <div class="comp-panel-title">
+                <svg width="18" height="18" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                Compensation Analysis — OC/LA Metro Market Data
+              </div>
+              <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
+                <span class="comp-score-chip" id="comp-score-label">Score: —</span>
+                <span class="suggest-pill" id="comp-suggest-label" style="display:none"></span>
+              </div>
+            </div>
+            <div class="comp-panel-body">
+              <div class="role-match-note" id="comp-role-note"></div>
+              <div class="comp-input-row">
+                <div class="comp-input-group">
+                  <label>Proposed Increase (%)</label>
+                  <input type="number" class="comp-input-field" id="comp-pct-input" min="0" max="50" step="0.1" placeholder="e.g. 3.5" />
+                  <div class="comp-input-hint">Enter the % raise you want to propose</div>
+                </div>
+                <div class="comp-input-group">
+                  <label>Market Position</label>
+                  <div style="padding-top:0.35rem">
+                    <span class="mkt-status-pill" id="comp-market-pill">—</span>
+                  </div>
+                </div>
+              </div>
+              <div class="mkt-section">
+                <div class="mkt-section-label">
+                  <span>Market Range vs. Compensation</span>
+                  <span style="font-size:0.7rem;color:var(--gray-400);font-weight:400;text-transform:none;letter-spacing:0">BLS OES May 2023 (latest available) · OC/LA Metro</span>
+                </div>
+                <div class="mkt-bar-wrap">
+                  <div class="mkt-bar-track" id="mkt-bar-track">
+                    <div class="mkt-flag current-flag" id="mkt-current-flag" style="left:50%">Current</div>
+                    <div class="mkt-dot current" id="mkt-current-dot" style="left:50%">C</div>
+                    <div class="mkt-flag proposed-flag" id="mkt-proposed-flag" style="left:50%;display:none">Proposed</div>
+                    <div class="mkt-dot proposed" id="mkt-proposed-dot" style="left:50%;display:none">P</div>
+                  </div>
+                  <div class="mkt-bar-labels">
+                    <span id="mkt-label-lo"></span>
+                    <span id="mkt-label-med">Median</span>
+                    <span id="mkt-label-hi"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="comp-cards">
+                <div class="comp-card">
+                  <div class="comp-card-label">Current Salary</div>
+                  <div class="comp-card-value" id="cc-current">—</div>
+                  <div class="comp-card-sub" id="cc-current-sub"></div>
+                </div>
+                <div class="comp-card highlight">
+                  <div class="comp-card-label">Proposed Salary</div>
+                  <div class="comp-card-value" id="cc-proposed">—</div>
+                  <div class="comp-card-sub" id="cc-proposed-sub">Enter % above</div>
+                </div>
+                <div class="comp-card accent-card">
+                  <div class="comp-card-label">Dollar Increase</div>
+                  <div class="comp-card-value" id="cc-increase">—</div>
+                  <div class="comp-card-sub" id="cc-increase-sub"></div>
+                </div>
+                <div class="comp-card">
+                  <div class="comp-card-label">vs. Market Median</div>
+                  <div class="comp-card-value" id="cc-vs-median">—</div>
+                  <div class="comp-card-sub" id="cc-vs-median-sub"></div>
+                </div>
+              </div>
+              <div class="value-section" id="value-section" style="display:none">
+                <div class="value-section-header">
+                  <div class="value-section-title">
+                    💼 Industry Value — What This Role Brings
+                    <span class="value-source-tag">Landscaping industry benchmarks · OC/LA Metro</span>
+                  </div>
+                </div>
+                <div class="value-cards">
+                  <div class="value-card highlight-value">
+                    <div class="value-card-label">Est. Annual Revenue Contribution</div>
+                    <div class="value-card-value" id="vc-revenue">—</div>
+                    <div class="value-card-sub" id="vc-revenue-sub"></div>
+                  </div>
+                  <div class="value-card">
+                    <div class="value-card-label">Value-to-Cost Ratio</div>
+                    <div class="value-card-value" id="vc-ratio">—</div>
+                    <div class="value-card-sub" id="vc-ratio-sub">Revenue generated per $1 of salary</div>
+                  </div>
+                  <div class="value-card">
+                    <div class="value-card-label">Scope of Responsibility</div>
+                    <div class="value-card-value" id="vc-scope">—</div>
+                    <div class="value-card-sub" id="vc-scope-sub"></div>
+                  </div>
+                </div>
+                <div class="value-roi-bar-wrap">
+                  <div class="value-roi-label">
+                    <span>Cost vs. Value</span>
+                    <span id="vc-roi-pct-label">—</span>
+                  </div>
+                  <div class="value-roi-track">
+                    <div class="value-roi-fill" id="vc-roi-fill" style="width:0%"></div>
+                  </div>
+                </div>
+                <div class="value-insight" id="vc-insight" style="margin-top:1rem"></div>
+                <div id="regional-comp-wrap" style="display:none;margin-top:1.5rem;border-top:1px solid var(--border);padding-top:1.25rem">
+                  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem">
+                    <div class="value-section-title">🗺️ Regional Market &amp; Competitor Comparison</div>
+                    <div class="region-tabs" id="region-tabs">
+                      <button class="region-tab active" onclick="switchRegion('ocla')">OC / LA Metro</button>
+                      <button class="region-tab" onclick="switchRegion('ie')">Inland Empire</button>
+                    </div>
+                  </div>
+                  <div id="regional-bls-block" style="margin-bottom:1rem">
+                    <div style="font-size:0.7rem;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem">
+                      BLS Market Range — <span id="regional-bls-label"></span>
+                      <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--gray-400)"> · BLS OES May 2023 (latest available)</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:.5rem">
+                      <div style="background:#F4F6F2;border:1px solid var(--border);border-radius:8px;padding:.75rem;text-align:center">
+                        <div style="font-size:.65rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.05em">10th %ile</div>
+                        <div style="font-size:1.1rem;font-weight:800;color:var(--gray-600)" id="regional-bls-low">—</div>
+                      </div>
+                      <div style="background:#EEF5E8;border:1px solid #B8D4A8;border-radius:8px;padding:.75rem;text-align:center">
+                        <div style="font-size:.65rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.05em">Median</div>
+                        <div style="font-size:1.1rem;font-weight:800;color:var(--green-dark)" id="regional-bls-med">—</div>
+                      </div>
+                      <div style="background:#F4F6F2;border:1px solid var(--border);border-radius:8px;padding:.75rem;text-align:center">
+                        <div style="font-size:.65rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.05em">90th %ile</div>
+                        <div style="font-size:1.1rem;font-weight:800;color:var(--gray-600)" id="regional-bls-high">—</div>
+                      </div>
+                    </div>
+                    <div id="regional-bls-vs-swl" style="font-size:.78rem;color:var(--green-dark);background:#F0F6EC;border:1px solid #C5DDB8;border-radius:6px;padding:.5rem .75rem"></div>
+                  </div>
+                  <div style="font-size:.7rem;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem">
+                    Competitor Pay — <span id="regional-comp-region-label"></span>
+                  </div>
+                  <div id="regional-comp-rows"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ── Final Increase Approval ── -->
+            <div class="inc-approval-wrap" id="inc-approval-wrap" style="display:none">
+              <div class="inc-approval-title">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                Final Increase Approval
+              </div>
+              <div id="inc-approved-state" style="display:none">
+                <div class="inc-approved-banner">
+                  <div class="inc-approved-icon">✅</div>
+                  <div>
+                    <div class="inc-approved-title">Increase Approved</div>
+                    <div class="inc-approved-detail" id="inc-approved-detail"></div>
+                  </div>
+                </div>
+              </div>
+              <div id="inc-input-state">
+                <div style="font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem" id="inc-current-rate-label"></div>
+                <div class="inc-input-row">
+                  <div class="inc-input-group">
+                    <label id="inc-rate-label">Final Approved Rate</label>
+                    <input type="number" class="inc-input-field" id="inc-new-rate" min="0" step="0.01" placeholder="e.g. 24.50" />
+                  </div>
+                </div>
+                <div class="inc-row" id="inc-calcs" style="display:none">
+                  <div class="inc-stat highlight">
+                    <div class="inc-stat-label">New Rate</div>
+                    <div class="inc-stat-value" id="inc-display-rate">—</div>
+                  </div>
+                  <div class="inc-stat">
+                    <div class="inc-stat-label">Dollar Increase</div>
+                    <div class="inc-stat-value" id="inc-display-dollar">—</div>
+                  </div>
+                  <div class="inc-stat">
+                    <div class="inc-stat-label">% Increase</div>
+                    <div class="inc-stat-value" id="inc-display-pct">—</div>
+                  </div>
+                </div>
+                <div style="display:none" id="inc-hidden-compat">
+                  <div id="inc-approved-state-compat"></div>
+                </div>
+                <button class="inc-submit-btn" id="inc-submit-btn" disabled>Submit Increase Approval</button>
+              </div>
+            </div>
+          </div><!-- end comp-panel -->
+
           <div class="fp-sub-label">Executive Comments <span class="req">*</span></div>
           <textarea class="form-control" id="exec-comments" rows="4" placeholder="Provide executive-level feedback and justify the recommended action…"></textarea>
 
@@ -1352,13 +1524,9 @@
 
     </div><!-- end fp-left -->
 
-    <!-- RIGHT: sticky comp panel -->
-    <div class="fp-right" id="fp-right-col">
-      <div class="fp-right-placeholder" id="fp-right-placeholder">
-        <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="opacity:.3;margin-bottom:.5rem"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        <div style="font-size:.8rem;color:var(--gray-400);text-align:center">Compensation analysis<br>appears when a score is set</div>
-      </div>
-      <!-- Comp Panel (shown when score is set) -->
+    <!-- RIGHT col kept for layout compat but hidden via CSS -->
+    <div class="fp-right" id="fp-right-col" style="display:none">
+      <div id="fp-right-placeholder" style="display:none"></div>
       <div class="comp-panel hidden" id="comp-panel">
           <div class="comp-panel-header">
             <div class="comp-panel-title">
@@ -1542,10 +1710,6 @@
             </div>
           </div>
 
-        </div>
-        </div>
-
-      </div><!-- end comp-panel -->
     </div><!-- end fp-right -->
   </div><!-- end fp-body -->
 </div><!-- end fp-review -->
@@ -3046,13 +3210,7 @@
   }
   function showCompPanel(show) {
     const execOrAdmin = isExecOfEmp || isAdmin;
-    if (!execOrAdmin) {
-      document.getElementById('fp-right-col').style.display = 'none';
-      return;
-    }
-    document.getElementById('fp-right-col').style.display = '';
-    document.getElementById('comp-panel').classList.toggle('hidden', !show);
-    document.getElementById('fp-right-placeholder').classList.toggle('hidden', show);
+    document.getElementById('comp-panel').classList.toggle('hidden', !show || !execOrAdmin);
   }
   document.getElementById('modal-close').addEventListener('click', closeModal);
   document.getElementById('modal-print').addEventListener('click', printReview);
@@ -3881,11 +4039,7 @@
 
   async function updateCompPanel() {
     if (!currentReview) return;
-    // Only executives and admins see the compensation panel
-    if (!isExecOfEmp && !isAdmin) {
-      document.getElementById('fp-right-col').style.display = 'none';
-      return;
-    }
+    if (!isExecOfEmp && !isAdmin) { showCompPanel(false); return; }
     const score = document.getElementById('exec-overall-score').value;
     const action = document.getElementById('exec-action').value;
     const panel = document.getElementById('comp-panel');
@@ -4131,7 +4285,6 @@
       document.getElementById('fp-sec-self').style.display    = '';
       document.getElementById('fp-sec-mgr').style.display     = '';
       document.getElementById('fp-sec-exec').style.display    = '';
-      document.getElementById('fp-right-col').style.display   = '';
       return;
     }
     // Employee only: show tracker, hide full sections, hide action buttons
@@ -4142,7 +4295,6 @@
     document.getElementById('modal-save-draft').style.display = 'none';
     document.getElementById('modal-submit').style.display     = 'none';
     document.getElementById('modal-print').style.display      = 'none';
-    document.getElementById('fp-right-col').style.display     = 'none';
     showCompPanel(false);
 
     const r = currentReview;
