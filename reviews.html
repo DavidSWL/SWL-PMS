@@ -2239,6 +2239,7 @@
   function buildCompetencies(containerId, ratingsObj, editable, prefix, selfContext) {
     const notesObj = (prefix === 'self' || prefix === 'exec-self') ? selfNotes : (prefix === 'exec-own' ? execNotes : (prefix === 'mgr' || prefix === 'exec-mgr' ? mgrNotes : {}));
     const container = document.getElementById(containerId);
+    if (!container) return;
     container.innerHTML = COMPETENCIES.map(c => {
       const hasRating = !!ratingsObj[c.key];
       const noteVal   = escHtml(notesObj[c.key] || '');
