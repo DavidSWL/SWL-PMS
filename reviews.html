@@ -2690,16 +2690,19 @@
     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
   });
 
-  document.getElementById('self-add-goal-btn').addEventListener('click', () => showGoalForm('self'));
-  document.getElementById('mgr-add-goal-btn').addEventListener('click',  () => showGoalForm('mgr'));
-  document.getElementById('exec-add-goal-btn').addEventListener('click', () => showGoalForm('exec'));
+  // Null-safe event binding — a single missing element must never halt the whole module.
+  const on = (id, ev, fn) => { const el = document.getElementById(id); if (el) el.addEventListener(ev, fn); };
+
+  on('self-add-goal-btn', 'click', () => showGoalForm('self'));
+  on('mgr-add-goal-btn',  'click', () => showGoalForm('mgr'));
+  on('exec-add-goal-btn', 'click', () => showGoalForm('exec'));
 
   // Inline exec section buttons
-  document.getElementById('exec-save-draft-btn').addEventListener('click', () => saveExecDraft());
-  document.getElementById('exec-submit-btn').addEventListener('click', () => completeExecutiveAssessment());
+  on('exec-save-draft-btn', 'click', () => saveExecDraft());
+  on('exec-submit-btn',     'click', () => completeExecutiveAssessment());
 
   // ── Save Draft ──
-  document.getElementById('modal-save-draft').addEventListener('click', async () => {
+  on('modal-save-draft', 'click', async () => {
     if (activeTab === 'self') await saveSelfDraft();
     else if (activeTab === 'manager') await saveMgrDraft();
     else await saveExecDraft();
@@ -2794,7 +2797,7 @@
   }
 
   // ── Submit ──
-  document.getElementById('modal-submit').addEventListener('click', async () => {
+  on('modal-submit', 'click', async () => {
     if (activeTab === 'self') await submitSelfEval();
     else if (activeTab === 'manager') await completeManagerReview();
     else await completeExecutiveAssessment();
@@ -2935,10 +2938,10 @@
     document.getElementById('init-modal-title').textContent = `Initialize ${selectedYear} Review Cycle`;
     document.getElementById('init-modal').classList.add('open');
   }
-  document.getElementById('init-btn').addEventListener('click', openInitModal);
-  document.getElementById('init-btn-empty').addEventListener('click', openInitModal);
+  on('init-btn', 'click', openInitModal);
+  on('init-btn-empty', 'click', openInitModal);
 
-  document.getElementById('init-confirm').addEventListener('click', async () => {
+  on('init-confirm', 'click', async () => {
     document.getElementById('init-confirm').disabled = true;
     document.getElementById('init-confirm').textContent = 'Creating…';
 
@@ -2971,15 +2974,15 @@
     await loadData();
   });
 
-  document.getElementById('init-cancel').addEventListener('click', () => {
+  on('init-cancel', 'click', () => {
     document.getElementById('init-modal').classList.remove('open');
   });
-  document.getElementById('init-modal-close').addEventListener('click', () => {
+  on('init-modal-close', 'click', () => {
     document.getElementById('init-modal').classList.remove('open');
   });
 
   // ── Close Cycle ──
-  document.getElementById('close-cycle-btn').addEventListener('click', async () => {
+  on('close-cycle-btn', 'click', async () => {
     if (!confirm(`Mark all remaining reviews as completed for ${selectedYear}? This cannot be undone.`)) return;
     const incomplete = Object.values(allReviews).filter(r => r.status !== 'completed');
     for (const rev of incomplete) {
@@ -3013,9 +3016,9 @@
     const execOrAdmin = isExecOfEmp || isAdmin;
     document.getElementById('comp-panel').classList.toggle('hidden', !show || !execOrAdmin);
   }
-  document.getElementById('modal-close').addEventListener('click', closeModal);
-  document.getElementById('modal-print').addEventListener('click', printReview);
-  document.getElementById('fp-test-role').addEventListener('change', () => {
+  on('modal-close', 'click', closeModal);
+  on('modal-print', 'click', printReview);
+  on('fp-test-role', 'change', () => {
     if (currentReview) openReview(currentReview.id);
   });
 
@@ -3240,8 +3243,8 @@
 
   // ── Sign out / hamburger ──
   async function logout() { await signOut(auth); window.location.href = 'index.html'; }
-  document.getElementById('logout-btn').addEventListener('click', logout);
-  document.getElementById('logout-btn-mobile').addEventListener('click', logout);
+  on('logout-btn', 'click', logout);
+  on('logout-btn-mobile', 'click', logout);
   const hamburger  = document.getElementById('hamburger');
   const mobileMenu = document.getElementById('mobile-menu');
   hamburger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
@@ -3685,26 +3688,9 @@
     }
 
     // ── Role Benchmark Scorecard ──
-    if (bench) {
-      benchSection.style.display = 'block';
-      document.getElementById('benchmark-rows').innerHTML = bench.benchmarks.map(b => `
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;padding:.55rem .65rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;align-items:start">
-          <div>
-            <div style="font-size:.68rem;font-weight:700;color:var(--text)">${b.label}</div>
-          </div>
-          <div>
-            <div style="font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.15rem">Standard Expectation</div>
-            <div style="font-size:.75rem;color:var(--green-dark);font-weight:600">${b.target}</div>
-          </div>
-          <div>
-            <div style="font-size:.6rem;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.15rem">Growth Challenge</div>
-            <div style="font-size:.73rem;color:#92400e">${b.challenge}</div>
-          </div>
-        </div>`).join('');
-      document.getElementById('benchmark-growth').innerHTML = `<strong>Career Path:</strong> ${bench.growth}`;
-    } else {
-      benchSection.style.display = 'none';
-    }
+    // Hidden for now: prior content was placeholder data, not real company standards.
+    // Re-enable once per-role benchmarks are supplied by the business.
+    benchSection.style.display = 'none';
 
     // Regional comparison
     const regionalWrap = document.getElementById('regional-comp-wrap');
@@ -4065,11 +4051,11 @@
   }
 
   // Wire up panel triggers
-  document.getElementById('exec-overall-score').addEventListener('change', () => { updateScoreSummaryCard(); updateCompPanel(); });
-  document.getElementById('exec-action').addEventListener('change', () => {
+  on('exec-overall-score', 'change', () => { updateScoreSummaryCard(); updateCompPanel(); });
+  on('exec-action', 'change', () => {
     if (document.getElementById('exec-action').value === 'merit-increase') updateCompPanel();
   });
-  document.getElementById('comp-pct-input').addEventListener('input', () => {
+  on('comp-pct-input', 'input', () => {
     if (!currentReview) return;
     const emp = allEmployees[currentReview.employeeId];
     const role = matchBLSRole(emp?.position);
@@ -4130,7 +4116,7 @@
     }
   }
 
-  document.getElementById('inc-new-rate').addEventListener('input', () => {
+  on('inc-new-rate', 'input', () => {
     const emp = currentReview ? allEmployees[currentReview.employeeId] : null;
     const payType     = emp?.payType || null;
     const currentRate = emp?.currentRate ? parseFloat(emp.currentRate) : null;
@@ -4152,7 +4138,7 @@
     }
   });
 
-  document.getElementById('inc-submit-btn').addEventListener('click', async () => {
+  on('inc-submit-btn', 'click', async () => {
     const emp = currentReview ? allEmployees[currentReview.employeeId] : null;
     const newRate     = parseFloat(document.getElementById('inc-new-rate').value);
     if (!newRate || newRate <= 0) { toast('Enter a valid new rate.', 'error'); return; }
@@ -4337,7 +4323,7 @@
       const dateStr = document.getElementById('meeting-date').value;
       const timeStr = document.getElementById('meeting-time').value;
       const subject = encodeURIComponent(`Your Annual Performance Review Meeting — ${selectedYear}`);
-      let body = `Hello ${empName},\n\nI would like to schedule your annual performance review meeting`;
+      let body = `Dear ${empName},\n\nI would like to schedule your annual performance review meeting`;
       if (dateStr) {
         const d = new Date(dateStr + (timeStr ? 'T' + timeStr : ''));
         const fmt = d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
@@ -4352,7 +4338,7 @@
     }
   }
 
-  document.getElementById('meeting-save-btn').addEventListener('click', async () => {
+  on('meeting-save-btn', 'click', async () => {
     const date = document.getElementById('meeting-date').value;
     const time = document.getElementById('meeting-time').value;
     if (!date) { toast('Please select a meeting date.', 'error'); return; }
