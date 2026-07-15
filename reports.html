@@ -949,6 +949,8 @@
     if (_rAv) _rAv.textContent = _rName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
     const snap = await getDocs(query(collection(db, 'employees'), where('email', '==', user.email)));
     if (!snap.empty) currentEmployee = { id: snap.docs[0].id, ...snap.docs[0].data() };
+    // Reports is admin-only — non-admins are redirected away from this page
+    if (currentEmployee && currentEmployee.role !== 'admin') { window.location.replace('reviews.html'); return; }
     const isAdmin = !currentEmployee || currentEmployee.role === 'admin' || currentEmployee.role === 'executive';
     if (isAdmin) {
       const el = document.getElementById('nav-admin'); if (el) el.style.display = '';
