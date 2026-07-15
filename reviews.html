@@ -1554,7 +1554,7 @@
     appId: "1:465838605580:web:c3322da1833f219725b529"
   };
 
-  console.log('%creviews.html build: init-fix-2026-07-14', 'color:#16a34a;font-weight:700');
+  console.log('%creviews.html build: year-autoselect-2026-07-15', 'color:#16a34a;font-weight:700');
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -1833,13 +1833,36 @@
       allEmployees = {};
       empSnap.forEach(d => allEmployees[d.id] = { id: d.id, ...d.data() });
 
-      // Load all reviews, filter client-side (no index needed)
+      // Load all reviews (no index needed)
       const revSnap = await getDocs(collection(db, 'reviews'));
-      allReviews = {};
+      const allYears = new Set();
+      const byYear = [];
       revSnap.forEach(d => {
         const data = { id: d.id, ...d.data() };
-        if (data.year === selectedYear) allReviews[d.id] = data;
+        byYear.push(data);
+        if (data.year != null) allYears.add(data.year);
       });
+
+      // If the selected year has no reviews but another year does, switch to the
+      // most recent year that actually has data — so reviews created under a prior
+      // calendar year don't silently "disappear" when the new year rolls over.
+      const hasForSelected = byYear.some(r => r.year === selectedYear);
+      if (!hasForSelected && allYears.size > 0) {
+        const newest = Math.max(...allYears);
+        selectedYear = newest;
+        const sel = document.getElementById('year-select');
+        if (sel) {
+          if (![...sel.options].some(o => +o.value === newest)) {
+            const opt = document.createElement('option');
+            opt.value = newest; opt.textContent = newest;
+            sel.appendChild(opt);
+          }
+          sel.value = String(newest);
+        }
+      }
+
+      allReviews = {};
+      byYear.forEach(data => { if (data.year === selectedYear) allReviews[data.id] = data; });
     } catch(e) {
       document.getElementById('loading-state').style.display = 'none';
       document.getElementById('no-cycle-card').style.display = 'block';
