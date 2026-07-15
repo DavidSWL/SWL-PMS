@@ -773,6 +773,44 @@
       .stats-row { grid-template-columns: 1fr 1fr; }
       .modal-tabs { overflow-x: auto; }
     }
+
+    /* ── Hero gradient band on the reviews list ── */
+    .page > .cycle-banner, #no-cycle-card { position: relative; }
+    .hero-band { position:absolute; left:0; right:0; top:0; height:150px; z-index:0; pointer-events:none;
+      background:linear-gradient(180deg, rgba(14,76,45,0.10) 0%, rgba(14,76,45,0.03) 60%, rgba(14,76,45,0) 100%); }
+    .page { position: relative; }
+    .page > *:not(.hero-band) { position: relative; z-index: 1; }
+
+    /* ── Employee review view (compact card + growing oak) ── */
+    #emp-tracker-view { padding: 0; }
+    .emp-scene { position: relative; min-height: 620px; overflow: hidden;
+      background: linear-gradient(180deg,#f7fbf5 0%,#eef4ea 60%,#eef4ea 100%); border-radius: 12px; }
+    #empOak { position:absolute; inset:0; width:100%; height:100%; z-index:2; }
+    .emp-scene-inner { position: relative; z-index: 3; padding: 1.1rem; }
+    .emp-grow-note { position:absolute; bottom:12px; left:0; right:0; text-align:center; font-size:.75rem;
+      color:#f3ead6; font-weight:800; z-index:4; text-shadow:0 1px 3px rgba(0,0,0,.5); }
+    .erv-card { border:1px solid #bbf7d0; border-radius:12px;
+      background:linear-gradient(180deg,rgba(240,253,244,.97),rgba(255,255,255,.97)); backdrop-filter:blur(2px);
+      padding:1.1rem; box-shadow:0 6px 20px -12px rgba(7,40,24,.25); max-width:560px; margin:0 auto; }
+    .erv-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:.9rem; gap:.75rem; }
+    .erv-year { font-size:1.15rem; font-weight:800; color:var(--green); }
+    .erv-sub { font-size:.78rem; color:var(--muted); }
+    .erv-pill { padding:.25rem .6rem; border-radius:999px; font-size:.72rem; font-weight:800; white-space:nowrap; }
+    .erv-pill.action { background:var(--accent-bg,#fef3c7); color:#92400e; }
+    .erv-pill.review { background:#e0f2fe; color:#075985; }
+    .erv-pill.done   { background:#dcfce7; color:#166534; }
+    .erv-track { height:8px; background:#e2e8f0; border-radius:99px; overflow:hidden; margin:.5rem 0 .4rem; }
+    .erv-fill { height:100%; background:var(--green-mid); border-radius:99px; transition:width .5s; }
+    .erv-label { font-size:.75rem; color:var(--muted); margin-bottom:1rem; }
+    .erv-cta { display:block; width:100%; background:var(--accent,#d97706); color:#fff; border:none; border-radius:9px;
+      padding:.7rem; font-size:.9rem; font-weight:800; cursor:pointer; text-align:center; }
+    .erv-cta:hover { filter:brightness(.96); }
+    .erv-steps { display:flex; gap:.4rem; margin-top:.9rem; }
+    .erv-step { flex:1; text-align:center; font-size:.64rem; font-weight:700; color:var(--muted); }
+    .erv-dot { width:24px; height:24px; border-radius:50%; margin:0 auto .3rem; display:flex; align-items:center;
+      justify-content:center; font-size:.72rem; background:#eef2f6; }
+    .erv-step.active .erv-dot { background:var(--accent,#d97706); color:#fff; } .erv-step.active { color:var(--accent,#d97706); }
+    .erv-step.done .erv-dot { background:var(--green-mid); color:#fff; } .erv-step.done { color:var(--green-mid); }
   </style>
 </head>
 <body>
@@ -810,6 +848,7 @@
 </nav>
 
 <div class="page">
+  <div class="hero-band"></div>
   <div class="content">
 
     <div class="page-header">
@@ -957,61 +996,28 @@
     <!-- LEFT: three section cards -->
     <div class="fp-left">
 
-      <!-- ── Employee Tracker View (only visible to the employee themselves) ── -->
+      <!-- ── Employee Review View (compact card + growing oak) ── -->
       <div id="emp-tracker-view">
-        <div class="tracker-title">Your Review Progress</div>
-        <div class="tracker-steps">
-
-          <!-- Step 1: Self-Eval -->
-          <div class="tracker-step">
-            <div class="tracker-icon done" id="trk-icon-1">✅</div>
-            <div class="tracker-step-body">
-              <div class="tracker-step-label"><span class="step-num">Step 1</span> Self-Evaluation <span class="tracker-status-chip chip-done" id="trk-chip-1">Submitted</span></div>
-              <div class="tracker-step-sub" id="trk-sub-1">Your self-evaluation has been received.</div>
-              <div class="tracker-self-answers" id="trk-self-answers" style="display:none">
-                <div>
-                  <div class="tracker-answer-label">Key Accomplishments</div>
-                  <div class="tracker-answer-text" id="trk-ans-q1">—</div>
-                </div>
-                <div>
-                  <div class="tracker-answer-label">Challenges &amp; How You Handled Them</div>
-                  <div class="tracker-answer-text" id="trk-ans-q2">—</div>
-                </div>
-                <div id="trk-ans-q4-wrap" style="display:none">
-                  <div class="tracker-answer-label">Support Requested</div>
-                  <div class="tracker-answer-text" id="trk-ans-q4">—</div>
-                </div>
+        <div class="emp-scene">
+          <canvas id="empOak"></canvas>
+          <div class="emp-grow-note" id="emp-grow-note"></div>
+          <div class="emp-scene-inner">
+            <div class="erv-card">
+              <div class="erv-top">
+                <div><div class="erv-year" id="erv-year">Your Annual Review</div><div class="erv-sub" id="erv-sub"></div></div>
+                <span class="erv-pill action" id="erv-pill">Action needed</span>
+              </div>
+              <div class="erv-track"><div class="erv-fill" id="erv-fill" style="width:15%"></div></div>
+              <div class="erv-label" id="erv-label">Self-evaluation not started</div>
+              <button class="erv-cta" id="erv-cta">Start Self-Evaluation →</button>
+              <div class="erv-steps" id="erv-steps">
+                <div class="erv-step" data-step="1"><div class="erv-dot">1</div>Self</div>
+                <div class="erv-step" data-step="2"><div class="erv-dot">2</div>Manager</div>
+                <div class="erv-step" data-step="3"><div class="erv-dot">3</div>Executive</div>
+                <div class="erv-step" data-step="4"><div class="erv-dot">4</div>Meeting</div>
               </div>
             </div>
           </div>
-
-          <!-- Step 2: Manager Review -->
-          <div class="tracker-step">
-            <div class="tracker-icon" id="trk-icon-2">📋</div>
-            <div class="tracker-step-body">
-              <div class="tracker-step-label"><span class="step-num">Step 2</span> Manager Review <span class="tracker-status-chip" id="trk-chip-2">Pending</span></div>
-              <div class="tracker-step-sub" id="trk-sub-2">Your manager is completing their review.</div>
-            </div>
-          </div>
-
-          <!-- Step 3: In-Person Meeting -->
-          <div class="tracker-step">
-            <div class="tracker-icon" id="trk-icon-3">📅</div>
-            <div class="tracker-step-body">
-              <div class="tracker-step-label"><span class="step-num">Step 3</span> In-Person Meeting <span class="tracker-status-chip" id="trk-chip-3">Pending</span></div>
-              <div class="tracker-step-sub" id="trk-sub-3">Your executive will schedule a meeting to discuss your review.</div>
-            </div>
-          </div>
-
-          <!-- Step 4: Review Complete -->
-          <div class="tracker-step">
-            <div class="tracker-icon" id="trk-icon-4">🏁</div>
-            <div class="tracker-step-body">
-              <div class="tracker-step-label"><span class="step-num">Step 4</span> Review Complete <span class="tracker-status-chip" id="trk-chip-4">Pending</span></div>
-              <div class="tracker-step-sub" id="trk-sub-4">Your annual review will be finalized by the executive.</div>
-            </div>
-          </div>
-
         </div>
       </div>
 
@@ -1555,7 +1561,7 @@
     appId: "1:465838605580:web:c3322da1833f219725b529"
   };
 
-  console.log('%creviews.html build: modal-nesting-fix-2026-07-15', 'color:#16a34a;font-weight:700');
+  console.log('%creviews.html build: oak-employee-view-2026-07-15', 'color:#16a34a;font-weight:700');
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -1799,8 +1805,8 @@
     const isAdmin = role === 'admin';
     const isMgrOrUp = isAdmin || role === 'manager' || role === 'executive';
     const show = id => { const el = document.getElementById(id); if (el) el.style.display = ''; };
-    if (isMgrOrUp) { show('nav-dashboard'); show('nav-reports'); show('mobile-nav-dashboard'); show('mobile-nav-reports'); }
-    if (isAdmin)   { show('nav-admin'); show('mobile-nav-admin'); }
+    if (isMgrOrUp) { show('nav-dashboard'); show('mobile-nav-dashboard'); }
+    if (isAdmin)   { show('nav-reports'); show('mobile-nav-reports'); show('nav-admin'); show('mobile-nav-admin'); }
   }
 
   // ── Year Select ──
@@ -2286,6 +2292,10 @@
     renderEmployeeTracker();
     renderMeetingScheduler();
     document.getElementById('fp-review').classList.add('open');
+    // Grow the oak once the modal (and its canvas) is actually laid out
+    if (document.getElementById('emp-tracker-view').style.display === 'block') {
+      requestAnimationFrame(initEmployeeOak);
+    }
   }
 
   function setField(id, val, readonly, isSelect = false) {
@@ -4193,6 +4203,7 @@
   });
 
   // ── Employee Tracker View ──
+  let empOakTargetT = 1;   // growth target set by renderEmployeeTracker, applied when the modal opens
   function renderEmployeeTracker() {
     const trackerView = document.getElementById('emp-tracker-view');
     const employeeOnly = isOwn && !isMgrOfEmp && !isExecOfEmp && !isAdmin;
@@ -4203,7 +4214,7 @@
       document.getElementById('fp-sec-exec').style.display    = '';
       return;
     }
-    // Employee only: show tracker, hide full sections, hide action buttons
+    // Employee only: show the review card + oak, hide full sections and action buttons
     trackerView.style.display = 'block';
     document.getElementById('fp-sec-self').style.display    = 'none';
     document.getElementById('fp-sec-mgr').style.display     = 'none';
@@ -4214,110 +4225,187 @@
     showCompPanel(false);
 
     const r = currentReview;
-    const selfDone = !!r.selfEval?.submitted;
-    const mgrDone  = !!r.managerEval?.completedAt;
-    const execDone = r.status === 'completed';
-    const meeting  = r.scheduledMeeting;
+    const selfDone  = !!r.selfEval?.submitted;
+    const mgrDone   = !!r.managerEval?.completedAt;
+    const execDone  = r.status === 'completed';
+    const meetSet   = !!r.scheduledMeeting?.date;
+    const doneCount = (selfDone?1:0)+(mgrDone?1:0)+(execDone?1:0)+(meetSet?1:0);
+    const activeStep = !selfDone?1:(!mgrDone?2:(!execDone?3:4));
+    const allDone   = selfDone && mgrDone && execDone && meetSet;
 
-    // Step 1 — Self Eval
-    const icon1 = document.getElementById('trk-icon-1');
-    const chip1 = document.getElementById('trk-chip-1');
-    const sub1  = document.getElementById('trk-sub-1');
-    const answers = document.getElementById('trk-self-answers');
-    if (selfDone) {
-      icon1.className = 'tracker-icon done'; icon1.textContent = '✅';
-      chip1.className = 'tracker-status-chip chip-done'; chip1.textContent = 'Submitted';
-      sub1.textContent = 'Your self-evaluation has been received.';
-      // Show their own submitted answers
-      answers.style.display = 'flex';
-      document.getElementById('trk-ans-q1').textContent = r.selfEval?.q1 || '—';
-      document.getElementById('trk-ans-q2').textContent = r.selfEval?.q2 || '—';
-      const q4 = r.selfEval?.q4;
-      if (q4) { document.getElementById('trk-ans-q4').textContent = q4; document.getElementById('trk-ans-q4-wrap').style.display = 'block'; }
-      else document.getElementById('trk-ans-q4-wrap').style.display = 'none';
-    } else {
-      icon1.className = 'tracker-icon active'; icon1.textContent = '✏️';
-      chip1.className = 'tracker-status-chip chip-active'; chip1.textContent = 'In Progress';
-      sub1.textContent = r.selfEval?.savedAt ? 'Draft saved. Submit when ready.' : 'Not yet started.';
-      answers.style.display = 'none';
-      // Show Start / Continue button
-      let trk1Btn = document.getElementById('trk-start-btn');
-      if (!trk1Btn) {
-        trk1Btn = document.createElement('button');
-        trk1Btn.id = 'trk-start-btn';
-        trk1Btn.style.cssText = 'margin-top:.6rem;padding:.45rem 1rem;background:var(--accent,#2563eb);color:#fff;border:none;border-radius:6px;font-size:.78rem;font-weight:700;cursor:pointer';
-        trk1Btn.addEventListener('click', () => {
-          trackerView.style.display = 'none';
-          document.getElementById('fp-sec-self').style.display = '';
-          document.getElementById('modal-save-draft').style.display = '';
-          document.getElementById('modal-submit').style.display = '';
-          switchTab('self');
-        });
-        sub1.parentNode.insertBefore(trk1Btn, sub1.nextSibling);
-      }
-      trk1Btn.textContent = r.selfEval?.savedAt ? 'Continue Self-Evaluation' : 'Start Self-Evaluation';
-      trk1Btn.style.display = '';
-    }
-    // Hide start button if submitted
-    const existingBtn = document.getElementById('trk-start-btn');
-    if (existingBtn && selfDone) existingBtn.style.display = 'none';
+    // Card header
+    const emp = allEmployees[r.employeeId];
+    document.getElementById('erv-year').textContent = `Your ${selectedYear} Annual Review`;
+    document.getElementById('erv-sub').textContent  = emp ? `${emp.position || ''}${emp.branch ? ' · ' + emp.branch : ''}` : '';
 
-    // Step 2 — Manager Review
-    const icon2 = document.getElementById('trk-icon-2');
-    const chip2 = document.getElementById('trk-chip-2');
-    const sub2  = document.getElementById('trk-sub-2');
-    if (mgrDone) {
-      icon2.className = 'tracker-icon done'; icon2.textContent = '✅';
-      chip2.className = 'tracker-status-chip chip-done'; chip2.textContent = 'Complete';
-      sub2.textContent = 'Your manager has completed their review.';
-    } else if (selfDone) {
-      icon2.className = 'tracker-icon active'; icon2.textContent = '📋';
-      chip2.className = 'tracker-status-chip chip-active'; chip2.textContent = 'In Progress';
-      sub2.textContent = 'Your manager is reviewing your submission.';
+    // Status pill
+    const pill = document.getElementById('erv-pill');
+    if (allDone)            { pill.className = 'erv-pill done';   pill.textContent = 'Complete'; }
+    else if (activeStep===1){ pill.className = 'erv-pill action'; pill.textContent = 'Action needed'; }
+    else                    { pill.className = 'erv-pill review'; pill.textContent = 'In review'; }
+
+    // Progress + label
+    document.getElementById('erv-fill').style.width = [15,42,72,88,100][doneCount] + '%';
+    const labels = {
+      1: r.selfEval?.savedAt ? 'Self-evaluation — draft saved' : 'Self-evaluation not started',
+      2: 'With your manager',
+      3: 'Under executive review',
+      4: meetSet ? 'Complete · In-person meeting scheduled' : 'Awaiting your in-person meeting'
+    };
+    document.getElementById('erv-label').textContent = allDone ? 'Complete · In-person meeting scheduled' : labels[activeStep];
+
+    // Steps
+    const stepDone = [selfDone, mgrDone, execDone, meetSet];
+    document.querySelectorAll('#erv-steps .erv-step').forEach((el,i) => {
+      el.classList.remove('active','done');
+      if (stepDone[i]) el.classList.add('done');
+      else if (i+1===activeStep) el.classList.add('active');
+    });
+
+    // CTA
+    const cta = document.getElementById('erv-cta');
+    if (!selfDone) {
+      cta.textContent = r.selfEval?.savedAt ? 'Resume Self-Evaluation →' : 'Start Self-Evaluation →';
+      cta.onclick = () => {
+        trackerView.style.display = 'none';
+        document.getElementById('fp-sec-self').style.display = '';
+        document.getElementById('modal-save-draft').style.display = '';
+        document.getElementById('modal-submit').style.display = '';
+        switchTab('self');
+      };
     } else {
-      icon2.className = 'tracker-icon wait'; icon2.textContent = '📋';
-      chip2.className = 'tracker-status-chip chip-wait'; chip2.textContent = 'Waiting';
-      sub2.textContent = 'Waiting for your self-evaluation to be submitted first.';
+      cta.textContent = 'View My Self-Evaluation →';
+      cta.onclick = () => {
+        trackerView.style.display = 'none';
+        document.getElementById('fp-sec-self').style.display = '';
+        switchTab('self');
+      };
     }
 
-    // Step 3 — In-Person Meeting
-    const icon3 = document.getElementById('trk-icon-3');
-    const chip3 = document.getElementById('trk-chip-3');
-    const sub3  = document.getElementById('trk-sub-3');
-    if (meeting?.date) {
-      const d = new Date(meeting.date + (meeting.time ? 'T' + meeting.time : ''));
-      const fmt = d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
-      const timeFmt = meeting.time ? ' at ' + d.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' }) : '';
-      icon3.className = 'tracker-icon done'; icon3.textContent = '📅';
-      chip3.className = 'tracker-status-chip chip-done'; chip3.textContent = 'Scheduled';
-      sub3.className = 'tracker-step-sub highlight';
-      sub3.textContent = fmt + timeFmt;
-    } else if (mgrDone) {
-      icon3.className = 'tracker-icon active'; icon3.textContent = '📅';
-      chip3.className = 'tracker-status-chip chip-active'; chip3.textContent = 'Being Arranged';
-      sub3.className = 'tracker-step-sub';
-      sub3.textContent = 'Your executive will schedule your in-person meeting soon.';
-    } else {
-      icon3.className = 'tracker-icon wait'; icon3.textContent = '📅';
-      chip3.className = 'tracker-status-chip chip-wait'; chip3.textContent = 'Pending';
-      sub3.className = 'tracker-step-sub';
-      sub3.textContent = 'Your executive will schedule a meeting to discuss your review.';
-    }
-
-    // Step 4 — Complete
-    const icon4 = document.getElementById('trk-icon-4');
-    const chip4 = document.getElementById('trk-chip-4');
-    const sub4  = document.getElementById('trk-sub-4');
-    if (execDone) {
-      icon4.className = 'tracker-icon done'; icon4.textContent = '🏁';
-      chip4.className = 'tracker-status-chip chip-done'; chip4.textContent = 'Complete';
-      sub4.textContent = 'Your annual review has been finalized.';
-    } else {
-      icon4.className = 'tracker-icon wait'; icon4.textContent = '🏁';
-      chip4.className = 'tracker-status-chip chip-wait'; chip4.textContent = 'Pending';
-      sub4.textContent = 'Your annual review will be finalized by the executive.';
-    }
+    // Grow note + oak target
+    const notes = {
+      1: 'From a single acorn — roots take hold 🌰',
+      2: 'Branching out — manager review 🌿',
+      3: 'Strong and steady — executive review 🌳',
+      4: 'A mighty oak — endurance & growth 🌳'
+    };
+    document.getElementById('emp-grow-note').textContent = allDone ? notes[4] : notes[activeStep];
+    empOakTargetT = [0.30,0.50,0.72,0.88,1][doneCount];
   }
+
+  // ══ Growing oak (Canvas) — employee review view ══
+  function oakMulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+  let oakCanvas=null, oakCtx=null, oakW=0, oakH=0, oakDPR=1, oakSeg=[], oakLeaves=[], oakRoots=[], oakGroundY=0, oakFlecks=[], oakGrass=[], oakCurT=1, oakRaf=null, oakMaxLevel=9;
+  const oakLeafShades=[['#3f6b1f','#5c8a2c'],['#4a7023','#6b9a34'],['#2f5218','#457024'],['#557a2f','#74a03f']];
+  function oakDrawLeaf(x,y,size,rot,shade,alpha){
+    const c=oakLeafShades[Math.floor(shade*oakLeafShades.length)%oakLeafShades.length];
+    oakCtx.save(); oakCtx.translate(x,y); oakCtx.rotate(rot); oakCtx.globalAlpha=alpha;
+    const g=oakCtx.createLinearGradient(0,-size,0,size); g.addColorStop(0,c[1]); g.addColorStop(1,c[0]); oakCtx.fillStyle=g;
+    const s=size, w=size*0.62;
+    oakCtx.beginPath(); oakCtx.moveTo(0,-s);
+    oakCtx.bezierCurveTo(w*0.5,-s*0.75,w*0.5,-s*0.55,w*0.35,-s*0.4);
+    oakCtx.bezierCurveTo(w*1.05,-s*0.4,w*1.05,-s*0.1,w*0.4,-s*0.05);
+    oakCtx.bezierCurveTo(w*1.0,s*0.15,w*0.95,s*0.45,w*0.32,s*0.5);
+    oakCtx.bezierCurveTo(w*0.6,s*0.7,w*0.3,s*0.9,0,s);
+    oakCtx.bezierCurveTo(-w*0.3,s*0.9,-w*0.6,s*0.7,-w*0.32,s*0.5);
+    oakCtx.bezierCurveTo(-w*0.95,s*0.45,-w*1.0,s*0.15,-w*0.4,-s*0.05);
+    oakCtx.bezierCurveTo(-w*1.05,-s*0.1,-w*1.05,-s*0.4,-w*0.35,-s*0.4);
+    oakCtx.bezierCurveTo(-w*0.5,-s*0.55,-w*0.5,-s*0.75,0,-s);
+    oakCtx.fill(); oakCtx.restore();
+  }
+  function oakBuild(){
+    oakSeg=[]; oakLeaves=[]; oakRoots=[]; oakFlecks=[]; oakGrass=[];
+    const rnd=oakMulberry32(20260715); oakMaxLevel=9;
+    oakGroundY=oakH-92;
+    const baseY=oakGroundY, baseLen=oakH*0.10, startW=Math.max(12,oakW*0.028);
+    let minx=oakW,maxx=0,miny=oakH,maxy=0;
+    function branch(x,y,angle,len,width,level,tBias){
+      if(level>oakMaxLevel||len<3)return;
+      const ex=x+Math.cos(angle)*len, ey=y+Math.sin(angle)*len;
+      const startT=tBias, endT=Math.min(1,tBias+0.05+level*0.004);
+      oakSeg.push({x1:x,y1:y,x2:ex,y2:ey,w:width,level,startT,endT});
+      if(level>=oakMaxLevel-5){
+        const n=level>=oakMaxLevel-1?4:(level>=oakMaxLevel-2?3:2), spreadR=len*0.75;
+        for(let i=0;i<n;i++){
+          const lx=ex+(rnd()-0.5)*spreadR, ly=ey+(rnd()-0.5)*spreadR-len*0.18;
+          oakLeaves.push({x:lx,y:ly,size:3.6+rnd()*4.2,rot:rnd()*Math.PI,shade:rnd(),appear:Math.min(1,endT+0.02+rnd()*0.1)});
+          if(lx<minx)minx=lx; if(lx>maxx)maxx=lx; if(ly<miny)miny=ly; if(ly>maxy)maxy=ly;
+        }
+      }
+      const branches=level<1?3:(level<3?2:(rnd()<0.5?3:2));
+      const spread=(level<2?0.46:0.4)+rnd()*0.26;
+      for(let i=0;i<branches;i++){
+        const dir=branches===2?(i===0?-1:1):(i-1)*1.05;
+        let na=angle+dir*spread+(rnd()-0.5)*0.24;
+        let dx=Math.cos(na),dy=Math.sin(na);
+        if(dy>0.18){dy=0.18;const m=Math.hypot(dx,dy)||1;dx/=m;dy/=m;na=Math.atan2(dy,dx);}
+        branch(ex,ey,na,len*(0.76+rnd()*0.1),width*(0.72+rnd()*0.06),level+1,endT);
+      }
+    }
+    branch(oakW/2,baseY,-Math.PI/2,baseLen,startW,0,0);
+    const CX=(minx+maxx)/2, CY=(miny+maxy)/2+(maxy-miny)*0.04, RX=(maxx-minx)/2, RY=(maxy-miny)/2;
+    let count=0,tries=0;
+    while(count<175&&tries<7000){tries++;const u=rnd()*2-1,v=rnd()*2-1;if(u*u+v*v>1)continue;
+      oakLeaves.push({x:CX+u*RX,y:CY+v*RY-RY*0.06,size:3.4+rnd()*4.0,rot:rnd()*Math.PI,shade:rnd(),appear:0.55+rnd()*0.4});count++;}
+    function root(x,y,angle,len,width,level,tBias){
+      if(level>4||len<7)return;
+      const ex=x+Math.cos(angle)*len, ey=y+Math.sin(angle)*len;
+      oakRoots.push({x1:x,y1:y,x2:ex,y2:ey,w:width,level,startT:tBias,endT:Math.min(0.24,tBias+0.05)});
+      const n=level<1?2:(rnd()<0.6?2:1);
+      for(let i=0;i<n;i++){const dir=(i===0?-1:1);const na=angle+dir*(0.3+rnd()*0.3)+(rnd()-0.5)*0.2;
+        root(ex,ey,na,len*(0.68+rnd()*0.12),width*0.66,level+1,tBias*0.8);}
+    }
+    const rBase=Math.min(oakH-oakGroundY-12, baseLen*1.15);
+    root(oakW/2,baseY,Math.PI/2,rBase,startW*0.85,1,0.04);
+    root(oakW/2,baseY,Math.PI/2-0.7,rBase*0.85,startW*0.8,0,0);
+    root(oakW/2,baseY,Math.PI/2+0.7,rBase*0.85,startW*0.8,0,0);
+    root(oakW/2,baseY,Math.PI/2-1.05,rBase*0.7,startW*0.7,0,0.02);
+    root(oakW/2,baseY,Math.PI/2+1.05,rBase*0.7,startW*0.7,0,0.02);
+    const soilShades=['#5b4127','#6d5334','#4a3420','#7a5c3a','#3d2c1a'];
+    for(let i=0;i<Math.round(oakW*0.9);i++){oakFlecks.push({x:rnd()*oakW,y:oakGroundY+4+rnd()*(oakH-oakGroundY-4),r:0.6+rnd()*2.0,c:soilShades[Math.floor(rnd()*soilShades.length)],a:0.25+rnd()*0.4});}
+    for(let x=-4;x<oakW+4;x+=1.6+rnd()*2){oakGrass.push({x,h:8+rnd()*16,lean:(rnd()-0.5)*9,c:['#4a7024','#5c8a2c','#3f6b1f','#6b9a34','#356018','#77a83a'][Math.floor(rnd()*6)],w:1+rnd()*1.0});}
+  }
+  function oakRender(t){
+    if(!oakCtx)return;
+    oakCtx.clearRect(0,0,oakW,oakH); oakCtx.lineCap='round';
+    const sg=oakCtx.createLinearGradient(0,oakGroundY,0,oakH);
+    sg.addColorStop(0,'#7a5c39'); sg.addColorStop(0.5,'#5e4629'); sg.addColorStop(1,'#42301c');
+    oakCtx.fillStyle=sg; oakCtx.fillRect(0,oakGroundY,oakW,oakH-oakGroundY);
+    for(const f of oakFlecks){oakCtx.globalAlpha=f.a;oakCtx.fillStyle=f.c;oakCtx.beginPath();oakCtx.arc(f.x,f.y,f.r,0,Math.PI*2);oakCtx.fill();}
+    oakCtx.globalAlpha=1;
+    for(const s of oakRoots){if(t<=s.startT)continue;const f=Math.min(1,(t-s.startT)/(s.endT-s.startT));
+      const ex=s.x1+(s.x2-s.x1)*f, ey=s.y1+(s.y2-s.y1)*f;const depth=Math.min(1,(s.y1-oakGroundY)/150);
+      oakCtx.strokeStyle=`rgba(38,27,15,${(0.72-depth*0.4).toFixed(2)})`;oakCtx.lineWidth=Math.max(0.8,s.w*(1-s.level/6));
+      oakCtx.beginPath();oakCtx.moveTo(s.x1,s.y1);oakCtx.lineTo(ex,ey);oakCtx.stroke();}
+    for(const s of oakSeg){if(t<=s.startT)continue;const f=Math.min(1,(t-s.startT)/(s.endT-s.startT));
+      const ex=s.x1+(s.x2-s.x1)*f, ey=s.y1+(s.y2-s.y1)*f;const shade=42+s.level*7;
+      oakCtx.strokeStyle=`rgb(${shade+22},${shade+14},${Math.max(20,shade-8)})`;oakCtx.lineWidth=Math.max(0.8,s.w*(1-s.level/(oakMaxLevel+3)));
+      oakCtx.beginPath();oakCtx.moveTo(s.x1,s.y1);oakCtx.lineTo(ex,ey);oakCtx.stroke();}
+    for(const b of oakGrass){oakCtx.strokeStyle=b.c;oakCtx.lineWidth=b.w;oakCtx.beginPath();oakCtx.moveTo(b.x,oakGroundY);
+      oakCtx.quadraticCurveTo(b.x+b.lean*0.5,oakGroundY-b.h*0.6,b.x+b.lean,oakGroundY-b.h);oakCtx.stroke();}
+    for(const l of oakLeaves){if(t<=l.appear)continue;const a=Math.min(1,(t-l.appear)/0.12)*0.92;oakDrawLeaf(l.x,l.y,l.size,l.rot,l.shade,a);}
+    oakCurT=t;
+  }
+  function oakAnimate(target){
+    cancelAnimationFrame(oakRaf);
+    const start=performance.now(), reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduce){oakRender(target);return;}
+    function step(now){const p=Math.min(1,(now-start)/3200);const e=1-Math.pow(1-p,2.2);oakRender(target*e);if(p<1)oakRaf=requestAnimationFrame(step);}
+    oakRaf=requestAnimationFrame(step);
+  }
+  function initEmployeeOak(){
+    oakCanvas=document.getElementById('empOak'); if(!oakCanvas)return;
+    oakCtx=oakCanvas.getContext('2d');
+    const r=oakCanvas.getBoundingClientRect();
+    if(r.width<10||r.height<10){ requestAnimationFrame(initEmployeeOak); return; }
+    oakDPR=Math.min(window.devicePixelRatio||1,2); oakW=r.width; oakH=r.height;
+    oakCanvas.width=oakW*oakDPR; oakCanvas.height=oakH*oakDPR; oakCtx.setTransform(oakDPR,0,0,oakDPR,0,0);
+    oakBuild(); oakAnimate(empOakTargetT);
+  }
+  window.addEventListener('resize', () => {
+    const tv=document.getElementById('emp-tracker-view');
+    if(tv && tv.style.display==='block' && document.getElementById('fp-review').classList.contains('open')){ initEmployeeOak(); }
+  });
 
   // ── Meeting Scheduler ──
   function renderMeetingScheduler() {
