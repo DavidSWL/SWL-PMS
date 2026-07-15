@@ -683,7 +683,7 @@
     .score-none { font-size: 0.8125rem; color: var(--gray-400); font-style: italic; }
 
     /* ── Employee Status Tracker ── */
-    #emp-tracker-view { display: none; padding: 1.5rem; max-width: 640px; margin: 0 auto; }
+    #emp-tracker-view { display: none; }
     .tracker-title { font-size: 1rem; font-weight: 800; color: var(--text); margin-bottom: 1.25rem; letter-spacing: -.02em; }
     .tracker-steps { display: flex; flex-direction: column; gap: 0; }
     .tracker-step { display: flex; gap: 1rem; align-items: flex-start; padding: 1rem 0; border-bottom: 1px solid var(--border2); }
@@ -781,14 +781,13 @@
     .page { position: relative; }
     .page > *:not(.hero-band) { position: relative; z-index: 1; }
 
-    /* ── Employee review view (compact card + growing oak) ── */
-    #emp-tracker-view { padding: 0; }
-    .emp-scene { position: relative; min-height: 620px; overflow: hidden;
-      background: linear-gradient(180deg,#f7fbf5 0%,#eef4ea 60%,#eef4ea 100%); border-radius: 12px; }
+    /* ── Employee review view (full-page compact card + growing oak) ── */
+    /* full-bleed: cancel the .fp-left padding so the scene fills the whole modal */
+    #emp-tracker-view { padding: 0; margin: -1.25rem; }
+    .emp-scene { position: relative; width: 100%; min-height: calc(100vh - 132px); overflow: hidden;
+      background: linear-gradient(180deg,#f7fbf5 0%,#eef4ea 60%,#eef4ea 100%); }
     #empOak { position:absolute; inset:0; width:100%; height:100%; z-index:2; }
-    .emp-scene-inner { position: relative; z-index: 3; padding: 1.1rem; }
-    .emp-grow-note { position:absolute; bottom:12px; left:0; right:0; text-align:center; font-size:.75rem;
-      color:#f3ead6; font-weight:800; z-index:4; text-shadow:0 1px 3px rgba(0,0,0,.5); }
+    .emp-scene-inner { position: relative; z-index: 3; padding: 1.6rem 1.25rem; }
     .erv-card { border:1px solid #bbf7d0; border-radius:12px;
       background:linear-gradient(180deg,rgba(240,253,244,.97),rgba(255,255,255,.97)); backdrop-filter:blur(2px);
       padding:1.1rem; box-shadow:0 6px 20px -12px rgba(7,40,24,.25); max-width:560px; margin:0 auto; }
@@ -1000,7 +999,6 @@
       <div id="emp-tracker-view">
         <div class="emp-scene">
           <canvas id="empOak"></canvas>
-          <div class="emp-grow-note" id="emp-grow-note"></div>
           <div class="emp-scene-inner">
             <div class="erv-card">
               <div class="erv-top">
@@ -1561,7 +1559,7 @@
     appId: "1:465838605580:web:c3322da1833f219725b529"
   };
 
-  console.log('%creviews.html build: oak-employee-view-2026-07-15', 'color:#16a34a;font-weight:700');
+  console.log('%creviews.html build: oak-fullpage-2026-07-15', 'color:#16a34a;font-weight:700');
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -4282,14 +4280,7 @@
       };
     }
 
-    // Grow note + oak target
-    const notes = {
-      1: 'From a single acorn — roots take hold 🌰',
-      2: 'Branching out — manager review 🌿',
-      3: 'Strong and steady — executive review 🌳',
-      4: 'A mighty oak — endurance & growth 🌳'
-    };
-    document.getElementById('emp-grow-note').textContent = allDone ? notes[4] : notes[activeStep];
+    // Oak growth target based on how many steps are done
     empOakTargetT = [0.30,0.50,0.72,0.88,1][doneCount];
   }
 
