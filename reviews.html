@@ -1559,7 +1559,7 @@
     appId: "1:465838605580:web:c3322da1833f219725b529"
   };
 
-  console.log('%creviews.html build: oak-fullpage-2026-07-15', 'color:#16a34a;font-weight:700');
+  console.log('%creviews.html build: employee-own-only-2026-07-16', 'color:#16a34a;font-weight:700');
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -1891,7 +1891,28 @@
       return;
     }
 
-    // Show banner
+    // A plain employee only sees their own review — no org-wide stats, cycle
+    // completion, filters, or roster.
+    const isEmployee = currentEmployee && currentEmployee.role !== 'admin'
+      && currentEmployee.role !== 'manager' && currentEmployee.role !== 'executive';
+
+    if (isEmployee) {
+      // Friendlier header + hide everything org-level
+      const h1 = document.querySelector('.page-title h1');
+      const sub = document.querySelector('.page-title p');
+      if (h1)  h1.textContent  = 'My Review';
+      if (sub) sub.textContent = 'View and complete your annual performance review.';
+      document.getElementById('cycle-banner').style.display = 'none';
+      document.getElementById('stats-row').style.display    = 'none';
+      document.getElementById('toolbar').style.display      = 'none';
+      document.getElementById('admin-cycle-actions')?.style.setProperty('display','none');
+      document.getElementById('init-btn').style.display     = 'none';
+      document.getElementById('table-card').style.display   = 'block';
+      renderTable();
+      return;
+    }
+
+    // Show banner (managers / execs / admins)
     const completed = Object.values(allReviews).filter(r => r.status === 'completed').length;
     const total = Object.keys(allReviews).length;
     document.getElementById('banner-year').textContent = selectedYear;
@@ -2129,9 +2150,13 @@
     setField('self-mfb-r2', currentReview.selfEval?.mfbR2 || '', !canEditSelf, true);
     setField('self-mfb-r3', currentReview.selfEval?.mfbR3 || '', !canEditSelf, true);
     setField('self-mfb-r4', currentReview.selfEval?.mfbR4 || '', !canEditSelf, true);
-    // Hide manager feedback section from managers (exec/admin can still read it)
+    // Manager feedback is the employee's confidential feedback ABOUT their manager.
+    // It must never be visible to that manager — even if they also hold an executive
+    // or admin role for this employee. Visible only to: the employee (their own),
+    // and executives/admins who are NOT this employee's manager.
     const mfbSection = document.getElementById('self-mfb-section');
-    if (mfbSection) mfbSection.style.display = (isMgrOfEmp && !isExecOfEmp && !isAdmin) ? 'none' : '';
+    const canSeeMfb = isOwn || (!isMgrOfEmp && (isExecOfEmp || isAdmin));
+    if (mfbSection) mfbSection.style.display = canSeeMfb ? '' : 'none';
 
     // Self status note
     const sn = document.getElementById('self-status-note');
