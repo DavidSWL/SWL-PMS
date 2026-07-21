@@ -1,6 +1,10 @@
-<html lang="en"><head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="logo2.png" />
+  <link rel="apple-touch-icon" href="logo2.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sign In — SWL Performance Management</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -177,7 +181,7 @@
 
 <div class="login-card">
   <div class="logo-circle">
-    <img src="logo.png" alt="SouthWest Landscape">
+    <img src="logo.png" alt="SouthWest Landscape"/>
   </div>
 
   <div class="brand-name">SouthWest Landscape</div>
@@ -186,31 +190,33 @@
   <div class="form-wrap">
     <div class="error-msg" id="error-msg"></div>
 
-    <form id="login-form" novalidate="">
+    <form id="login-form" novalidate>
       <div class="form-field">
         <label for="email">Work Email</label>
-        <input type="email" id="email" name="email" placeholder="you@southwestlandscape.com" autocomplete="email" required="">
+        <input type="email" id="email" name="email"
+               placeholder="you@southwestlandscape.com" autocomplete="email" required />
       </div>
       <div class="form-field">
         <label for="password">Password</label>
         <div class="pw-wrap">
-          <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required="">
+          <input type="password" id="password" name="password"
+                 placeholder="••••••••" autocomplete="current-password" required />
           <button type="button" class="pw-toggle" id="pw-toggle" aria-label="Show password">
             <!-- eye icon -->
             <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-              <circle cx="12" cy="12" r="3" stroke-linecap="round"></circle>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              <circle cx="12" cy="12" r="3" stroke-linecap="round"/>
             </svg>
             <!-- eye-off icon (hidden by default) -->
             <svg id="eye-off-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" style="display:none">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.97 9.97 0 012.563-4.312M6.7 6.7A9.965 9.965 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.97 9.97 0 01-1.284 2.567M3 3l18 18"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.97 9.97 0 012.563-4.312M6.7 6.7A9.965 9.965 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.97 9.97 0 01-1.284 2.567M3 3l18 18"/>
             </svg>
           </button>
         </div>
       </div>
       <div class="remember-row">
         <label class="remember-label">
-          <input type="checkbox" id="remember-me">
+          <input type="checkbox" id="remember-me" />
           Remember me
         </label>
         <a href="mailto:admin@southwestlandscape.com" class="forgot-link">Forgot password?</a>
@@ -306,6 +312,5 @@
     }
   });
 </script>
-
-
-</body></html>
+</body>
+</html>
