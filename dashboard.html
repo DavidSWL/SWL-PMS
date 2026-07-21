@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="logo2.png" />
+  <link rel="apple-touch-icon" href="logo2.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reports — SWL Performance Management</title>
+  <title>Dashboard — SWL Performance Management</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -15,7 +17,6 @@
       --green-lt:     #22c55e;
       --green-bg:     #f0fdf4;
       --green-border: #bbf7d0;
-      --green-light:  #f0fdf4;
       --sage:         #D3DED7;
       --bg:           #f0f4f8;
       --surface:      #ffffff;
@@ -32,40 +33,26 @@
       --red-bg:       #fee2e2;
       --purple:       #6d28d9;
       --purple-bg:    #ede9fe;
-      --white:        #ffffff;
-      --accent:       #d97706;
-      --accent-bg:    #fef3c7;
-      --success:      #16a34a;
-      --success-bg:   #dcfce7;
-      --error:        #dc2626;
-      --error-bg:     #fee2e2;
-      --warning:      #d97706;
-      --warning-bg:   #fef3c7;
-      --info:         #1d4ed8;
-      --info-bg:      #dbeafe;
-      --gray-50:      #f8fafc;
-      --gray-100:     #f1f5f9;
-      --gray-400:     #94a3b8;
-      --gray-500:     #94a3b8;
-      --gray-600:     #475569;
-      --gray-700:     #334155;
-      --gray-900:     #0f172a;
     }
 
     body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-    /* ── Nav ── */
-    .topnav { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: var(--green); display: flex; align-items: center; padding: 0 1.5rem; gap: 1.5rem; z-index: 200; box-shadow: 0 2px 12px rgba(7,40,24,.35); }
+    /* ── Top Nav ── */
+    .topnav {
+      position: fixed; top: 0; left: 0; right: 0; height: 60px;
+      background: var(--green); display: flex; align-items: center;
+      padding: 0 1.5rem; gap: 1.5rem; z-index: 100;
+      box-shadow: 0 2px 12px rgba(7,40,24,.35);
+    }
     .brand { display: flex; align-items: center; gap: .65rem; text-decoration: none; flex-shrink: 0; }
-    .brand img { height: 40px; max-height: 40px; width: auto; display: block; object-fit: contain; }
-    .brand-name { font-size: 1.05rem; font-weight: 700; color: var(--white); letter-spacing: -0.02em; }
+    .brand-logo { height: 40px; max-height: 40px; width: auto; display: block; object-fit: contain; }
     .nav-links { display: flex; align-items: center; gap: .15rem; flex: 1; }
     .nav-link { padding: .35rem .75rem; border-radius: 7px; font-size: .875rem; font-weight: 500; color: rgba(211,222,215,.7); text-decoration: none; transition: background .15s, color .15s; white-space: nowrap; }
     .nav-link:hover, .nav-link.active { background: rgba(211,222,215,.15); color: #fff; }
     .nav-link.active { font-weight: 600; }
     .nav-right { display: flex; align-items: center; gap: .75rem; margin-left: auto; }
     .user-chip { display: flex; align-items: center; gap: .5rem; padding: .3rem .65rem .3rem .35rem; background: rgba(211,222,215,.12); border: 1px solid rgba(211,222,215,.18); border-radius: 99px; }
-    .user-avatar { width: 26px; height: 26px; border-radius: 50%; background: rgba(211,222,215,.25); color: #fff; display: flex; align-items: center; justify-content: center; font-size: .65rem; font-weight: 800; flex-shrink: 0; }
+    .user-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--sage); color: var(--green-deep); display: flex; align-items: center; justify-content: center; font-size: .65rem; font-weight: 800; flex-shrink: 0; }
     .user-name { font-size: .8125rem; color: rgba(255,255,255,.85); font-weight: 500; }
     .btn-logout { padding: .35rem .875rem; background: rgba(211,222,215,.1); border: 1px solid rgba(211,222,215,.22); border-radius: 7px; color: rgba(211,222,215,.8); font-size: .8rem; font-weight: 600; cursor: pointer; transition: background .15s; font-family: inherit; }
     .btn-logout:hover { background: rgba(211,222,215,.2); color: #fff; }
@@ -77,341 +64,255 @@
     .mobile-menu .nav-link:hover, .mobile-menu .nav-link.active { background: rgba(211,222,215,.12); color: #fff; }
     .mobile-divider { height: 1px; background: rgba(211,222,215,.12); margin: .35rem 0; }
 
-    /* ── Layout ── */
+    /* ── Page shell ── */
     .page { padding-top: 60px; min-height: 100vh; }
-    .content { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .view { display: none; }
+    .view.active { display: block; }
 
-    /* ── Page Header ── */
-    .page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.75rem; }
-    .page-title h1 { font-size: 1.5rem; font-weight: 900; color: var(--text); letter-spacing: -.03em; }
-    .page-title p { font-size: 0.8rem; color: var(--muted); margin-top: 0.2rem; }
-    .header-actions { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
-    .year-select { padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.875rem; background: var(--white); color: var(--gray-900); cursor: pointer; }
-    .btn { padding: 0.5rem 1.125rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; cursor: pointer; border: none; transition: background 0.15s; }
-    .btn-secondary { background: var(--white); color: var(--gray-900); border: 1px solid var(--border); }
-    .btn-secondary:hover { background: var(--gray-100); }
+    /* ── Shared layout ── */
+    .v-body { max-width: 1200px; margin: 0 auto; padding: 2rem 1.75rem 3rem; display: flex; flex-direction: column; gap: 1.75rem; }
+    .v-hero { display: flex; align-items: flex-end; gap: 1rem; }
+    .v-hero h1 { font-size: 1.5rem; font-weight: 900; color: var(--text); letter-spacing: -.03em; line-height: 1.15; }
+    .v-hero h1 span { color: var(--green-mid); }
+    .v-hero p { font-size: .8rem; color: var(--muted); margin-top: .3rem; }
+    .v-hero-actions { margin-left: auto; display: flex; gap: .625rem; }
 
-    /* ── KPI Row ── */
-    .kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; margin-bottom: 1.75rem; background: var(--border); border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
-    .kpi-card { background: var(--surface); padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: .25rem; }
-    .kpi-icon { font-size: 1.4rem; line-height: 1; }
+    /* Card */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.05); }
+    .card-head { padding: .875rem 1.25rem; border-bottom: 1px solid var(--border2); display: flex; align-items: center; gap: .75rem; }
+    .card-title { font-size: .8rem; font-weight: 800; color: var(--text); flex: 1; }
+    .card-badge { font-size: .65rem; font-weight: 700; background: var(--green-bg); color: var(--green-mid); border: 1px solid var(--green-border); padding: .15rem .5rem; border-radius: 99px; }
+    .card-badge-warn { background: var(--yellow-bg); color: #92400e; border-color: var(--yellow-border); }
+    .card-badge-muted { background: var(--border2); color: var(--muted); border-color: var(--border); }
+
+    /* KPI row */
+    .kpi-row { display: grid; gap: 1px; background: var(--border); border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+    .kpi { background: var(--surface); padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: .25rem; }
     .kpi-label { font-size: .65rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
-    .kpi-value { font-size: 2rem; font-weight: 900; color: var(--text); line-height: 1; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
-    .kpi-sub { font-size: 0.7rem; color: var(--muted); }
-    .kpi-card.c-done .kpi-value { color: var(--green-mid); }
-    .kpi-card.c-prog .kpi-value { color: var(--yellow); }
-    .kpi-card.c-pend .kpi-value { color: var(--muted); }
-    .kpi-card.c-score .kpi-value { color: var(--info); }
+    .kpi-val { font-size: 2rem; font-weight: 900; color: var(--text); letter-spacing: -.04em; font-variant-numeric: tabular-nums; line-height: 1; }
+    .kpi-val sub { font-size: .85rem; color: var(--muted); font-weight: 600; vertical-align: baseline; }
+    .kpi-sub { font-size: .7rem; color: var(--muted); }
+    .c-green  { color: var(--green-mid); }
+    .c-yellow { color: var(--yellow); }
+    .c-red    { color: var(--red); }
+    .c-purple { color: var(--purple); }
+    .c-accent { color: var(--green); }
 
-    /* ── Section ── */
-    .section-label { font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
-    .section-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; margin-top: 2rem; }
-    .section-header h3 { font-size: 1rem; font-weight: 800; color: var(--text); letter-spacing: -.02em; }
-    .section-header .section-badge { font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.65rem; border-radius: 99px; background: var(--green-bg); color: var(--green-mid); }
-    .section-divider { height: 1px; background: var(--border); flex: 1; }
+    /* Table */
+    .tbl { width: 100%; border-collapse: collapse; }
+    .tbl th { font-size: .62rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; padding: .5rem 1.25rem; text-align: left; border-bottom: 1px solid var(--border2); background: var(--surface2); white-space: nowrap; }
+    .tbl td { padding: .7rem 1.25rem; border-bottom: 1px solid var(--border2); font-size: .78rem; color: var(--sub); vertical-align: middle; }
+    .tbl tr:last-child td { border-bottom: none; }
+    .tbl tr:hover td { background: var(--surface2); }
+    .emp-av { width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: .62rem; font-weight: 800; margin-right: .5rem; vertical-align: middle; background: var(--green-bg); color: var(--green); flex-shrink: 0; }
+    .row-name { font-weight: 700; color: var(--text); }
+    .row-dept { font-size: .7rem; color: var(--muted); }
 
-    /* ── Two-col / Three-col Grid ── */
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
-    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem; }
-    .four-col { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem; }
-    .report-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,.05); }
-    .report-card h2 { font-size: 0.8rem; font-weight: 800; color: var(--text); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
-    .report-card.accent-green { border-left: 4px solid var(--green-mid); }
-    .report-card.accent-red   { border-left: 4px solid var(--error); }
-    .report-card.accent-yellow { border-left: 4px solid var(--yellow); }
-    .report-card.accent-blue  { border-left: 4px solid var(--info); }
+    /* Status chips */
+    .chip { display: inline-flex; align-items: center; font-size: .65rem; font-weight: 700; padding: .2rem .6rem; border-radius: 5px; white-space: nowrap; }
+    .chip-done  { background: #dcfce7; color: #15803d; }
+    .chip-act   { background: #dbeafe; color: #1d4ed8; }
+    .chip-wait  { background: var(--yellow-bg); color: #92400e; }
+    .chip-idle  { background: var(--border2); color: var(--muted); }
+    .chip-final { background: #dcfce7; color: #15803d; }
 
-    /* ── Spotlight cards ── */
-    .spotlight-name { font-size: 1.05rem; font-weight: 800; color: var(--text); margin-bottom: 0.15rem; }
-    .spotlight-dept { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem; }
-    .spotlight-score { font-size: 2.2rem; font-weight: 900; letter-spacing: -.05em; line-height: 1; }
-    .spotlight-score.hi  { color: var(--green-mid); }
-    .spotlight-score.lo  { color: var(--error); }
-    .spotlight-score.mid { color: var(--yellow); }
-    .spotlight-score sub { font-size: 0.9rem; font-weight: 600; opacity: .6; }
-    .spotlight-note { font-size: 0.75rem; color: var(--sub); margin-top: 0.5rem; line-height: 1.5; }
-    .spotlight-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 0.75rem; }
-    .spotlight-label.green { color: var(--green-mid); }
-    .spotlight-label.red   { color: var(--error); }
-    .spotlight-label.yellow { color: var(--yellow); }
-    .spotlight-label.blue  { color: var(--info); }
+    /* Progress dots */
+    .dots { display: flex; gap: 3px; }
+    .dot { width: 8px; height: 8px; border-radius: 2px; background: var(--border); }
+    .dot.d { background: var(--green-mid); }
+    .dot.p { background: #93c5fd; }
 
-    /* ── Horizontal Bar Chart ── */
-    .bar-chart { display: flex; flex-direction: column; gap: 0.875rem; }
-    .bar-row { display: grid; grid-template-columns: 130px 1fr 48px; align-items: center; gap: 0.75rem; }
-    .bar-row-label { font-size: 0.8125rem; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .bar-track { height: 10px; background: var(--border2); border-radius: 99px; overflow: hidden; }
-    .bar-fill { height: 100%; border-radius: 99px; background: var(--green); transition: width 0.6s ease; }
-    .bar-fill.done   { background: var(--success); }
-    .bar-fill.prog   { background: var(--accent); }
-    .bar-fill.low    { background: var(--error); }
-    .bar-pct { font-size: 0.8125rem; font-weight: 700; color: var(--gray-600); text-align: right; }
+    /* Lower 2-col grid */
+    .lower { display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; }
 
-    /* ── Competency dual bar ── */
-    .comp-bar-row { display: grid; grid-template-columns: 150px 1fr; align-items: center; gap: 0.75rem; margin-bottom: 0.7rem; }
-    .comp-bar-label { font-size: 0.75rem; font-weight: 600; color: var(--text); }
-    .comp-bar-tracks { display: flex; flex-direction: column; gap: 3px; }
-    .comp-dual-track { height: 8px; background: var(--border2); border-radius: 99px; overflow: hidden; position: relative; }
-    .comp-dual-fill { height: 100%; border-radius: 99px; transition: width 0.6s ease; }
-    .comp-dual-fill.self-fill { background: #93c5fd; }
-    .comp-dual-fill.mgr-fill  { background: var(--green); }
-    .comp-bar-score { font-size: 0.7rem; font-weight: 700; color: var(--sub); white-space: nowrap; }
+    /* Activity */
+    .act-row { display: flex; align-items: flex-start; gap: .75rem; padding: .625rem 1.25rem; border-bottom: 1px solid var(--border2); }
+    .act-row:last-child { border-bottom: none; }
+    .act-dot { width: 7px; height: 7px; border-radius: 50%; margin-top: .3rem; flex-shrink: 0; }
+    .act-dot.green  { background: var(--green-mid); }
+    .act-dot.yellow { background: var(--yellow); }
+    .act-dot.blue   { background: #3b82f6; }
+    .act-text { font-size: .74rem; color: var(--sub); line-height: 1.35; }
+    .act-text strong { color: var(--text); font-weight: 700; }
+    .act-time { font-size: .63rem; color: var(--muted); margin-top: .15rem; }
 
-    /* ── Score Distribution ── */
-    .score-dist { display: flex; align-items: flex-end; gap: 0.75rem; height: 140px; }
-    .score-col { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; flex: 1; }
-    .score-bar-wrap { flex: 1; width: 100%; display: flex; flex-direction: column; justify-content: flex-end; }
-    .score-bar { width: 100%; border-radius: 6px 6px 0 0; transition: height 0.7s cubic-bezier(0.34,1.2,0.64,1); min-height: 4px; }
-    .score-bar.s1 { background: var(--error); }
-    .score-bar.s2 { background: #FF7043; }
-    .score-bar.s3 { background: var(--accent); }
-    .score-bar.s4 { background: #66BB6A; }
-    .score-bar.s5 { background: var(--success); }
-    .score-label { font-size: 0.8125rem; font-weight: 700; color: var(--gray-600); }
-    .score-count { font-size: 0.75rem; color: var(--gray-400); }
-    .score-desc { font-size: 0.65rem; color: var(--gray-400); text-align: center; white-space: nowrap; }
+    /* Ring */
+    .ring-wrap { position: relative; display: inline-block; }
+    .ring-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+    .ring-num { font-size: 1.5rem; font-weight: 900; color: var(--text); letter-spacing: -.04em; }
+    .ring-sub-txt { font-size: .62rem; color: var(--muted); font-weight: 600; }
+    .ring-center { text-align: center; padding: 1.5rem 1.25rem; }
+    .ring-title { font-size: .7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; margin-top: .75rem; }
 
-    /* ── Stacked completion bar ── */
-    .stacked-bar-wrap { margin-bottom: 0.5rem; }
-    .stacked-bar { display: flex; height: 22px; border-radius: 8px; overflow: hidden; gap: 2px; }
-    .stacked-seg { height: 100%; transition: width 0.6s ease; }
-    .stacked-seg.done { background: var(--success); }
-    .stacked-seg.prog { background: var(--accent); }
-    .stacked-seg.pend { background: var(--gray-100); border: 1px solid var(--border); }
-    .stacked-legend { display: flex; gap: 1rem; margin-top: 0.5rem; flex-wrap: wrap; }
-    .legend-item { display: flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; color: var(--gray-600); }
-    .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+    /* Buttons */
+    .btn { border: none; border-radius: 8px; font-size: .78rem; font-weight: 700; cursor: pointer; font-family: inherit; padding: .45rem 1rem; }
+    .btn-pri   { background: var(--green); color: #fff; }
+    .btn-pri:hover { background: var(--green-dark); }
+    .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--sub); }
+    .btn-ghost:hover { background: var(--surface2); }
+    .btn-sm { font-size: .72rem; padding: .3rem .75rem; border-radius: 6px; }
 
-    /* ── Dept score table ── */
-    .score-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-    .score-table th { text-align: left; font-size: .62rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border2); background: var(--surface2); }
-    .score-table td { padding: 0.625rem 0.75rem; border-bottom: 1px solid var(--border2); vertical-align: middle; color: var(--sub); }
-    .score-table tr:last-child td { border-bottom: none; }
-    .score-pill { display: inline-flex; align-items: center; padding: 0.2rem 0.6rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; }
-    .sp-high { background: var(--success-bg); color: var(--success); }
-    .sp-mid  { background: var(--accent-bg); color: var(--accent); }
-    .sp-low  { background: var(--error-bg); color: var(--error); }
-    .mini-bar-wrap { width: 80px; height: 8px; background: var(--gray-100); border-radius: 99px; overflow: hidden; display: inline-block; vertical-align: middle; margin-left: 0.5rem; }
-    .mini-bar-fill { height: 100%; border-radius: 99px; background: var(--green); }
-
-    /* ── Self-eval voice table ── */
-    .voice-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-    .voice-table th { text-align: left; font-size: .6rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border2); background: var(--surface2); }
-    .voice-table td { padding: 0.75rem; border-bottom: 1px solid var(--border2); vertical-align: top; color: var(--sub); line-height: 1.5; }
-    .voice-table tr:last-child td { border-bottom: none; }
-    .voice-emp-name { font-weight: 700; color: var(--text); font-size: 0.8125rem; }
-    .voice-dept { font-size: 0.7rem; color: var(--muted); }
-    .voice-text { font-style: italic; color: var(--sub); font-size: 0.78rem; }
-    .self-score-badge { display: inline-flex; align-items: center; padding: 0.15rem 0.55rem; border-radius: 99px; font-size: 0.72rem; font-weight: 800; }
-
-    /* ── Dept intelligence grid ── */
-    .dept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; }
-    .dept-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
-    .dept-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
-    .dept-card-name { font-size: 0.9rem; font-weight: 800; color: var(--text); }
-    .dept-card-score { font-size: 1.4rem; font-weight: 900; letter-spacing: -.04em; }
-    .dept-card-score.hi  { color: var(--green-mid); }
-    .dept-card-score.mid { color: var(--yellow); }
-    .dept-card-score.lo  { color: var(--error); }
-    .dept-card-meta { font-size: 0.7rem; color: var(--muted); margin-bottom: 0.75rem; }
-    .dept-insight { font-size: 0.75rem; color: var(--sub); display: flex; gap: 0.4rem; align-items: flex-start; margin-bottom: 0.35rem; }
-    .dept-insight-icon { flex-shrink: 0; margin-top: 0.1rem; }
-    .dept-prog-bar { height: 6px; background: var(--border2); border-radius: 99px; overflow: hidden; margin-top: 0.75rem; }
-    .dept-prog-fill { height: 100%; border-radius: 99px; background: var(--green); transition: width .5s; }
-
-    /* ── Compensation summary table ── */
-    .comp-sum-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-    .comp-sum-table th { text-align: left; font-size: .62rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border2); background: var(--surface2); white-space: nowrap; }
-    .comp-sum-table td { padding: 0.625rem 0.75rem; border-bottom: 1px solid var(--border2); vertical-align: middle; color: var(--sub); }
-    .comp-sum-table tr:last-child td { border-bottom: none; }
-    .type-badge { display: inline-flex; padding: 0.15rem 0.55rem; border-radius: 99px; font-size: 0.7rem; font-weight: 700; background: var(--green-light); color: var(--green-dark); }
-
-    /* ── Goal status section ── */
-    .goal-donut-row { display: flex; align-items: center; gap: 2rem; }
-    .donut-wrap { position: relative; width: 120px; height: 120px; flex-shrink: 0; }
-    .donut-svg { transform: rotate(-90deg); }
-    .donut-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .donut-pct { font-size: 1.375rem; font-weight: 800; color: var(--green-dark); line-height: 1; }
-    .donut-lbl { font-size: 0.65rem; color: var(--gray-400); font-weight: 600; }
-    .goal-legend { display: flex; flex-direction: column; gap: 0.6rem; flex: 1; }
-    .gl-row { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; font-size: 0.8125rem; }
-    .gl-dot-label { display: flex; align-items: center; gap: 0.5rem; }
-    .gl-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
-    .gl-count { font-weight: 700; color: var(--gray-900); }
-
-    /* ── Game plan ── */
-    .plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
-    .plan-item { display: flex; gap: 0.875rem; padding: 1rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; }
-    .plan-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 900; flex-shrink: 0; margin-top: 0.1rem; }
-    .plan-num.hi  { background: var(--green-bg); color: var(--green-mid); }
-    .plan-num.lo  { background: var(--red-bg); color: var(--error); }
-    .plan-num.mid { background: var(--yellow-bg); color: var(--yellow); }
-    .plan-title { font-size: 0.8125rem; font-weight: 700; color: var(--text); margin-bottom: 0.3rem; }
-    .plan-body  { font-size: 0.75rem; color: var(--sub); line-height: 1.55; }
-
-    /* ── Print cover ── */
-    .print-cover { display: none; }
-    @media print {
-      .print-cover { display: block; text-align: center; padding: 3rem 2rem; border-bottom: 3px solid #0E4C2D; margin-bottom: 2rem; page-break-after: always; }
-      .print-cover h1 { font-size: 2rem; font-weight: 900; color: #0E4C2D; }
-      .print-cover p  { color: #475569; margin-top: 0.5rem; }
+    /* ────────────────────────────────────────
+       EMPLOYEE VIEW
+    ──────────────────────────────────────── */
+    .emp-center { align-items: center; padding-top: 2.5rem; }
+    .emp-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+      padding: 2.5rem; display: flex; flex-direction: column; align-items: center;
+      text-align: center; gap: 1.25rem; max-width: 520px; width: 100%;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
     }
+    .emp-icon { width: 60px; height: 60px; background: var(--green-bg); border-radius: 14px; display: flex; align-items: center; justify-content: center; }
+    .emp-card-title { font-size: 1.1rem; font-weight: 800; color: var(--text); }
+    .emp-card-sub { font-size: .8rem; color: var(--muted); line-height: 1.55; }
+    .emp-due { display: flex; align-items: center; gap: .5rem; background: var(--yellow-bg); border: 1px solid var(--yellow-border); border-radius: 8px; padding: .625rem 1rem; font-size: .78rem; font-weight: 600; color: #92400e; }
+    .emp-submit { background: var(--green); color: #fff; border: none; border-radius: 10px; padding: .75rem 2rem; font-size: .88rem; font-weight: 800; cursor: pointer; font-family: inherit; width: 100%; }
+    .emp-submit:hover { background: var(--green-dark); }
+    .emp-note { font-size: .72rem; color: var(--muted); line-height: 1.5; }
+    .emp-done-wrap { background: var(--green-bg); border: 1px solid var(--green-border); border-radius: 10px; padding: 1rem 1.5rem; display: flex; align-items: center; gap: .75rem; width: 100%; }
+    .next-steps { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; max-width: 520px; width: 100%; overflow: hidden; }
+    .next-step-row { display: flex; gap: .875rem; align-items: flex-start; padding: .875rem 1.25rem; border-bottom: 1px solid var(--border2); }
+    .next-step-row:last-child { border-bottom: none; }
+    .step-num { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: .65rem; font-weight: 800; }
+    .step-num.active { background: var(--green-bg); border: 1.5px solid var(--green-border); color: var(--green-mid); }
+    .step-num.inactive { background: var(--border2); border: 1.5px solid var(--border); color: var(--muted); }
 
-    /* ── Empty / Loading ── */
-    .empty-block { text-align: center; padding: 2rem 1rem; color: var(--gray-400); font-size: 0.875rem; }
-    .loading { display: flex; align-items: center; justify-content: center; padding: 3rem; gap: 0.75rem; color: var(--gray-400); }
-    .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.7s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    /* ────────────────────────────────────────
+       EXECUTIVE HIGHLIGHTS
+    ──────────────────────────────────────── */
+    .highlights-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+    .hl-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.25rem; display: flex; flex-direction: column; gap: .5rem; box-shadow: 0 1px 3px rgba(0,0,0,.05); }
+    .hl-label { font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; display: flex; align-items: center; gap: .35rem; }
+    .hl-name { font-size: .9rem; font-weight: 800; color: var(--text); }
+    .hl-dept { font-size: .72rem; color: var(--muted); }
+    .hl-score { font-size: 1.4rem; font-weight: 900; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+    .hl-score sub { font-size: .75rem; font-weight: 600; color: var(--muted); vertical-align: baseline; }
+    .hl-note { font-size: .72rem; color: var(--muted); line-height: 1.45; border-top: 1px solid var(--border2); padding-top: .5rem; }
 
-    /* ── Toast ── */
-    .toast-wrap { position: fixed; bottom: 1.5rem; right: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 9999; }
-    .toast { padding: 0.875rem 1.125rem; border-radius: 10px; font-size: 0.875rem; font-weight: 500; color: var(--white); max-width: 320px; box-shadow: 0 4px 16px rgba(0,0,0,0.20); animation: slideIn 0.25s ease; }
-    .toast.success { background: var(--success); }
-    .toast.error   { background: var(--error); }
-    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    /* ────────────────────────────────────────
+       ADMIN VIEW
+    ──────────────────────────────────────── */
+    .summary-bar { background: linear-gradient(135deg,#0e4c2d 0%,#166534 100%); border-radius: 12px; padding: 1.1rem 1.5rem; display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; }
+    .sbar-item { display: flex; flex-direction: column; gap: .15rem; }
+    .sbar-label { font-size: .62rem; font-weight: 700; color: rgba(255,255,255,.55); text-transform: uppercase; letter-spacing: .08em; }
+    .sbar-val { font-size: 1.1rem; font-weight: 900; color: #fff; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+    .sbar-div { width: 1px; background: rgba(255,255,255,.18); align-self: stretch; }
+    .sbar-spacer { flex: 1; }
 
-    @media (max-width: 1024px) { .kpi-row { grid-template-columns: repeat(3, 1fr); } .three-col { grid-template-columns: 1fr 1fr; } .four-col { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 900px)  { .two-col { grid-template-columns: 1fr; } .plan-grid { grid-template-columns: 1fr; } }
+    /* Raise pill */
+    .inc-pill { display: inline-flex; align-items: center; gap: .35rem; border-radius: 7px; padding: .28rem .65rem; font-weight: 800; font-size: .78rem; }
+    .inc-high { background: #dcfce7; color: #15803d; }
+    .inc-mid  { background: var(--yellow-bg); color: #92400e; }
+    .inc-low  { background: var(--border2); color: var(--sub); }
+    .inc-amt  { font-size: .68rem; font-weight: 600; opacity: .75; }
+
+    /* Score display */
+    .score-hi { font-size: .92rem; font-weight: 900; color: #15803d; font-variant-numeric: tabular-nums; }
+    .score-md { font-size: .92rem; font-weight: 900; color: var(--yellow); font-variant-numeric: tabular-nums; }
+    .score-lo { font-size: .92rem; font-weight: 900; color: var(--red); font-variant-numeric: tabular-nums; }
+
+    /* Action buttons */
+    .row-actions { display: flex; gap: .4rem; }
+    .abtn { border-radius: 6px; padding: .28rem .65rem; font-size: .68rem; font-weight: 700; cursor: pointer; font-family: inherit; border: none; white-space: nowrap; }
+    .abtn-ghost  { background: var(--border2); color: var(--sub); }
+    .abtn-letter { background: var(--purple-bg); color: var(--purple); }
+    .abtn-sent   { background: var(--green-bg); color: var(--green-mid); border: 1px solid var(--green-border); cursor: default; }
+
+    /* Tbl footer */
+    .tbl-foot { padding: .875rem 1.5rem; background: var(--surface2); border-top: 1px solid var(--border); display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; }
+    .foot-item { font-size: .78rem; }
+    .foot-label { color: var(--muted); font-weight: 600; }
+    .foot-val { color: var(--text); font-weight: 800; font-variant-numeric: tabular-nums; margin-left: .3rem; }
+    .foot-val-green { color: var(--green-mid); }
+
+    /* ────────────────────────────────────────
+       LETTER PAGE
+    ──────────────────────────────────────── */
+    #view-letter .v-body { padding-top: 1.25rem; }
+    .letter-layout { display: flex; gap: 1.75rem; }
+    .letter-controls { width: 255px; flex-shrink: 0; display: flex; flex-direction: column; gap: 1rem; }
+    .ctrl-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.1rem; }
+    .ctrl-title { font-size: .68rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; margin-bottom: .875rem; }
+    .ctrl-row { display: flex; flex-direction: column; gap: .3rem; margin-bottom: .75rem; }
+    .ctrl-row:last-child { margin-bottom: 0; }
+    .ctrl-lbl { font-size: .72rem; font-weight: 700; color: var(--sub); }
+    .ctrl-static { font-size: .82rem; font-weight: 800; color: var(--text); }
+    .ctrl-input { width: 100%; border: 1px solid var(--border); border-radius: 7px; padding: .45rem .75rem; font-size: .82rem; font-family: inherit; color: var(--text); background: var(--surface2); }
+    .ctrl-input:focus { outline: none; border-color: var(--green-mid); }
+    .raise-display { background: var(--green-bg); border: 1px solid var(--green-border); border-radius: 8px; padding: .875rem 1rem; text-align: center; margin-top: .25rem; }
+    .raise-pct { font-size: 2rem; font-weight: 900; color: #15803d; letter-spacing: -.04em; }
+    .raise-amt { font-size: .78rem; color: #166534; font-weight: 700; margin-top: .1rem; }
+    .raise-new { font-size: .75rem; color: #166534; margin-top: .2rem; }
+    .btn-full { width: 100%; border: none; border-radius: 8px; padding: .6rem; font-size: .8rem; font-weight: 800; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: .4rem; }
+    .btn-full-pri { background: var(--green); color: #fff; }
+    .btn-full-pri:hover { background: var(--green-dark); }
+    .btn-full-sec { background: var(--border2); color: var(--sub); }
+
+    /* Letter preview */
+    .letter-preview { flex: 1; }
+    .preview-label { font-size: .72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; margin-bottom: .75rem; display: flex; align-items: center; gap: .5rem; }
+    .preview-unsent { background: var(--yellow-bg); color: #92400e; border: 1px solid var(--yellow-border); border-radius: 4px; padding: .1rem .45rem; font-size: .65rem; }
+    .preview-sent { background: var(--green-bg); color: #15803d; border: 1px solid var(--green-border); border-radius: 4px; padding: .1rem .45rem; font-size: .65rem; }
+
+    .letter-doc { background: #fff; border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,.08); overflow: hidden; max-width: 700px; padding: .5rem; }
+
+    /* Formal letter template — matches letters.html exactly */
+    .letter { max-width: 100%; font-family: Calibri, Arial, sans-serif; font-size: 11pt; line-height: 1.4; color: #111; }
+    .ltr-hdr-wrap { margin: -.5rem -.5rem 1.5rem; border-radius: 6px 6px 0 0; overflow: hidden; }
+    .ltr-hdr-top { background: #083520; padding: 0.8rem 1.5rem; display: flex; align-items: center; gap: 1rem; }
+    .ltr-hdr-logo-placeholder { height: 48px; width: 48px; background: rgba(255,255,255,.12); border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .ltr-hdr-company { font-family: 'Segoe UI', sans-serif; font-size: 1.25rem; font-weight: 900; color: #fff; letter-spacing: -.01em; line-height: 1.1; }
+    .ltr-hdr-tagline { font-family: 'Segoe UI', sans-serif; font-size: .65rem; color: rgba(255,255,255,.6); letter-spacing: .03em; margin-top: .2rem; }
+    .ltr-hdr-bot { background: #0E4C2D; padding: .45rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .ltr-hdr-doctype { font-family: 'Segoe UI', sans-serif; font-size: .68rem; font-weight: 700; color: rgba(255,255,255,.9); text-transform: uppercase; letter-spacing: .12em; }
+    .ltr-hdr-address { font-family: 'Segoe UI', sans-serif; font-size: .65rem; color: rgba(255,255,255,.65); }
+    .letter p { margin-bottom: .6rem; font-size: 11pt; }
+    .letter p.spaced { margin-bottom: 1rem; }
+    .letter .section-head { font-weight: 700; margin-bottom: .1rem; }
+    .letter .sig-area { margin-top: 2rem; padding: 0 .5rem .5rem; }
+    .letter .sig-sender { margin-bottom: 1.5rem; }
+    .letter .sig-sender-name { font-family: 'Segoe UI', sans-serif; font-weight: 700; font-size: .875rem; }
+    .letter .sig-sender-title { font-family: 'Segoe UI', sans-serif; font-size: .8rem; color: #6B7280; }
+    .letter .sig-row { display: flex; gap: 3rem; margin-top: 1.5rem; flex-wrap: wrap; }
+    .letter .sig-block { flex: 1; min-width: 160px; }
+    .letter .sig-line { border-bottom: 1.5px solid #333; height: 30px; margin-bottom: .2rem; }
+    .letter .sig-label { font-family: 'Segoe UI', sans-serif; font-size: .75rem; color: #6B7280; }
+    .letter .sig-title { font-weight: 700; font-size: .875rem; margin-bottom: .5rem; }
+    .ltr-body-pad { padding: 1.25rem 1.5rem .5rem; }
+
+    /* ── Responsive ── */
+    @media (max-width: 1024px) {
+      .kpi-row { grid-template-columns: repeat(2,1fr) !important; }
+      .lower { grid-template-columns: 1fr; }
+      .highlights-row { grid-template-columns: 1fr; }
+    }
     @media (max-width: 768px) {
       .nav-links, .nav-right { display: none; }
       .hamburger { display: flex; }
-      .content { padding: 1.5rem 1rem; }
-      .kpi-row { grid-template-columns: repeat(2, 1fr); }
-      .bar-row { grid-template-columns: 90px 1fr 40px; }
-      .three-col { grid-template-columns: 1fr; }
-      .comp-bar-row { grid-template-columns: 110px 1fr; }
+      .v-body { padding: 1.25rem 1rem; }
+      .lower { grid-template-columns: 1fr; }
+      .letter-layout { flex-direction: column; }
+      .letter-controls { width: 100%; }
+      .comp-box { grid-template-columns: 1fr; }
     }
-    @media (max-width: 480px) { .kpi-row { grid-template-columns: 1fr 1fr; } }
-
-    @media print {
-      .topnav, .hamburger, .mobile-menu, .header-actions, .toast-wrap { display: none !important; }
-      .page { padding-top: 0; }
-      body { background: white; }
-      .report-card { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
-      .dept-card { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
-      .two-col, .three-col, .four-col, .plan-grid { break-inside: avoid; }
-    }
-
-    /* ── Admin Section Nav ── */
-    .admin-section-nav {
-      display: flex;
-      align-items: stretch;
-      gap: 0;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-      margin-bottom: 1.75rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,.06);
-    }
-    .sec-nav-btn {
-      flex: 1;
-      background: none;
-      border: none;
-      border-right: 1px solid var(--border);
-      padding: .75rem 1rem;
-      font-size: .8125rem;
-      font-weight: 600;
-      color: var(--muted);
-      cursor: pointer;
-      transition: background .15s, color .15s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: .2rem;
-      white-space: nowrap;
-      font-family: inherit;
-    }
-    .sec-nav-btn:last-child { border-right: none; }
-    .sec-nav-btn:hover { background: var(--surface2); color: var(--text); }
-    .sec-nav-btn.active { background: var(--green); color: #fff; }
-    .sec-nav-btn .snb-icon { font-size: 1.1rem; }
-    .sec-nav-btn .snb-count {
-      font-size: .65rem;
-      font-weight: 700;
-      padding: .1rem .4rem;
-      border-radius: 99px;
-      background: rgba(255,255,255,.2);
-      display: none;
-    }
-    .sec-nav-btn.active .snb-count { display: inline; }
-
-    /* ── Report tab visibility ── */
-    /* Default: all tabs visible (non-admin). Admin JS adds .admin-tabs-enabled to #report-body which hides non-active tabs. */
-    .report-tab { display: block; }
-    #report-body.admin-tabs-enabled .report-tab { display: none; }
-    #report-body.admin-tabs-enabled .report-tab.active { display: block; }
-
-    /* ── Clickable KPI cards ── */
-    .kpi-card.is-clickable { cursor: pointer; transition: box-shadow .15s, transform .1s; }
-    .kpi-card.is-clickable:hover { box-shadow: 0 4px 16px rgba(0,0,0,.1); transform: translateY(-1px); }
-
-    /* ── Drawer ── */
-    .rpt-drawer-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,.45);
-      z-index: 500;
-      opacity: 0; pointer-events: none;
-      transition: opacity .2s;
-    }
-    .rpt-drawer-overlay.open { opacity: 1; pointer-events: all; }
-    .rpt-drawer {
-      position: fixed; top: 0; right: 0; bottom: 0;
-      width: min(520px, 100vw);
-      background: var(--surface);
-      box-shadow: -4px 0 32px rgba(0,0,0,.18);
-      transform: translateX(100%);
-      transition: transform .25s cubic-bezier(.4,0,.2,1);
-      display: flex; flex-direction: column;
-      z-index: 501;
-    }
-    .rpt-drawer-overlay.open .rpt-drawer { transform: translateX(0); }
-    .rpt-drawer-head {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 1.25rem 1.5rem;
-      border-bottom: 1px solid var(--border);
-      position: sticky; top: 0;
-      background: var(--surface); z-index: 1;
-    }
-    .rpt-drawer-title { font-size: 1rem; font-weight: 800; color: var(--text); }
-    .rpt-drawer-close {
-      background: none; border: none; cursor: pointer;
-      color: var(--muted); font-size: 1.25rem; line-height: 1;
-      padding: .3rem .5rem; border-radius: 6px; font-family: inherit;
-    }
-    .rpt-drawer-close:hover { background: var(--surface2); color: var(--text); }
-    .rpt-drawer-body { padding: 1.5rem; overflow-y: auto; flex: 1; }
-    .rpt-drawer-section { margin-bottom: 1.5rem; }
-    .rpt-drawer-section-title {
-      font-size: .65rem; font-weight: 700; color: var(--muted);
-      text-transform: uppercase; letter-spacing: .08em;
-      margin-bottom: .75rem;
-    }
-    .rpt-stat-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: .5rem 0; border-bottom: 1px solid var(--border2);
-      font-size: .875rem;
-    }
-    .rpt-stat-row:last-child { border-bottom: none; }
-    .rpt-stat-key { color: var(--sub); }
-    .rpt-stat-val { font-weight: 700; color: var(--text); }
   </style>
 </head>
 <body>
 
+<!-- ── Top Nav ── -->
 <header class="topnav">
   <a href="dashboard.html" class="brand">
-    <img src="logo2.png" alt="SouthWest Landscape" style="height:40px;width:auto;display:block;object-fit:contain;" />
+    <img src="logo2.png" alt="SouthWest Landscape" class="brand-logo" />
   </a>
   <nav class="nav-links">
-    <a class="nav-link" id="nav-dashboard" href="dashboard.html">Dashboard</a>
+    <a class="nav-link active" href="dashboard.html">Dashboard</a>
     <a class="nav-link" href="reviews.html">Reviews</a>
-    <a class="nav-link active" href="reports.html">Reports</a>
-    <a class="nav-link" id="nav-admin" href="admin-employees.html" style="display:none">Administration</a>
+    <a class="nav-link" id="nav-reports" href="reports.html" style="display:none">Reports</a>
+    <a class="nav-link" id="nav-admin" href="adminemployees.html" style="display:none">Administration</a>
   </nav>
   <div class="nav-right">
     <div class="user-chip">
-      <div class="user-avatar" id="user-avatar"></div>
+      <div class="user-avatar" id="user-avatar">—</div>
       <span class="user-name" id="user-name"></span>
     </div>
     <button class="btn-logout" id="logout-btn">Sign out</button>
@@ -422,1697 +323,1033 @@
 </header>
 
 <nav class="mobile-menu" id="mobile-menu">
-  <a class="nav-link" href="dashboard.html">Dashboard</a>
+  <a class="nav-link active" href="dashboard.html">Dashboard</a>
   <a class="nav-link" href="reviews.html">Reviews</a>
-  <a class="nav-link active" href="reports.html">Reports</a>
-  <a class="nav-link" id="mobile-nav-admin" href="admin-employees.html" style="display:none">Administration</a>
+  <a class="nav-link" id="mobile-nav-reports" href="reports.html" style="display:none">Reports</a>
+  <a class="nav-link" id="mobile-nav-admin" href="adminemployees.html" style="display:none">Administration</a>
   <div class="mobile-divider"></div>
   <button class="btn-logout" id="logout-btn-mobile">Sign out</button>
 </nav>
 
 <div class="page">
-  <div class="content">
 
-    <!-- Print Cover (visible only when printing) -->
-    <div class="print-cover">
-      <div style="font-size:0.8rem;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:.1em;margin-bottom:0.5rem">Southwest Landscape</div>
-      <h1 id="print-cover-title">Annual Performance Report</h1>
-      <p id="print-cover-sub">Confidential · Executive Summary</p>
-      <p style="margin-top:0.35rem;font-size:0.8rem;color:#94a3b8" id="print-cover-date"></p>
+  <!-- ════════════════ EMPLOYEE VIEW ════════════════ -->
+  <div class="view" id="view-employee">
+    <div class="v-body emp-center">
+      <div style="text-align:center">
+        <h1 style="font-size:1.5rem;font-weight:900;color:var(--text);letter-spacing:-.03em">Hello, <span style="color:var(--green-mid)" id="emp-first-name">—</span>.</h1>
+        <p style="font-size:.8rem;color:var(--muted);margin-top:.3rem" id="emp-cycle-name">2025 Annual Review Cycle is open</p>
+      </div>
+
+      <!-- Dynamic content: pending / submitted / done -->
+      <div class="emp-card" id="emp-status-card">
+        <div class="emp-icon">
+          <svg width="26" height="26" fill="none" stroke="#16a34a" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        </div>
+        <div>
+          <div class="emp-card-title" id="emp-card-title">Self-Evaluation Required</div>
+          <div class="emp-card-sub" id="emp-card-sub">Rate yourself on each competency and include an explanation for every score.</div>
+        </div>
+        <div class="emp-due" id="emp-due-row">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          <span id="emp-due-text">Loading…</span>
+        </div>
+        <a class="emp-submit" href="reviews.html" id="emp-action-btn">Start My Self-Evaluation →</a>
+        <div class="emp-note">Once you submit, your manager will complete their review. You'll meet with them in person to go over the final results.</div>
+      </div>
+
+      <div class="next-steps card" id="dash-tracker-card">
+        <div class="card-head"><div class="card-title">Review Progress</div></div>
+        <div id="dash-tracker-steps">
+          <!-- rendered by JS -->
+        </div>
+      </div>
     </div>
-
-    <div class="page-header">
-      <div class="page-title">
-        <h1>Performance Reports</h1>
-        <p id="reports-scope-note">Cycle-level analytics across reviews and goals.</p>
-      </div>
-      <div class="header-actions">
-        <select class="year-select" id="year-select"></select>
-        <button class="btn btn-secondary" onclick="window.print()">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:inline;vertical-align:middle;margin-right:4px"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-          Print / Export
-        </button>
-      </div>
-    </div>
-
-    <div id="loading-state" class="loading"><div class="spinner"></div> Loading report data…</div>
-
-    <div id="report-body" style="display:none">
-
-      <!-- Admin section nav — injected by JS when isAdmin -->
-      <div id="admin-section-nav-wrap"></div>
-
-      <!-- ── TAB: Performance ── -->
-      <div id="tab-performance" class="report-tab active">
-
-      <!-- ── KPI Row ── -->
-      <div class="kpi-row">
-        <div class="kpi-card">
-          <div class="kpi-icon">👥</div>
-          <div class="kpi-label">Total Employees</div>
-          <div class="kpi-value" id="kpi-emps">0</div>
-          <div class="kpi-sub">Active headcount</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-icon">📋</div>
-          <div class="kpi-label">Total Reviews</div>
-          <div class="kpi-value" id="kpi-total">0</div>
-          <div class="kpi-sub" id="kpi-total-sub">Review cycle</div>
-        </div>
-        <div class="kpi-card c-done">
-          <div class="kpi-icon">✅</div>
-          <div class="kpi-label">Completed</div>
-          <div class="kpi-value" id="kpi-done">0</div>
-          <div class="kpi-sub" id="kpi-done-sub">—% completion rate</div>
-        </div>
-        <div class="kpi-card c-score">
-          <div class="kpi-icon">⭐</div>
-          <div class="kpi-label">Avg Score</div>
-          <div class="kpi-value" id="kpi-score">—</div>
-          <div class="kpi-sub">Finalized reviews</div>
-        </div>
-        <div class="kpi-card c-prog">
-          <div class="kpi-icon">🎯</div>
-          <div class="kpi-label">Active Goals</div>
-          <div class="kpi-value" id="kpi-goals">0</div>
-          <div class="kpi-sub" id="kpi-goals-sub">—% on track</div>
-        </div>
-      </div>
-
-      <!-- ── Cycle overview bar ── -->
-      <div class="report-card" style="margin-bottom:1.5rem">
-        <h2>
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-          <span id="report-cycle-title">Review Cycle Overview</span>
-        </h2>
-        <div class="stacked-bar-wrap">
-          <div class="stacked-bar" id="stacked-bar"></div>
-        </div>
-        <div class="stacked-legend">
-          <div class="legend-item"><div class="legend-dot" style="background:var(--success)"></div><span id="legend-done">Completed (0)</span></div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div><span id="legend-prog">In Progress (0)</span></div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--gray-100);border:1px solid var(--border)"></div><span id="legend-pend">Not Started (0)</span></div>
-        </div>
-      </div>
-
-      <!-- ── SECTION: Performance Spotlight ── -->
-      <div class="section-header">
-        <h3>Performance Spotlight</h3>
-        <div class="section-badge">Finalized Reviews Only</div>
-        <div class="section-divider"></div>
-      </div>
-
-      <div class="four-col" id="spotlight-grid">
-        <!-- populated by JS -->
-      </div>
-
-      <!-- ── SECTION: Competency Breakdown ── -->
-      <div class="section-header">
-        <h3>Competency Breakdown</h3>
-        <div class="section-badge">Self vs. Manager Ratings</div>
-        <div class="section-divider"></div>
-      </div>
-
-      <div class="report-card" style="margin-bottom:1.5rem">
-        <h2>
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          Organization-Wide Competency Averages
-          <span style="font-size:0.7rem;font-weight:400;color:var(--muted);margin-left:0.5rem">Scale: 1 – 5</span>
-        </h2>
-        <div style="display:flex;gap:1.25rem;margin-bottom:1rem;flex-wrap:wrap">
-          <div class="legend-item"><div class="legend-dot" style="background:#93c5fd"></div><span>Self Evaluation</span></div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div><span>Manager Rating</span></div>
-        </div>
-        <div id="competency-chart"><div class="empty-block">No completed reviews yet</div></div>
-        <div id="comp-insight-row" style="display:none;margin-top:1.25rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-          <div style="background:var(--green-bg);border:1px solid var(--green-border);border-radius:8px;padding:0.875rem">
-            <div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--green-mid);margin-bottom:0.35rem">Org Strength</div>
-            <div id="comp-strength-name" style="font-size:0.9rem;font-weight:800;color:var(--green-dark)">—</div>
-            <div id="comp-strength-score" style="font-size:0.75rem;color:var(--sub)">Avg mgr rating</div>
-          </div>
-          <div style="background:var(--yellow-bg);border:1px solid var(--yellow-border);border-radius:8px;padding:0.875rem">
-            <div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--yellow);margin-bottom:0.35rem">Focus Area</div>
-            <div id="comp-focus-name" style="font-size:0.9rem;font-weight:800;color:var(--gray-900)">—</div>
-            <div id="comp-focus-score" style="font-size:0.75rem;color:var(--sub)">Lowest avg mgr rating</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── SECTION: Dept completion + Branch ── -->
-      <div class="section-header">
-        <h3>Completion by Group</h3>
-        <div class="section-divider"></div>
-      </div>
-
-      <div class="two-col">
-        <div class="report-card">
-          <h2>
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            Completion by Department
-          </h2>
-          <div class="bar-chart" id="dept-chart"><div class="empty-block">No data</div></div>
-        </div>
-        <div class="report-card">
-          <h2>
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            Completion by Branch
-          </h2>
-          <div class="bar-chart" id="branch-chart"><div class="empty-block">No data</div></div>
-        </div>
-      </div>
-
-      <!-- ── Score distribution + Avg score by dept ── -->
-      <div class="two-col">
-        <div class="report-card">
-          <h2>
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            Performance Score Distribution
-          </h2>
-          <div class="score-dist" id="score-dist">
-            <div class="empty-block" style="flex:1">No completed reviews yet</div>
-          </div>
-          <div style="text-align:center;margin-top:0.75rem;font-size:0.75rem;color:var(--gray-400)" id="score-dist-note"></div>
-        </div>
-        <div class="report-card">
-          <h2>
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-            Average Score by Department
-          </h2>
-          <table class="score-table">
-            <thead><tr><th>Department</th><th>Avg Score</th><th>Reviews</th></tr></thead>
-            <tbody id="dept-score-tbody"><tr><td colspan="3" class="empty-block">No data</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      </div><!-- /tab-performance -->
-
-      <!-- ── TAB: People ── -->
-      <div id="tab-people" class="report-tab">
-
-      <!-- ── SECTION: Employee Voice ── -->
-      <div class="section-header">
-        <h3>Employee Voice — Self-Evaluations</h3>
-        <div class="section-badge">What employees said about themselves</div>
-        <div class="section-divider"></div>
-      </div>
-
-      <!-- Self vs mgr alignment overview -->
-      <div class="two-col" id="self-align-row">
-        <!-- populated by JS -->
-      </div>
-
-      <!-- Self-eval answers table -->
-      <div class="report-card" style="margin-bottom:1.5rem">
-        <h2>
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          Self-Evaluation Responses
-        </h2>
-        <div style="overflow-x:auto">
-          <table class="voice-table" id="voice-table">
-            <thead>
-              <tr>
-                <th>Employee</th>
-                <th>Self Score</th>
-                <th>Mgr Score</th>
-                <th>Gap</th>
-                <th>Major Achievements (Q1)</th>
-                <th>Key Challenges (Q2)</th>
-                <th>Support Needed (Q4)</th>
-              </tr>
-            </thead>
-            <tbody id="voice-tbody"><tr><td colspan="7" class="empty-block">No submitted self-evaluations yet</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- ── SECTION: Department Intelligence ── -->
-      <div class="section-header">
-        <h3>Department Intelligence</h3>
-        <div class="section-badge">Per-Division Deep Dive</div>
-        <div class="section-divider"></div>
-      </div>
-
-      <div class="dept-grid" id="dept-intel-grid">
-        <!-- populated by JS -->
-      </div>
-
-      </div><!-- /tab-people -->
-
-      <!-- ── TAB: Financials ── -->
-      <div id="tab-financials" class="report-tab">
-
-      <!-- ── Payroll Impact ── -->
-      <div class="section-header">
-        <h3>Payroll Impact</h3>
-        <div class="section-badge">Current vs. Approved</div>
-        <div class="section-divider"></div>
-      </div>
-
-      <!-- Summary KPI strip -->
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:12px;overflow:hidden;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.06)">
-        <div class="kpi-card">
-          <div class="kpi-label">Current Total Payroll</div>
-          <div class="kpi-value" id="pr-current" style="font-size:1.5rem;color:var(--text)">—</div>
-          <div class="kpi-sub" id="pr-current-sub">All active employees (annualized)</div>
-        </div>
-        <div class="kpi-card c-done">
-          <div class="kpi-label">Approved New Payroll</div>
-          <div class="kpi-value" id="pr-new" style="font-size:1.5rem">—</div>
-          <div class="kpi-sub" id="pr-new-sub">After approved increases</div>
-        </div>
-        <div class="kpi-card c-score">
-          <div class="kpi-label">Total Payroll Increase</div>
-          <div class="kpi-value" id="pr-diff" style="font-size:1.5rem">—</div>
-          <div class="kpi-sub" id="pr-diff-pct">—% increase</div>
-        </div>
-        <div class="kpi-card c-prog">
-          <div class="kpi-label">Approvals Pending</div>
-          <div class="kpi-value" id="pr-pending" style="font-size:1.5rem">0</div>
-          <div class="kpi-sub">Reviews finalized, raise not yet set</div>
-        </div>
-      </div>
-
-      <!-- Per-employee breakdown table -->
-      <div class="report-card" style="margin-bottom:1.5rem">
-        <h2>
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          Employee Payroll Breakdown
-        </h2>
-        <div style="overflow-x:auto">
-          <table class="comp-sum-table">
-            <thead>
-              <tr>
-                <th>Employee</th>
-                <th>Dept</th>
-                <th>Pay Type</th>
-                <th>Current Rate</th>
-                <th>Current Annual</th>
-                <th>New Rate</th>
-                <th>New Annual</th>
-                <th>$ Increase</th>
-                <th>% Increase</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="payroll-tbody">
-              <tr><td colspan="10" class="empty-block">Loading…</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div id="payroll-foot" style="display:none;padding:.75rem 1rem;background:var(--surface2);border-top:1px solid var(--border);font-size:.78rem;display:flex;gap:2rem;flex-wrap:wrap">
-          <span><strong>Current Total:</strong> <span id="pr-foot-current">—</span></span>
-          <span><strong>New Total:</strong> <span id="pr-foot-new">—</span></span>
-          <span><strong>Difference:</strong> <span id="pr-foot-diff" style="color:var(--green-mid);font-weight:700">—</span></span>
-        </div>
-      </div>
-
-      <!-- ── Compensation summary ── -->
-      <div class="section-header">
-        <h3>Compensation Changes</h3>
-        <div class="section-badge"><span id="comp-year-label">Year</span></div>
-        <div class="section-divider"></div>
-      </div>
-
-      <div class="report-card" style="margin-bottom:1.5rem">
-        <h2>
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          Compensation Changes
-        </h2>
-        <div id="comp-kpi-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.25rem">
-          <div class="kpi-card" style="padding:1rem">
-            <div class="kpi-label">Total Events</div>
-            <div class="kpi-value" id="comp-total" style="font-size:1.5rem">0</div>
-          </div>
-          <div class="kpi-card" style="padding:1rem">
-            <div class="kpi-label">Avg Increase %</div>
-            <div class="kpi-value" id="comp-avg-pct" style="font-size:1.5rem">—</div>
-          </div>
-          <div class="kpi-card" style="padding:1rem">
-            <div class="kpi-label">Total $ Added</div>
-            <div class="kpi-value" id="comp-total-dollar" style="font-size:1.5rem">$0</div>
-          </div>
-          <div class="kpi-card" style="padding:1rem">
-            <div class="kpi-label">Promotions</div>
-            <div class="kpi-value" id="comp-promotions" style="font-size:1.5rem">0</div>
-          </div>
-        </div>
-        <div class="section-label">Recent Changes</div>
-        <div style="overflow-x:auto">
-          <table class="comp-sum-table">
-            <thead><tr><th>Employee</th><th>Type</th><th>Old Rate</th><th>New Rate</th><th>Change %</th><th>Effective Date</th><th>Notes</th></tr></thead>
-            <tbody id="comp-tbody"><tr><td colspan="7" class="empty-block">No compensation records for this year</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      </div><!-- /tab-financials -->
-
-      <!-- ── TAB: Manager Feedback ── -->
-      <div id="tab-mgr-feedback" class="report-tab">
-
-      <!-- ── SECTION: Manager Feedback (Upward) ── -->
-      <div class="section-header">
-        <h3>Manager Feedback &amp; Coaching</h3>
-        <div class="section-badge">Upward Feedback from Employees</div>
-        <div class="section-divider"></div>
-      </div>
-
-      <!-- KPI strip -->
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-radius:12px;overflow:hidden;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.06)">
-        <div class="kpi-card">
-          <div class="kpi-label">Responses Submitted</div>
-          <div class="kpi-value" id="mfb-count" style="font-size:1.5rem">0</div>
-          <div class="kpi-sub">Employees who rated their manager</div>
-        </div>
-        <div class="kpi-card c-done">
-          <div class="kpi-label">Avg Manager Rating</div>
-          <div class="kpi-value" id="mfb-avg" style="font-size:1.5rem">—</div>
-          <div class="kpi-sub">Out of 5.0</div>
-        </div>
-        <div class="kpi-card c-score">
-          <div class="kpi-label">Managers Reviewed</div>
-          <div class="kpi-value" id="mfb-mgr-count" style="font-size:1.5rem">0</div>
-          <div class="kpi-sub">Unique managers with feedback</div>
-        </div>
-      </div>
-
-      <!-- Per-manager breakdown -->
-      <div id="mfb-mgr-grid" style="display:flex;flex-direction:column;gap:1rem;margin-bottom:2rem">
-        <!-- populated by JS -->
-      </div>
-
-      </div><!-- /tab-mgr-feedback -->
-
-      <!-- ── TAB: Planning ── -->
-      <div id="tab-planning" class="report-tab">
-
-      <!-- ── SECTION: Forward-Looking Game Plan ── -->
-      <div class="section-header">
-        <h3>Forward-Looking Game Plan</h3>
-        <div class="section-badge">Priorities for Next Cycle</div>
-        <div class="section-divider"></div>
-      </div>
-
-      <div id="gameplan-grid" class="plan-grid">
-        <!-- populated by JS -->
-      </div>
-
-      <!-- ── Goal progress ── -->
-      <div class="section-header">
-        <h3>Goal Progress</h3>
-        <div class="section-divider"></div>
-      </div>
-
-      <div class="two-col">
-        <div class="report-card">
-          <h2>
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-            Goal Status Breakdown
-          </h2>
-          <div class="goal-donut-row" id="goal-donut-row">
-            <div class="empty-block" style="flex:1">No goals data</div>
-          </div>
-        </div>
-        <div class="report-card">
-          <h2>
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h14"/></svg>
-            Goals by Category
-          </h2>
-          <div class="bar-chart" id="goal-cat-chart"><div class="empty-block">No goals data</div></div>
-        </div>
-      </div>
-
-      </div><!-- /tab-planning -->
-
-    </div><!-- /report-body -->
   </div>
-</div>
 
-<div class="toast-wrap" id="toast-wrap"></div>
+  <!-- ════════════════ MANAGER VIEW ════════════════ -->
+  <div class="view" id="view-manager">
+    <div class="v-body">
+      <div class="v-hero">
+        <div>
+          <h1 id="mgr-greeting">Good morning, <span>—</span></h1>
+          <p id="mgr-cycle-sub">2025 Annual Review Cycle</p>
+        </div>
+      </div>
 
-<!-- Drawer (admin only) -->
-<div class="rpt-drawer-overlay" id="rpt-drawer-overlay">
-  <div class="rpt-drawer" id="rpt-drawer">
-    <div class="rpt-drawer-head">
-      <div class="rpt-drawer-title" id="rpt-drawer-title">Detail</div>
-      <button class="rpt-drawer-close" id="rpt-drawer-close">✕</button>
+      <div class="kpi-row" style="grid-template-columns:repeat(4,1fr)">
+        <div class="kpi"><div class="kpi-label">My Team</div><div class="kpi-val" id="mgr-kpi-total">—</div><div class="kpi-sub">Under your management</div></div>
+        <div class="kpi"><div class="kpi-label">Needs My Review</div><div class="kpi-val c-accent" id="mgr-kpi-needs">—</div><div class="kpi-sub">Self-evals submitted</div></div>
+        <div class="kpi"><div class="kpi-label">Sent to Executive</div><div class="kpi-val c-green" id="mgr-kpi-sent">—</div><div class="kpi-sub">Awaiting exec sign-off</div></div>
+        <div class="kpi"><div class="kpi-label">Not Started</div><div class="kpi-val c-yellow" id="mgr-kpi-idle">—</div><div class="kpi-sub">Employee hasn't submitted</div></div>
+      </div>
+
+      <div class="lower">
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Team Reviews</div>
+            <div class="card-badge card-badge-muted" id="mgr-badge">— employees</div>
+          </div>
+          <table class="tbl">
+            <thead><tr><th>Employee</th><th>Self-Eval</th><th>My Review</th><th>Stage</th><th></th></tr></thead>
+            <tbody id="mgr-table-body"><tr><td colspan="5" style="padding:1.5rem;color:var(--muted)">Loading…</td></tr></tbody>
+          </table>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:1.5rem">
+          <div class="card">
+            <div class="card-head"><div class="card-title">Team Completion</div></div>
+            <div class="ring-center">
+              <div class="ring-wrap">
+                <svg width="100" height="100" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="#e2ebe4" stroke-width="9"/>
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="#16a34a" stroke-width="9"
+                    stroke-dasharray="251.2" id="mgr-ring-fill" stroke-dashoffset="251.2" stroke-linecap="round"
+                    transform="rotate(-90 50 50)"/>
+                </svg>
+                <div class="ring-label"><div class="ring-num" id="mgr-ring-pct">0%</div><div class="ring-sub-txt">done</div></div>
+              </div>
+              <div class="ring-title">My Team · <span id="mgr-ring-year">2025</span> Cycle</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div class="card-title">Recent Activity</div></div>
+            <div id="mgr-activity"><div class="act-row"><span style="font-size:.75rem;color:var(--muted)">No recent activity.</span></div></div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="rpt-drawer-body" id="rpt-drawer-body"></div>
   </div>
-</div>
+
+  <!-- ════════════════ EXECUTIVE VIEW ════════════════ -->
+  <div class="view" id="view-executive">
+    <div class="v-body">
+      <div class="v-hero">
+        <div>
+          <h1 id="exec-greeting">Good morning, <span>—</span></h1>
+          <p id="exec-cycle-sub">2025 Annual Review Cycle</p>
+        </div>
+      </div>
+
+      <div class="kpi-row" style="grid-template-columns:repeat(4,1fr)">
+        <div class="kpi"><div class="kpi-label">Total Reviews</div><div class="kpi-val" id="exec-kpi-total">—</div><div class="kpi-sub">Across all managers</div></div>
+        <div class="kpi"><div class="kpi-label">Ready for Sign-Off</div><div class="kpi-val c-accent" id="exec-kpi-ready">—</div><div class="kpi-sub">Both stages complete</div></div>
+        <div class="kpi"><div class="kpi-label">Finalized</div><div class="kpi-val c-green" id="exec-kpi-done">—</div><div class="kpi-sub">Sent to managers</div></div>
+        <div class="kpi"><div class="kpi-label">In Progress</div><div class="kpi-val c-yellow" id="exec-kpi-prog">—</div><div class="kpi-sub">Awaiting manager review</div></div>
+      </div>
+
+      <!-- Standouts -->
+      <div>
+        <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem">Team Standouts · <span id="exec-standout-year">2025</span></div>
+        <div class="highlights-row">
+          <div class="hl-card" style="border-top:3px solid #d97706">
+            <div class="hl-label" style="color:#d97706">⭐ Top Performer</div>
+            <div class="hl-name" id="exec-top-name">—</div>
+            <div class="hl-dept" id="exec-top-dept">—</div>
+            <div class="hl-score" style="color:#b45309" id="exec-top-score">—<sub>/5</sub></div>
+            <div class="hl-note" id="exec-top-note">Highest overall score this cycle.</div>
+          </div>
+          <div class="hl-card" style="border-top:3px solid var(--green-mid)">
+            <div class="hl-label" style="color:var(--green-mid)">↑ Most Improved</div>
+            <div class="hl-name" id="exec-imp-name">—</div>
+            <div class="hl-dept" id="exec-imp-dept">—</div>
+            <div class="hl-score" style="color:var(--green-mid)" id="exec-imp-score">—<sub>/5</sub></div>
+            <div class="hl-note" id="exec-imp-note">Strong growth across competencies.</div>
+          </div>
+          <div class="hl-card" style="border-top:3px solid #3b82f6">
+            <div class="hl-label" style="color:#3b82f6">⏳ Needs Attention</div>
+            <div class="hl-name" id="exec-attn-name">—</div>
+            <div class="hl-dept" id="exec-attn-dept">—</div>
+            <div class="hl-score" style="color:var(--muted)" id="exec-attn-score">—</div>
+            <div class="hl-note" id="exec-attn-note">Review not yet started.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lower">
+        <div style="display:flex;flex-direction:column;gap:1.5rem">
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">Ready for Your Sign-Off</div>
+              <div class="card-badge" id="exec-ready-badge">0 reviews</div>
+            </div>
+            <table class="tbl">
+              <thead><tr><th>Employee</th><th>Manager</th><th>Mgr Score</th><th></th></tr></thead>
+              <tbody id="exec-signoff-body"><tr><td colspan="4" style="padding:1.5rem;color:var(--muted)">Loading…</td></tr></tbody>
+            </table>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">Finalized — Sent to Managers</div>
+              <div class="card-badge" id="exec-done-badge">0 complete</div>
+            </div>
+            <table class="tbl">
+              <thead><tr><th>Employee</th><th>Manager</th><th>Final Score</th><th>Status</th></tr></thead>
+              <tbody id="exec-done-body"><tr><td colspan="4" style="padding:1.5rem;color:var(--muted)">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:1.5rem">
+          <div class="card">
+            <div class="card-head"><div class="card-title">Org Completion</div></div>
+            <div class="ring-center">
+              <div class="ring-wrap">
+                <svg width="100" height="100" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="#e2ebe4" stroke-width="9"/>
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="#16a34a" stroke-width="9"
+                    id="exec-ring-fill" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round"
+                    transform="rotate(-90 50 50)"/>
+                </svg>
+                <div class="ring-label"><div class="ring-num" id="exec-ring-pct">0%</div><div class="ring-sub-txt">done</div></div>
+              </div>
+              <div class="ring-title">All Teams · <span id="exec-ring-year">2025</span> Cycle</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div class="card-title">By Manager</div></div>
+            <div id="exec-by-manager" style="padding:.5rem 0"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ ADMIN VIEW ════════════════ -->
+  <div class="view" id="view-admin">
+    <div class="v-body">
+      <div class="v-hero">
+        <div style="flex:1">
+          <h1>Admin <span>Overview</span></h1>
+          <p id="admin-cycle-sub">2025 Annual Review Cycle · Full organization access</p>
+        </div>
+        <div class="v-hero-actions"></div>
+      </div>
+
+      <div class="kpi-row" style="grid-template-columns:repeat(5,1fr)">
+        <div class="kpi"><div class="kpi-label">Total Employees</div><div class="kpi-val" id="adm-kpi-total">—</div><div class="kpi-sub">Across all teams</div></div>
+        <div class="kpi"><div class="kpi-label">Reviews Complete</div><div class="kpi-val c-green" id="adm-kpi-done">—</div><div class="kpi-sub">Fully finalized</div></div>
+        <div class="kpi"><div class="kpi-label">In Progress</div><div class="kpi-val c-yellow" id="adm-kpi-prog">—</div><div class="kpi-sub">Various stages</div></div>
+        <div class="kpi"><div class="kpi-label">Not Started</div><div class="kpi-val c-red" id="adm-kpi-idle">—</div><div class="kpi-sub">No self-eval yet</div></div>
+        <div class="kpi"><div class="kpi-label">Avg Score</div><div class="kpi-val c-purple" id="adm-kpi-avg">—</div><div class="kpi-sub">All finalized reviews</div></div>
+      </div>
+
+      <div class="summary-bar" id="adm-summary-bar">
+        <div class="sbar-item"><div class="sbar-label">Reviews Complete</div><div class="sbar-val" id="adm-sb-done">—</div></div>
+        <div class="sbar-div"></div>
+        <div class="sbar-div"></div>
+        <div class="sbar-item"><div class="sbar-label">Avg Score</div><div class="sbar-val" id="adm-sb-avg">—</div></div>
+        <div class="sbar-div"></div>
+        <div class="sbar-item"><div class="sbar-label">Cycle</div><div class="sbar-val" id="adm-sb-cycle">2025</div></div>
+      </div>
+
+      <!-- Compensation recommendations -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">Compensation Recommendations</div>
+          <div class="card-badge" id="adm-comp-badge">0 finalized</div>
+          <div style="font-size:.7rem;color:var(--muted);margin-left:.25rem">Based on final review scores</div>
+        </div>
+        <table class="tbl">
+          <thead>
+            <tr><th>Employee</th><th>Manager</th><th>Dept</th><th>Score</th><th>Current Pay</th><th>Suggested Raise</th><th>Actual Given</th><th>New Pay</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="adm-comp-body"><tr><td colspan="8" style="padding:1.5rem;color:var(--muted)">Loading…</td></tr></tbody>
+        </table>
+        <div class="tbl-foot" id="adm-comp-foot" style="display:none">
+          <span class="foot-item"><span class="foot-label">Finalized:</span><span class="foot-val" id="adm-foot-count">—</span></span>
+          <span class="foot-item"><span class="foot-label">Avg score:</span><span class="foot-val" id="adm-foot-avg">—</span></span>
+        </div>
+      </div>
+
+      <!-- In-progress -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">Reviews Still in Progress</div>
+          <div class="card-badge card-badge-warn" id="adm-prog-badge">— remaining</div>
+          <div style="font-size:.7rem;color:var(--muted);margin-left:.4rem">No compensation recommendation until executive sign-off is complete</div>
+        </div>
+        <table class="tbl">
+          <thead><tr><th>Employee</th><th>Manager</th><th>Dept</th><th>Self-Eval</th><th>Mgr Review</th><th>Exec Sign-Off</th><th>Blocking Stage</th></tr></thead>
+          <tbody id="adm-prog-body"><tr><td colspan="7" style="padding:1.5rem;color:var(--muted)">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ LETTER PAGE ════════════════ -->
+  <div class="view" id="view-letter">
+    <div class="v-body" style="padding-top:1.5rem">
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:-.5rem">
+        <button class="btn btn-ghost btn-sm" onclick="backToAdmin()">← Back to Admin</button>
+        <div style="flex:1;text-align:center;font-size:.85rem;font-weight:700;color:var(--text)" id="letter-page-title">Merit Increase Letter</div>
+        <button class="btn btn-sm btn-pri" onclick="window.print()">↓ Download PDF</button>
+      </div>
+
+      <div class="letter-layout">
+        <!-- Controls -->
+        <div class="letter-controls">
+          <div class="ctrl-card">
+            <div class="ctrl-title">Employee</div>
+            <div class="ctrl-row"><div class="ctrl-lbl">Name</div><div class="ctrl-static" id="ltr-emp-name">—</div></div>
+            <div class="ctrl-row"><div class="ctrl-lbl">Department</div><div class="ctrl-static" id="ltr-emp-dept">—</div></div>
+            <div class="ctrl-row"><div class="ctrl-lbl">Manager</div><div class="ctrl-static" id="ltr-emp-mgr">—</div></div>
+            <div class="ctrl-row"><div class="ctrl-lbl">Review Score</div><div class="ctrl-static" style="color:var(--green-mid)" id="ltr-emp-score">—</div></div>
+          </div>
+          <div class="ctrl-card">
+            <div class="ctrl-title">Compensation</div>
+            <div class="ctrl-row">
+              <div class="ctrl-lbl">Current Annual Pay</div>
+              <input class="ctrl-input" id="ltr-current-pay" type="text" placeholder="e.g. $50,000" oninput="updateLetter()"/>
+            </div>
+            <div class="ctrl-row">
+              <div class="ctrl-lbl">Increase %</div>
+              <input class="ctrl-input" id="ltr-increase-pct" type="text" placeholder="e.g. 5" oninput="updateLetter()"/>
+            </div>
+            <div class="raise-display">
+              <div class="raise-pct" id="ltr-raise-display">—%</div>
+              <div class="raise-amt" id="ltr-raise-amt">Enter salary and % above</div>
+              <div class="raise-new" id="ltr-raise-new"></div>
+            </div>
+          </div>
+          <div class="ctrl-card">
+            <div class="ctrl-title">Letter Settings</div>
+            <div class="ctrl-row">
+              <div class="ctrl-lbl">Effective Date</div>
+              <input class="ctrl-input" id="ltr-eff-date" type="text" placeholder="e.g. August 15, 2025" oninput="updateLetter()"/>
+            </div>
+            <div class="ctrl-row">
+              <div class="ctrl-lbl">Signed By</div>
+              <input class="ctrl-input" id="ltr-signer" type="text" placeholder="Executive name" oninput="updateLetter()"/>
+            </div>
+            <div class="ctrl-row">
+              <div class="ctrl-lbl">Title</div>
+              <input class="ctrl-input" id="ltr-title" type="text" placeholder="e.g. Executive Director" oninput="updateLetter()"/>
+            </div>
+          </div>
+          <button class="btn-full btn-full-pri" onclick="window.print()">↓ Print Letter</button>
+        </div>
+
+        <!-- Letter preview -->
+        <div class="letter-preview">
+          <div class="preview-label">Letter Preview</div>
+          <div class="letter-doc" id="letter-doc-inner"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page -->
 
 <script type="module">
-  import { initializeApp }    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-  import { getAuth, signOut, onAuthStateChanged }
-                               from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-  import { getFirestore, collection, getDocs, query, where }
-                               from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { initializeApp }    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getAuth, signOut, onAuthStateChanged }
+  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import { getFirestore, collection, getDocs, query, where, orderBy }
+  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyA6XJoxNAuNX0LN21WxBLS7cMbY3LJCri0",
-    authDomain: "swl-pms.firebaseapp.com",
-    projectId: "swl-pms",
-    storageBucket: "swl-pms.firebasestorage.app",
-    messagingSenderId: "465838605580",
-    appId: "1:465838605580:web:c3322da1833f219725b529"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyA6XJoxNAuNX0LN21WxBLS7cMbY3LJCri0",
+  authDomain: "swl-pms.firebaseapp.com",
+  projectId: "swl-pms",
+  storageBucket: "swl-pms.firebasestorage.app",
+  messagingSenderId: "465838605580",
+  appId: "1:465838605580:web:c3322da1833f219725b529"
+};
 
-  const app  = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db   = getFirestore(app);
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
 
-  let selectedYear    = new Date().getFullYear();
-  let currentEmployee = null;
+let currentEmployee = null;
+let allEmployees    = {};
+let allReviews      = [];
+let currentYear     = new Date().getFullYear();
+let activeCycleName = `${currentYear} Annual Review`;
+let activeCycleDeadline = null;
+let letterEmployee  = null; // the employee whose letter we're viewing
 
-  const COMPETENCIES = [
-    { key: 'technical',     label: 'Technical Skills' },
-    { key: 'quality',       label: 'Quality of Work' },
-    { key: 'productivity',  label: 'Productivity & Efficiency' },
-    { key: 'reliability',   label: 'Reliability & Attendance' },
-    { key: 'communication', label: 'Communication' },
-    { key: 'teamwork',      label: 'Teamwork & Collaboration' },
-    { key: 'safety',        label: 'Safety Compliance' },
+// ── Helpers ──────────────────────────────────────
+function greet() {
+  const h = new Date().getHours();
+  return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+}
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function initials(emp) {
+  return `${(emp.firstName||'?')[0]}${(emp.lastName||'?')[0]}`.toUpperCase();
+}
+function fullName(emp) {
+  return `${emp.firstName||''} ${emp.lastName||''}`.trim();
+}
+function avgScore(evalObj) {
+  if (!evalObj?.ratings) return null;
+  const vals = Object.values(evalObj.ratings).filter(v => v > 0);
+  return vals.length ? (vals.reduce((a,b) => a+b,0) / vals.length) : null;
+}
+function scoreLabel(s) {
+  if (!s) return '—';
+  if (s >= 4.5) return 'Exceeds Expectations';
+  if (s >= 3.5) return 'Meets Expectations';
+  if (s >= 2.5) return 'Developing';
+  return 'Below Expectations';
+}
+function setRing(circleId, pct) {
+  const el = document.getElementById(circleId);
+  if (el) el.style.strokeDashoffset = (251.2 * (1 - pct/100)).toFixed(1);
+}
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id)?.classList.add('active');
+}
+
+// ── Auth ─────────────────────────────────────────
+onAuthStateChanged(auth, async user => {
+  if (!user) { window.location.href = 'index.html'; return; }
+
+  const displayName = user.displayName || user.email.split('@')[0];
+  const firstName   = displayName.split(' ')[0];
+  const inits       = displayName.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('user-name').textContent = displayName;
+  document.getElementById('user-avatar').textContent = inits;
+
+  // Load cycle
+  try {
+    const cycleSnap = await getDocs(query(collection(db,'cycles'), orderBy('openedAt','desc')));
+    cycleSnap.forEach(d => {
+      const c = d.data();
+      if (c.status === 'open') {
+        activeCycleName    = c.name || activeCycleName;
+        activeCycleDeadline = c.deadline || null;
+      }
+    });
+  } catch(e) {}
+
+  // Load all employees
+  try {
+    const empSnap = await getDocs(collection(db,'employees'));
+    empSnap.forEach(d => { allEmployees[d.id] = { id: d.id, ...d.data() }; });
+  } catch(e) {}
+
+  // Find current user's employee record
+  for (const id in allEmployees) {
+    if ((allEmployees[id].email||'').toLowerCase() === user.email.toLowerCase()) {
+      currentEmployee = allEmployees[id];
+      break;
+    }
+  }
+
+  // Load reviews
+  try {
+    const revSnap = await getDocs(collection(db,'reviews'));
+    revSnap.forEach(d => {
+      const r = { id: d.id, ...d.data() };
+      if (r.year === currentYear) allReviews.push(r);
+    });
+  } catch(e) {}
+
+  const role = currentEmployee?.role || 'admin';
+
+  // Show admin nav links (Reports + Administration are admin-only)
+  if (role === 'admin' || !currentEmployee) {
+    document.getElementById('nav-reports')?.style.setProperty('display','');
+    document.getElementById('mobile-nav-reports')?.style.setProperty('display','');
+    document.getElementById('nav-admin')?.style.setProperty('display','');
+    document.getElementById('mobile-nav-admin')?.style.setProperty('display','');
+  }
+
+  if (role === 'employee') {
+    renderEmployeeView(firstName, displayName);
+  } else if (role === 'manager') {
+    renderManagerView(firstName);
+  } else if (role === 'executive') {
+    renderExecutiveView(firstName);
+  } else {
+    // admin
+    renderAdminView(firstName);
+  }
+});
+
+// ── EMPLOYEE ──────────────────────────────────────
+function renderEmployeeView(firstName) {
+  showView('view-employee');
+  document.getElementById('emp-first-name').textContent = firstName;
+
+  const deadline = activeCycleDeadline
+    ? new Date(activeCycleDeadline).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})
+    : 'Check with your manager';
+
+  // days remaining
+  let daysText = '';
+  if (activeCycleDeadline) {
+    const diff = Math.ceil((new Date(activeCycleDeadline) - Date.now()) / 86400000);
+    daysText = diff > 0 ? ` · ${diff} days remaining` : ' · Deadline passed';
+  }
+  document.getElementById('emp-due-text').textContent = `Due ${deadline}${daysText}`;
+  document.getElementById('emp-cycle-name').textContent = `${activeCycleName} is open`;
+
+  // Find this employee's review
+  const myReview = allReviews.find(r => r.employeeId === currentEmployee?.id);
+  const status   = myReview?.status || 'not-started';
+
+  const titleEl  = document.getElementById('emp-card-title');
+  const subEl    = document.getElementById('emp-card-sub');
+  const dueRow   = document.getElementById('emp-due-row');
+  const actionEl = document.getElementById('emp-action-btn');
+
+  if (status === 'completed') {
+    titleEl.textContent = 'Review Complete';
+    subEl.textContent   = 'Your annual review has been finalized. Management will reach out to schedule your in-person meeting.';
+    dueRow.style.display = 'none';
+    actionEl.textContent = 'View Your Review';
+    actionEl.style.background = '#166534';
+  } else if (['submitted','in-review','mgr-complete'].includes(status)) {
+    titleEl.textContent = 'Review Submitted';
+    subEl.textContent   = 'Your self-evaluation has been submitted. Management will reach out with next steps.';
+    dueRow.style.display = 'none';
+    actionEl.textContent = 'View Your Submission';
+    actionEl.style.background = '#1d4ed8';
+  } else if (status === 'draft') {
+    titleEl.textContent = 'Self-Evaluation In Progress';
+    subEl.textContent   = 'You started your self-evaluation. Return to complete and submit it before the deadline.';
+    actionEl.textContent = 'Continue My Self-Evaluation →';
+  } else {
+    // not started — default state already in HTML
+  }
+
+  // Live tracker
+  renderDashTracker(myReview);
+}
+
+function renderDashTracker(review) {
+  const steps = document.getElementById('dash-tracker-steps');
+  if (!steps) return;
+  const r = review || {};
+  const selfDone = !!r.selfEval?.submitted;
+  const mgrDone  = !!r.managerEval?.completedAt;
+  const execDone = r.status === 'completed';
+  const meeting  = r.scheduledMeeting;
+
+  function chip(done, active, label) {
+    const cls = done ? 'background:#dcfce7;color:#15803d' : active ? 'background:#dbeafe;color:#1d4ed8' : 'background:#f1f5f9;color:#94a3b8';
+    return `<span style="display:inline-flex;align-items:center;padding:.1rem .5rem;border-radius:99px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-left:.4rem;${cls}">${label}</span>`;
+  }
+
+  const rows = [
+    {
+      icon: selfDone ? '✅' : '✏️',
+      label: 'Self-Evaluation' + chip(selfDone, !selfDone, selfDone ? 'Submitted' : 'Pending'),
+      sub: selfDone ? 'Your self-evaluation has been received.' : 'Complete and submit your self-evaluation.'
+    },
+    {
+      icon: mgrDone ? '✅' : '📋',
+      label: 'Manager Review' + chip(mgrDone, selfDone && !mgrDone, mgrDone ? 'Complete' : selfDone ? 'In Progress' : 'Waiting'),
+      sub: mgrDone ? 'Your manager has completed their review.' : selfDone ? 'Your manager is reviewing your submission.' : 'Waiting for your self-evaluation.'
+    },
+    {
+      icon: meeting?.date ? '📅' : '📅',
+      label: 'In-Person Meeting' + chip(!!meeting?.date, mgrDone && !meeting?.date, meeting?.date ? 'Scheduled' : 'Pending'),
+      sub: (() => {
+        if (meeting?.date) {
+          const d = new Date(meeting.date + (meeting.time ? 'T' + meeting.time : ''));
+          const fmt = d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+          const t = meeting.time ? ' at ' + d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}) : '';
+          return `<strong style="color:#15803d">${fmt}${t}</strong>`;
+        }
+        return mgrDone ? 'Your executive will schedule your meeting soon.' : 'Scheduled after manager review is complete.';
+      })()
+    },
+    {
+      icon: execDone ? '🏁' : '🏁',
+      label: 'Review Finalized' + chip(execDone, false, execDone ? 'Complete' : 'Pending'),
+      sub: execDone ? 'Your annual review has been finalized.' : 'Will be finalized by the executive after your meeting.'
+    }
   ];
 
-  // ── Helpers ──────────────────────────────────────────────────────────────
-
-  function avgRatings(obj) {
-    if (!obj) return null;
-    const vals = Object.values(obj).map(Number).filter(n => n >= 1 && n <= 5);
-    return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
-  }
-
-  // Final authoritative score for a completed review:
-  // Prefer exec overallScore → mgr overallScore → avg of exec competencyRatings → avg of mgr ratings
-  function reviewScore(r) {
-    if (r.executiveEval?.overallScore) return +r.executiveEval.overallScore;
-    if (r.managerEval?.overallScore)   return +r.managerEval.overallScore;
-    const execAvg = avgRatings(r.executiveEval?.competencyRatings);
-    const mgrAvg  = avgRatings(r.managerEval?.ratings);
-    return execAvg ?? mgrAvg ?? null;
-  }
-
-  function scoreLbl(s) {
-    if (s === null) return '—';
-    if (s >= 4.5) return 'Exceptional';
-    if (s >= 4)   return 'Exceeds Expectations';
-    if (s >= 3)   return 'Meets Expectations';
-    if (s >= 2)   return 'Needs Improvement';
-    return 'Unsatisfactory';
-  }
-
-  function scoreCls(s) {
-    if (s === null) return '';
-    if (s >= 4) return 'hi';
-    if (s >= 3) return 'mid';
-    return 'lo';
-  }
-
-  function fullName(e) { return e ? `${e.firstName||''} ${e.lastName||''}`.trim() : '—'; }
-
-  function escHtml(s) {
-    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  function truncate(s, n=120) {
-    if (!s) return '—';
-    return s.length > n ? s.slice(0, n).trimEnd() + '…' : s;
-  }
-
-  // ── Auth Guard ────────────────────────────────────────────────────────────
-  onAuthStateChanged(auth, async user => {
-    if (!user) { window.location.href = 'index.html'; return; }
-    const _rName = user.displayName || user.email.split('@')[0];
-    document.getElementById('user-name').textContent = _rName;
-    const _rAv = document.getElementById('user-avatar');
-    if (_rAv) _rAv.textContent = _rName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-    const snap = await getDocs(query(collection(db, 'employees'), where('email', '==', user.email)));
-    if (!snap.empty) currentEmployee = { id: snap.docs[0].id, ...snap.docs[0].data() };
-    // Reports is admin-only — non-admins are redirected away from this page
-    if (currentEmployee && currentEmployee.role !== 'admin') { window.location.replace('reviews.html'); return; }
-    const isAdmin = !currentEmployee || currentEmployee.role === 'admin' || currentEmployee.role === 'executive';
-    if (isAdmin) {
-      const el = document.getElementById('nav-admin'); if (el) el.style.display = '';
-      const el2 = document.getElementById('mobile-nav-admin'); if (el2) el2.style.display = '';
-    }
-    setupYearSelect();
-    await loadReport();
-  });
-
-  function setupYearSelect() {
-    const sel = document.getElementById('year-select');
-    const now = new Date().getFullYear();
-    for (let y = now + 1; y >= now - 3; y--) {
-      const o = document.createElement('option');
-      o.value = y; o.textContent = y;
-      if (y === now) o.selected = true;
-      sel.appendChild(o);
-    }
-    selectedYear = now;
-    sel.addEventListener('change', () => { selectedYear = +sel.value; loadReport(); });
-  }
-
-  async function loadReport() {
-    document.getElementById('loading-state').style.display = 'flex';
-    document.getElementById('report-body').style.display = 'none';
-
-    try {
-      const [empSnap, revSnap, compSnap, goalSnap] = await Promise.all([
-        getDocs(collection(db, 'employees')),
-        getDocs(collection(db, 'reviews')),
-        getDocs(collection(db, 'compensation')),
-        getDocs(collection(db, 'goals')),
-      ]);
-
-      const employees = {};
-      empSnap.forEach(d => employees[d.id] = { id: d.id, ...d.data() });
-
-      const reviews = [];
-      revSnap.forEach(d => { const r = { id: d.id, ...d.data() }; if (r.year === selectedYear) reviews.push(r); });
-
-      const compRecords = [];
-      compSnap.forEach(d => {
-        const c = { id: d.id, ...d.data() };
-        if (String(c.year||'').startsWith(String(selectedYear)) || (c.effectiveDate||'').startsWith(String(selectedYear))) compRecords.push(c);
-      });
-
-      const goals = [];
-      goalSnap.forEach(d => goals.push({ id: d.id, ...d.data() }));
-
-      renderReport(employees, reviews, compRecords, goals);
-    } catch(e) {
-      console.error(e);
-      toast('Error loading report data', 'error');
-    }
-
-    document.getElementById('loading-state').style.display = 'none';
-    document.getElementById('report-body').style.display = 'block';
-  }
-
-  function renderReport(employees, reviews, compRecords, goals) {
-    // Scope to assigned team for managers
-    const isAdmin = !currentEmployee || currentEmployee.role === 'admin' || currentEmployee.role === 'executive';
-    const isMgr   = currentEmployee?.role === 'manager';
-    if (!isAdmin && isMgr && currentEmployee) {
-      const assignedIds = new Set(Object.values(employees).filter(e => e.managerId === currentEmployee.id).map(e => e.id));
-      reviews     = reviews.filter(r => assignedIds.has(r.employeeId));
-      compRecords = compRecords.filter(c => assignedIds.has(c.employeeId));
-      goals       = goals.filter(g => assignedIds.has(g.employeeId));
-    }
-
-    const activeEmps  = Object.values(employees).filter(e => e.status === 'active');
-    const completed   = reviews.filter(r => r.status === 'completed');
-    const inProgress  = reviews.filter(r => ['draft','submitted','in-review','mgr-complete'].includes(r.status));
-    const notStarted  = reviews.filter(r => r.status === 'not-started');
-    const total       = reviews.length;
-
-    // Reviews with a computed score
-    const scored = completed.map(r => ({ r, score: reviewScore(r) })).filter(x => x.score !== null);
-    const allScores = scored.map(x => x.score);
-    const avgSc = allScores.length ? (allScores.reduce((a,b)=>a+b,0)/allScores.length) : null;
-
-    // ── Print cover ──
-    document.getElementById('print-cover-title').textContent = `${selectedYear} Annual Performance Report`;
-    document.getElementById('print-cover-sub').textContent = isAdmin ? 'Confidential · Executive Summary' : `${fullName(currentEmployee)} · Manager Report`;
-    document.getElementById('print-cover-date').textContent = `Generated ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}`;
-
-    // ── KPI cards ──
-    document.getElementById('kpi-emps').textContent  = activeEmps.length;
-    document.getElementById('kpi-total').textContent = total;
-    document.getElementById('kpi-total-sub').textContent = `${selectedYear} cycle`;
-    document.getElementById('kpi-done').textContent  = completed.length;
-    document.getElementById('kpi-done-sub').textContent = total ? `${Math.round(completed.length/total*100)}% completion rate` : '—';
-    document.getElementById('kpi-score').textContent = avgSc !== null ? avgSc.toFixed(1) : '—';
-    document.getElementById('comp-year-label').textContent = selectedYear;
-    document.getElementById('report-cycle-title').textContent = `${selectedYear} Review Cycle Overview`;
-
-    const activeGoals = goals.filter(g => g.status !== 'Completed');
-    const onTrack     = goals.filter(g => g.status === 'In Progress' || g.status === 'Completed');
-    document.getElementById('kpi-goals').textContent     = goals.length;
-    document.getElementById('kpi-goals-sub').textContent = goals.length ? `${Math.round(onTrack.length/goals.length*100)}% on track` : 'No goals yet';
-
-    // ── Stacked bar ──
-    renderStackedBar(total, completed.length, inProgress.length, notStarted.length);
-
-    // ── Spotlight ──
-    renderSpotlight(scored, employees);
-
-    // ── Competency breakdown ──
-    renderCompetencyChart(completed, employees);
-
-    // ── Completion charts ──
-    renderGroupChart('dept-chart', reviews, employees, 'department');
-    renderGroupChart('branch-chart', reviews, employees, 'branch');
-
-    // ── Score distribution ──
-    renderScoreDist(scored);
-
-    // ── Dept score table ──
-    renderDeptScoreTable(scored, employees);
-
-    // ── Employee voice ──
-    renderEmployeeVoice(reviews, employees);
-
-    // ── Dept intelligence ──
-    renderDeptIntel(reviews, completed, employees);
-
-    // ── Payroll impact ──
-    renderPayrollImpact(employees, reviews);
-
-    // ── Compensation ──
-    renderCompSection(compRecords, employees);
-
-    // ── Manager upward feedback ──
-    renderManagerFeedback(reviews, employees);
-
-    // ── Game plan ──
-    renderGamePlan(completed, scored, employees, goals);
-
-    // ── Goals ──
-    renderGoalSection(goals);
-
-    // ── Admin section nav (admin/exec only) ──
-    if (isAdmin) initAdminLayout(reviews, employees, goals);
-  }
-
-  // ── Admin layout: section nav + clickable KPIs + drawer ─────────────────
-  function initAdminLayout(reviews, employees, goals) {
-    // Build section nav
-    const wrap = document.getElementById('admin-section-nav-wrap');
-    const completed = reviews.filter(r => r.status === 'completed');
-    const inProgress = reviews.filter(r => ['draft','submitted','in-review','mgr-complete'].includes(r.status));
-    const tabs = [
-      { id: 'performance',  icon: '📊', label: 'Performance',  count: reviews.length },
-      { id: 'people',       icon: '👥', label: 'People',       count: Object.values(employees).filter(e=>e.status==='active').length },
-      { id: 'financials',   icon: '💰', label: 'Financials',   count: reviews.filter(r=>r.approvedIncrease?.newRate).length },
-      { id: 'mgr-feedback', icon: '💬', label: 'Mgr Feedback', count: reviews.filter(r=>r.selfEval?.mfbRating).length },
-      { id: 'planning',     icon: '🎯', label: 'Planning',     count: goals.length },
-    ];
-
-    document.getElementById('report-body').classList.add('admin-tabs-enabled');
-
-    wrap.innerHTML = `<nav class="admin-section-nav" id="admin-section-nav">
-      ${tabs.map(t => `
-        <button class="sec-nav-btn${t.id==='performance'?' active':''}" data-tab="${t.id}" onclick="adminShowTab('${t.id}')">
-          <span class="snb-icon">${t.icon}</span>
-          ${t.label}
-          <span class="snb-count">${t.count}</span>
-        </button>`).join('')}
-    </nav>`;
-
-    // Hide all tabs except performance (default)
-    document.querySelectorAll('.report-tab').forEach(el => el.classList.remove('active'));
-    const perfTab = document.getElementById('tab-performance');
-    if (perfTab) perfTab.classList.add('active');
-
-    // Make KPI cards clickable with drawer content
-    wireKpiDrawers(reviews, employees, goals, completed);
-
-    // Set up drawer close
-    const overlay = document.getElementById('rpt-drawer-overlay');
-    const closeBtn = document.getElementById('rpt-drawer-close');
-    if (overlay) {
-      overlay.addEventListener('click', e => { if(e.target === overlay) closeRptDrawer(); });
-    }
-    if (closeBtn) closeBtn.addEventListener('click', closeRptDrawer);
-    document.addEventListener('keydown', e => { if(e.key==='Escape') closeRptDrawer(); });
-  }
-
-  window.adminShowTab = function adminShowTab(tabId) {
-    document.querySelectorAll('.report-tab').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.sec-nav-btn').forEach(b => b.classList.remove('active'));
-    const tab = document.getElementById('tab-' + tabId);
-    if (tab) tab.classList.add('active');
-    const btn = document.querySelector(`.sec-nav-btn[data-tab="${tabId}"]`);
-    if (btn) btn.classList.add('active');
-  };
-
-  function openRptDrawer(title, html) {
-    document.getElementById('rpt-drawer-title').textContent = title;
-    document.getElementById('rpt-drawer-body').innerHTML = html;
-    document.getElementById('rpt-drawer-overlay').classList.add('open');
-  }
-
-  function closeRptDrawer() {
-    const overlay = document.getElementById('rpt-drawer-overlay');
-    if (overlay) overlay.classList.remove('open');
-  }
-
-  function wireKpiDrawers(reviews, employees, goals, completed) {
-    const empList = Object.values(employees).filter(e => e.status === 'active');
-    const total = reviews.length;
-    const inProg = reviews.filter(r => ['draft','submitted','in-review','mgr-complete'].includes(r.status));
-    const notStarted = reviews.filter(r => r.status === 'not-started');
-
-    const scored = completed.map(r => {
-      const s = reviewScore(r); return s !== null ? { r, score: s } : null;
-    }).filter(Boolean);
-    const avgSc = scored.length ? (scored.reduce((a,x)=>a+x.score,0)/scored.length) : null;
-
-    const kpiMap = {
-      'kpi-emps': {
-        title: 'Active Employees',
-        html: () => {
-          const byDept = {};
-          empList.forEach(e => { const d=e.department||'Unassigned'; byDept[d]=(byDept[d]||0)+1; });
-          return `<div class="rpt-drawer-section">
-            <div class="rpt-drawer-section-title">By Department</div>
-            ${Object.entries(byDept).sort((a,b)=>b[1]-a[1]).map(([d,n])=>
-              `<div class="rpt-stat-row"><span class="rpt-stat-key">${escHtml(d)}</span><span class="rpt-stat-val">${n}</span></div>`
-            ).join('')}
-          </div>
-          <div class="rpt-drawer-section">
-            <div class="rpt-drawer-section-title">By Branch</div>
-            ${(()=>{const bb={};empList.forEach(e=>{const b=e.branch||'No Branch';bb[b]=(bb[b]||0)+1;});return Object.entries(bb).sort((a,b)=>b[1]-a[1]).map(([b,n])=>`<div class="rpt-stat-row"><span class="rpt-stat-key">${escHtml(b)}</span><span class="rpt-stat-val">${n}</span></div>`).join('');})()}
-          </div>`;
-        }
-      },
-      'kpi-total': {
-        title: `${selectedYear} Review Breakdown`,
-        html: () => `<div class="rpt-drawer-section">
-          <div class="rpt-drawer-section-title">Status Breakdown</div>
-          <div class="rpt-stat-row"><span class="rpt-stat-key">Completed</span><span class="rpt-stat-val" style="color:var(--success)">${completed.length}</span></div>
-          <div class="rpt-stat-row"><span class="rpt-stat-key">In Progress</span><span class="rpt-stat-val" style="color:var(--yellow)">${inProg.length}</span></div>
-          <div class="rpt-stat-row"><span class="rpt-stat-key">Not Started</span><span class="rpt-stat-val" style="color:var(--muted)">${notStarted.length}</span></div>
-          <div class="rpt-stat-row"><span class="rpt-stat-key">Total</span><span class="rpt-stat-val">${total}</span></div>
-          <div class="rpt-stat-row"><span class="rpt-stat-key">Completion Rate</span><span class="rpt-stat-val">${total?Math.round(completed.length/total*100)+'%':'—'}</span></div>
-        </div>`
-      },
-      'kpi-done': {
-        title: 'Completed Reviews',
-        html: () => {
-          const rows = completed.map(r => {
-            const e = employees[r.employeeId];
-            const s = reviewScore(r);
-            return `<div class="rpt-stat-row"><span class="rpt-stat-key">${escHtml(fullName(e))}<br><span style="font-size:.7rem;color:var(--muted)">${escHtml(e?.department||'')}</span></span><span class="rpt-stat-val">${s!==null?s.toFixed(1):'—'}</span></div>`;
-          }).join('') || '<div style="color:var(--muted);font-size:.875rem">No completed reviews yet</div>';
-          return `<div class="rpt-drawer-section"><div class="rpt-drawer-section-title">Completed Employees</div>${rows}</div>`;
-        }
-      },
-      'kpi-score': {
-        title: 'Score Analysis',
-        html: () => {
-          const dist = {1:0,2:0,3:0,4:0,5:0};
-          scored.forEach(x => { const b=Math.min(5,Math.max(1,Math.round(x.score))); dist[b]++; });
-          return `<div class="rpt-drawer-section">
-            <div class="rpt-drawer-section-title">Score Summary</div>
-            <div class="rpt-stat-row"><span class="rpt-stat-key">Average Score</span><span class="rpt-stat-val">${avgSc!==null?avgSc.toFixed(2):'—'}</span></div>
-            <div class="rpt-stat-row"><span class="rpt-stat-key">Highest</span><span class="rpt-stat-val">${scored.length?Math.max(...scored.map(x=>x.score)).toFixed(1):'—'}</span></div>
-            <div class="rpt-stat-row"><span class="rpt-stat-key">Lowest</span><span class="rpt-stat-val">${scored.length?Math.min(...scored.map(x=>x.score)).toFixed(1):'—'}</span></div>
-          </div>
-          <div class="rpt-drawer-section">
-            <div class="rpt-drawer-section-title">Distribution</div>
-            ${[5,4,3,2,1].map(s=>`<div class="rpt-stat-row"><span class="rpt-stat-key">Score ${s}</span><span class="rpt-stat-val">${dist[s]} employee${dist[s]!==1?'s':''}</span></div>`).join('')}
-          </div>`;
-        }
-      },
-      'kpi-goals': {
-        title: 'Goals Overview',
-        html: () => {
-          const byStatus = {};
-          goals.forEach(g => { byStatus[g.status]=(byStatus[g.status]||0)+1; });
-          return `<div class="rpt-drawer-section">
-            <div class="rpt-drawer-section-title">By Status</div>
-            ${Object.entries(byStatus).map(([s,n])=>`<div class="rpt-stat-row"><span class="rpt-stat-key">${escHtml(s)}</span><span class="rpt-stat-val">${n}</span></div>`).join('') || '<div style="color:var(--muted)">No goals</div>'}
-          </div>`;
-        }
-      },
-    };
-
-    Object.entries(kpiMap).forEach(([id, def]) => {
-      const card = document.getElementById(id)?.closest('.kpi-card');
-      if (!card) return;
-      card.classList.add('is-clickable');
-      card.addEventListener('click', () => openRptDrawer(def.title, def.html()));
-    });
-  }
-
-  // ── Stacked bar ──────────────────────────────────────────────────────────
-  function renderStackedBar(total, done, prog, pend) {
-    const bar = document.getElementById('stacked-bar');
-    if (!total) { bar.innerHTML = '<div style="flex:1;background:var(--gray-100);border-radius:8px"></div>'; return; }
-    const dPct = done/total*100, prPct = prog/total*100, pePct = pend/total*100;
-    bar.innerHTML = `
-      <div class="stacked-seg done" style="width:${dPct}%"  title="Completed ${done}"></div>
-      <div class="stacked-seg prog" style="width:${prPct}%" title="In Progress ${prog}"></div>
-      <div class="stacked-seg pend" style="width:${pePct}%" title="Not Started ${pend}"></div>`;
-    document.getElementById('legend-done').textContent = `Completed (${done})`;
-    document.getElementById('legend-prog').textContent = `In Progress (${prog})`;
-    document.getElementById('legend-pend').textContent = `Not Started (${pend})`;
-  }
-
-  // ── Spotlight ─────────────────────────────────────────────────────────────
-  function renderSpotlight(scored, employees) {
-    const grid = document.getElementById('spotlight-grid');
-    if (!scored.length) {
-      grid.innerHTML = '<div class="report-card" style="grid-column:1/-1"><div class="empty-block">No finalized reviews yet — spotlight will populate once reviews are completed.</div></div>';
-      return;
-    }
-
-    const sorted = [...scored].sort((a,b) => b.score - a.score);
-    const top    = sorted[0];
-    const bot    = sorted[sorted.length - 1];
-
-    // Self vs mgr gap analysis (only for reviews that have both)
-    const gapped = scored.map(x => {
-      const selfAvg = avgRatings(x.r.selfEval?.ratings);
-      const mgrAvg  = avgRatings(x.r.managerEval?.ratings);
-      if (selfAvg === null || mgrAvg === null) return null;
-      return { r: x.r, selfAvg, mgrAvg, gap: selfAvg - mgrAvg, score: x.score };
-    }).filter(Boolean);
-
-    const selfHighest = gapped.length ? [...gapped].sort((a,b) => b.selfAvg - a.selfAvg)[0] : null;
-    const selfLowest  = gapped.length ? [...gapped].sort((a,b) => a.selfAvg - b.selfAvg)[0] : null;
-
-    const topEmp = employees[top.r.employeeId];
-    const botEmp = employees[bot.r.employeeId];
-
-    grid.innerHTML = `
-      <!-- Top performer -->
-      <div class="report-card accent-green">
-        <div class="spotlight-label green">Standout Performer</div>
-        <div class="spotlight-name">${escHtml(fullName(topEmp))}</div>
-        <div class="spotlight-dept">${escHtml(topEmp?.department||'')}${topEmp?.branch?' · '+topEmp.branch:''}</div>
-        <div class="spotlight-score hi">${top.score.toFixed(1)}<sub>/5</sub></div>
-        <div class="spotlight-note">${scoreLbl(top.score)} · Highest overall score this cycle across all finalized reviews.</div>
+  steps.innerHTML = rows.map(s => `
+    <div style="display:flex;gap:.875rem;align-items:flex-start;padding:.7rem 0;border-bottom:1px solid #f1f5f9">
+      <div style="font-size:1rem;line-height:1;margin-top:2px;flex-shrink:0">${s.icon}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.8rem;font-weight:700;color:#0f172a">${s.label}</div>
+        <div style="font-size:.73rem;color:#64748b;margin-top:.15rem;line-height:1.4">${s.sub}</div>
       </div>
+    </div>`).join('');
+}
 
-      <!-- Lowest performer -->
-      <div class="report-card accent-red">
-        <div class="spotlight-label red">Needs Support</div>
-        <div class="spotlight-name">${escHtml(fullName(botEmp))}</div>
-        <div class="spotlight-dept">${escHtml(botEmp?.department||'')}${botEmp?.branch?' · '+botEmp.branch:''}</div>
-        <div class="spotlight-score lo">${bot.score.toFixed(1)}<sub>/5</sub></div>
-        <div class="spotlight-note">${scoreLbl(bot.score)} · Consider a focused coaching plan and a follow-up check-in.</div>
-      </div>
+// ── MANAGER ──────────────────────────────────────
+function renderManagerView(firstName) {
+  showView('view-manager');
+  const el = document.getElementById('mgr-greeting');
+  el.innerHTML = `${greet()}, <span style="color:var(--green-mid)">${escHtml(firstName)}.</span>`;
+  document.getElementById('mgr-cycle-sub').textContent = `${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})} · ${activeCycleName}`;
+  document.getElementById('mgr-ring-year').textContent = currentYear;
 
-      <!-- Self-rated highest -->
-      ${selfHighest ? (() => {
-        const e = employees[selfHighest.r.employeeId];
-        return `<div class="report-card accent-blue">
-          <div class="spotlight-label blue">Highest Self-Rating</div>
-          <div class="spotlight-name">${escHtml(fullName(e))}</div>
-          <div class="spotlight-dept">${escHtml(e?.department||'')}</div>
-          <div class="spotlight-score mid">${selfHighest.selfAvg.toFixed(1)}<sub>/5</sub></div>
-          <div class="spotlight-note">Self average ${selfHighest.selfAvg.toFixed(1)} vs. manager ${selfHighest.mgrAvg.toFixed(1)}. Gap: ${selfHighest.gap >= 0 ? '+' : ''}${selfHighest.gap.toFixed(1)} ${selfHighest.gap > 0.5 ? '— employee rated themselves higher than mgr.' : '— closely aligned with manager.'}</div>
-        </div>`;
-      })() : '<div class="report-card"><div class="empty-block" style="padding:1rem">No self-eval data</div></div>'}
+  const myId = currentEmployee?.id;
+  const myTeam = Object.values(allEmployees).filter(e => e.managerId === myId);
+  const teamReviews = allReviews.filter(r => myTeam.some(e => e.id === r.employeeId));
 
-      <!-- Self-rated lowest -->
-      ${selfLowest ? (() => {
-        const e = employees[selfLowest.r.employeeId];
-        return `<div class="report-card accent-yellow">
-          <div class="spotlight-label yellow">Lowest Self-Rating</div>
-          <div class="spotlight-name">${escHtml(fullName(e))}</div>
-          <div class="spotlight-dept">${escHtml(e?.department||'')}</div>
-          <div class="spotlight-score mid">${selfLowest.selfAvg.toFixed(1)}<sub>/5</sub></div>
-          <div class="spotlight-note">Self average ${selfLowest.selfAvg.toFixed(1)} vs. manager ${selfLowest.mgrAvg.toFixed(1)}. ${selfLowest.gap < -0.5 ? 'Employee may be underselling their performance — worth highlighting wins.' : 'Aligned with manager assessment.'}</div>
-        </div>`;
-      })() : '<div class="report-card"><div class="empty-block" style="padding:1rem">No self-eval data</div></div>'}
-    `;
+  const needsReview = teamReviews.filter(r => ['submitted','in-review'].includes(r.status)).length;
+  const sentToExec  = teamReviews.filter(r => r.status === 'completed' || r.managerEval?.completedAt).length;
+  const notStarted  = myTeam.filter(e => !teamReviews.find(r => r.employeeId === e.id) ||
+    teamReviews.find(r => r.employeeId === e.id)?.status === 'not-started').length;
+  const pct = myTeam.length ? Math.round((sentToExec / myTeam.length) * 100) : 0;
+
+  document.getElementById('mgr-kpi-total').textContent  = myTeam.length;
+  document.getElementById('mgr-kpi-needs').textContent  = needsReview;
+  document.getElementById('mgr-kpi-sent').textContent   = sentToExec;
+  document.getElementById('mgr-kpi-idle').textContent   = notStarted;
+  document.getElementById('mgr-badge').textContent      = `${myTeam.length} employees`;
+  document.getElementById('mgr-ring-pct').textContent   = pct + '%';
+  setRing('mgr-ring-fill', pct);
+
+  const tbody = document.getElementById('mgr-table-body');
+  if (!myTeam.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="padding:1.5rem;color:var(--muted)">No employees assigned to you.</td></tr>';
+    return;
   }
 
-  // ── Competency chart ─────────────────────────────────────────────────────
-  function renderCompetencyChart(completed, employees) {
-    const el = document.getElementById('competency-chart');
-    if (!completed.length) { el.innerHTML = '<div class="empty-block">No completed reviews</div>'; return; }
-
-    // Aggregate per competency
-    const selfSums = {}, mgrSums = {}, selfCounts = {}, mgrCounts = {};
-    COMPETENCIES.forEach(c => { selfSums[c.key]=0; mgrSums[c.key]=0; selfCounts[c.key]=0; mgrCounts[c.key]=0; });
-
-    completed.forEach(r => {
-      const sr = r.selfEval?.ratings || {};
-      const mr = r.managerEval?.ratings || {};
-      COMPETENCIES.forEach(c => {
-        const sv = Number(sr[c.key]);
-        const mv = Number(mr[c.key]);
-        if (sv >= 1 && sv <= 5) { selfSums[c.key] += sv; selfCounts[c.key]++; }
-        if (mv >= 1 && mv <= 5) { mgrSums[c.key]  += mv; mgrCounts[c.key]++; }
-      });
-    });
-
-    let bestKey = null, bestVal = -1, worstKey = null, worstVal = 6;
-    COMPETENCIES.forEach(c => {
-      const mAvg = mgrCounts[c.key] ? mgrSums[c.key]/mgrCounts[c.key] : null;
-      if (mAvg !== null) {
-        if (mAvg > bestVal)  { bestVal = mAvg; bestKey = c.key; }
-        if (mAvg < worstVal) { worstVal = mAvg; worstKey = c.key; }
-      }
-    });
-
-    el.innerHTML = COMPETENCIES.map(c => {
-      const sAvg = selfCounts[c.key] ? selfSums[c.key]/selfCounts[c.key] : null;
-      const mAvg = mgrCounts[c.key]  ? mgrSums[c.key]/mgrCounts[c.key]  : null;
-      const sW   = sAvg !== null ? (sAvg/5*100).toFixed(1) : 0;
-      const mW   = mAvg !== null ? (mAvg/5*100).toFixed(1) : 0;
-      return `<div class="comp-bar-row">
-        <div class="comp-bar-label">${escHtml(c.label)}</div>
-        <div>
-          <div class="comp-bar-tracks">
-            <div class="comp-dual-track" title="Self avg: ${sAvg!==null?sAvg.toFixed(2):'—'}">
-              <div class="comp-dual-fill self-fill" style="width:${sW}%"></div>
-            </div>
-            <div class="comp-dual-track" title="Mgr avg: ${mAvg!==null?mAvg.toFixed(2):'—'}">
-              <div class="comp-dual-fill mgr-fill" style="width:${mW}%"></div>
-            </div>
-          </div>
-          <div style="display:flex;gap:1.25rem;margin-top:3px">
-            <span class="comp-bar-score" style="color:#93c5fd">Self: ${sAvg!==null?sAvg.toFixed(1):'—'}</span>
-            <span class="comp-bar-score">Mgr: ${mAvg!==null?mAvg.toFixed(1):'—'}</span>
-          </div>
-        </div>
-      </div>`;
-    }).join('');
-
-    // Show insight row
-    const insightRow = document.getElementById('comp-insight-row');
-    if (insightRow && bestKey) {
-      insightRow.style.display = 'grid';
-      const bestLabel = COMPETENCIES.find(c=>c.key===bestKey)?.label || bestKey;
-      const worstLabel = COMPETENCIES.find(c=>c.key===worstKey)?.label || worstKey;
-      document.getElementById('comp-strength-name').textContent = bestLabel;
-      document.getElementById('comp-strength-score').textContent = `Avg mgr rating: ${bestVal.toFixed(2)} / 5`;
-      document.getElementById('comp-focus-name').textContent = worstLabel;
-      document.getElementById('comp-focus-score').textContent = `Avg mgr rating: ${worstVal.toFixed(2)} / 5 — prioritize for next cycle`;
-    }
-  }
-
-  // ── Group completion chart ────────────────────────────────────────────────
-  function renderGroupChart(elId, reviews, employees, field) {
-    const el = document.getElementById(elId);
-    const groups = {};
-    reviews.forEach(r => {
-      const emp = employees[r.employeeId];
-      const key = emp?.[field] || 'Unknown';
-      if (!groups[key]) groups[key] = { total: 0, done: 0 };
-      groups[key].total++;
-      if (r.status === 'completed') groups[key].done++;
-    });
-    const sorted = Object.entries(groups).sort((a,b) => b[1].total - a[1].total);
-    if (!sorted.length) { el.innerHTML = '<div class="empty-block">No data</div>'; return; }
-    const maxTotal = Math.max(...sorted.map(([,v]) => v.total));
-    el.innerHTML = sorted.map(([label, { total, done }]) => {
-      const pct = total ? Math.round(done/total*100) : 0;
-      const barW = total ? (total/maxTotal*100) : 0;
-      const fillCls = pct >= 80 ? 'done' : pct >= 40 ? '' : 'low';
-      return `<div class="bar-row">
-        <div class="bar-row-label" title="${escHtml(label)}">${escHtml(label)}</div>
-        <div class="bar-track"><div class="bar-fill ${fillCls}" style="width:${barW}%"></div></div>
-        <div class="bar-pct">${pct}%</div>
-      </div>`;
-    }).join('');
-  }
-
-  // ── Score distribution ───────────────────────────────────────────────────
-  function renderScoreDist(scored) {
-    const el = document.getElementById('score-dist');
-    if (!scored.length) { el.innerHTML = '<div class="empty-block" style="flex:1">No completed reviews yet</div>'; return; }
-
-    const labels = {1:'Unsatisfactory', 2:'Needs Improvement', 3:'Meets Expectations', 4:'Exceeds', 5:'Exceptional'};
-    const counts = {1:0, 2:0, 3:0, 4:0, 5:0};
-    // Bucket scores: <1.5→1, 1.5–2.5→2, 2.5–3.5→3, 3.5–4.5→4, ≥4.5→5
-    scored.forEach(({score}) => {
-      const bucket = score < 1.5 ? 1 : score < 2.5 ? 2 : score < 3.5 ? 3 : score < 4.5 ? 4 : 5;
-      counts[bucket]++;
-    });
-    const maxCount = Math.max(...Object.values(counts), 1);
-    el.innerHTML = [1,2,3,4,5].map(s => {
-      const h = Math.round(counts[s]/maxCount*110);
-      return `<div class="score-col">
-        <div class="score-bar-wrap"><div class="score-bar s${s}" style="height:${h}px"></div></div>
-        <div class="score-label">${s}</div>
-        <div class="score-count">${counts[s]}</div>
-        <div class="score-desc">${labels[s].split(' ')[0]}</div>
-      </div>`;
-    }).join('');
-
-    const total = scored.length;
-    const avg   = (scored.reduce((a,x)=>a+x.score,0)/total).toFixed(2);
-    document.getElementById('score-dist-note').textContent = `${total} scored reviews · Average: ${avg} / 5`;
-  }
-
-  // ── Dept score table ─────────────────────────────────────────────────────
-  function renderDeptScoreTable(scored, employees) {
-    const tbody = document.getElementById('dept-score-tbody');
-    const depts = {};
-    scored.forEach(({r, score}) => {
-      const emp  = employees[r.employeeId];
-      const dept = emp?.department || 'Unknown';
-      if (!depts[dept]) depts[dept] = { sum: 0, count: 0 };
-      depts[dept].sum += score;
-      depts[dept].count++;
-    });
-    const rows = Object.entries(depts).sort((a,b) => b[1].sum/b[1].count - a[1].sum/a[1].count);
-    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="3" class="empty-block">No scored reviews</td></tr>'; return; }
-    tbody.innerHTML = rows.map(([dept, { sum, count }]) => {
-      const avg = (sum/count).toFixed(1);
-      const cls = avg >= 4 ? 'sp-high' : avg >= 3 ? 'sp-mid' : 'sp-low';
-      const barW = (avg/5*100).toFixed(0);
-      return `<tr>
-        <td>${escHtml(dept)}</td>
-        <td>
-          <span class="score-pill ${cls}">${avg}</span>
-          <span class="mini-bar-wrap"><span class="mini-bar-fill" style="width:${barW}%"></span></span>
-        </td>
-        <td style="color:var(--gray-400)">${count}</td>
-      </tr>`;
-    }).join('');
-  }
-
-  // ── Employee Voice ────────────────────────────────────────────────────────
-  function renderEmployeeVoice(reviews, employees) {
-    // Self-align summary cards
-    const withBoth = reviews.filter(r =>
-      r.selfEval?.ratings && Object.keys(r.selfEval.ratings).length &&
-      r.managerEval?.ratings && Object.keys(r.managerEval.ratings).length
-    ).map(r => {
-      const selfAvg = avgRatings(r.selfEval.ratings);
-      const mgrAvg  = avgRatings(r.managerEval.ratings);
-      return { r, selfAvg, mgrAvg, gap: selfAvg - mgrAvg };
-    }).filter(x => x.selfAvg !== null && x.mgrAvg !== null);
-
-    const alignRow = document.getElementById('self-align-row');
-    if (withBoth.length) {
-      const overEval  = [...withBoth].sort((a,b) => b.gap - a.gap)[0];
-      const underEval = [...withBoth].sort((a,b) => a.gap - b.gap)[0];
-      const overEmp   = employees[overEval.r.employeeId];
-      const underEmp  = employees[underEval.r.employeeId];
-      alignRow.innerHTML = `
-        <div class="report-card">
-          <h2>
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-            Self vs. Manager Rating Alignment
-          </h2>
-          <div style="margin-bottom:1rem">
-            <div style="font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:0.5rem">Over Self-Evaluators (rated themselves higher than manager)</div>
-            ${withBoth.filter(x => x.gap > 0.3).sort((a,b)=>b.gap-a.gap).slice(0,3).map(x => {
-              const e = employees[x.r.employeeId];
-              return `<div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border2)">
-                <span style="font-size:0.8125rem;font-weight:600;color:var(--text)">${escHtml(fullName(e))}</span>
-                <span style="font-size:0.75rem;color:var(--yellow);font-weight:700">Self ${x.selfAvg.toFixed(1)} vs Mgr ${x.mgrAvg.toFixed(1)} (+${x.gap.toFixed(1)})</span>
-              </div>`;
-            }).join('') || '<div style="font-size:0.8rem;color:var(--muted);padding:0.5rem 0">None — all employees aligned or below</div>'}
-          </div>
-          <div>
-            <div style="font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:0.5rem">Under Self-Evaluators (rated themselves lower than manager)</div>
-            ${withBoth.filter(x => x.gap < -0.3).sort((a,b)=>a.gap-b.gap).slice(0,3).map(x => {
-              const e = employees[x.r.employeeId];
-              return `<div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border2)">
-                <span style="font-size:0.8125rem;font-weight:600;color:var(--text)">${escHtml(fullName(e))}</span>
-                <span style="font-size:0.75rem;color:var(--info);font-weight:700">Self ${x.selfAvg.toFixed(1)} vs Mgr ${x.mgrAvg.toFixed(1)} (${x.gap.toFixed(1)})</span>
-              </div>`;
-            }).join('') || '<div style="font-size:0.8rem;color:var(--muted);padding:0.5rem 0">None — all employees aligned or above</div>'}
-          </div>
-        </div>
-        <div class="report-card">
-          <h2>
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            Self-Evaluation Score Summary
-          </h2>
-          <div style="display:flex;flex-direction:column;gap:0.5rem">
-            ${[...withBoth].sort((a,b)=>b.selfAvg-a.selfAvg).map(x => {
-              const e = employees[x.r.employeeId];
-              const barW = (x.selfAvg/5*100).toFixed(0);
-              const mW   = (x.mgrAvg/5*100).toFixed(0);
-              return `<div style="margin-bottom:0.4rem">
-                <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:3px">
-                  <span style="font-weight:600;color:var(--text)">${escHtml(fullName(e))}</span>
-                  <span style="color:var(--muted)">Self ${x.selfAvg.toFixed(1)} / Mgr ${x.mgrAvg.toFixed(1)}</span>
-                </div>
-                <div style="height:6px;background:var(--border2);border-radius:99px;overflow:visible;position:relative;margin-bottom:2px">
-                  <div style="height:6px;width:${barW}%;background:#93c5fd;border-radius:99px"></div>
-                </div>
-                <div style="height:6px;background:var(--border2);border-radius:99px;overflow:hidden">
-                  <div style="height:6px;width:${mW}%;background:var(--green);border-radius:99px"></div>
-                </div>
-              </div>`;
-            }).join('')}
-          </div>
-        </div>`;
+  tbody.innerHTML = myTeam.map(emp => {
+    const rev    = teamReviews.find(r => r.employeeId === emp.id);
+    const status = rev?.status || 'not-started';
+    const selfChip = status === 'not-started'
+      ? '<span class="chip chip-idle">Not Started</span>'
+      : '<span class="chip chip-done">Submitted</span>';
+    let mgrChip, mgrAction;
+    if (['submitted','in-review'].includes(status)) {
+      mgrChip = '<span class="chip chip-act">Your Turn</span>';
+      mgrAction = `<a href="reviews.html" class="btn btn-pri btn-sm">Review Now</a>`;
+    } else if (status === 'completed' || rev?.managerEval?.completedAt) {
+      mgrChip = '<span class="chip chip-done">Complete</span>';
+      mgrAction = `<a href="reviews.html" class="btn btn-ghost btn-sm">View</a>`;
     } else {
-      alignRow.innerHTML = '<div class="report-card" style="grid-column:1/-1"><div class="empty-block">No self-evaluation data yet.</div></div>';
+      mgrChip = '<span class="chip chip-idle">Waiting</span>';
+      mgrAction = '';
     }
+    const dot1 = status !== 'not-started' ? 'd' : '';
+    const dot2 = (rev?.managerEval?.completedAt || status === 'completed') ? 'd' : (status === 'submitted' ? 'p' : '');
+    const dot3 = status === 'completed' ? 'd' : '';
+    const dept = `${emp.department||''}${emp.branch ? ' · '+emp.branch : ''}`;
+    return `<tr>
+      <td><span class="emp-av">${initials(emp)}</span><div style="display:inline-block"><div class="row-name">${escHtml(fullName(emp))}</div><div class="row-dept">${escHtml(dept)}</div></div></td>
+      <td>${selfChip}</td><td>${mgrChip}</td>
+      <td><div class="dots"><div class="dot ${dot1}"></div><div class="dot ${dot2}"></div><div class="dot ${dot3}"></div></div></td>
+      <td>${mgrAction}</td>
+    </tr>`;
+  }).join('');
 
-    // Voice table — all reviews with a self-eval submitted and a known employee
-    const withSelf = reviews.filter(r =>
-      employees[r.employeeId] &&
-      (r.selfEval?.submitted || r.selfEval?.q1 || r.selfEval?.q2)
-    );
-    const tbody = document.getElementById('voice-tbody');
-    if (!withSelf.length) {
-      tbody.innerHTML = '<tr><td colspan="7" class="empty-block">No submitted self-evaluations yet</td></tr>';
-      return;
-    }
+  // Activity — last 4 review updates
+  const recent = [...teamReviews].sort((a,b)=>(b.updatedAt?.seconds||0)-(a.updatedAt?.seconds||0)).slice(0,4);
+  const actEl = document.getElementById('mgr-activity');
+  if (!recent.length) return;
+  actEl.innerHTML = recent.map(r => {
+    const emp = allEmployees[r.employeeId];
+    const name = emp ? fullName(emp) : 'Unknown';
+    const [cls, msg] = r.status === 'completed' ? ['green','review fully complete']
+      : r.managerEval?.completedAt ? ['green','manager review complete']
+      : r.status === 'submitted' ? ['blue','submitted self-eval']
+      : ['yellow','review started'];
+    const ts = r.updatedAt?.toDate ? r.updatedAt.toDate().toLocaleDateString() : '';
+    return `<div class="act-row"><div class="act-dot ${cls}"></div><div><div class="act-text"><strong>${escHtml(name)}</strong> ${msg}</div>${ts?`<div class="act-time">${ts}</div>`:''}</div></div>`;
+  }).join('');
+}
 
-    tbody.innerHTML = withSelf.map(r => {
-      const emp     = employees[r.employeeId];
-      const selfAvg = avgRatings(r.selfEval?.ratings);
-      const mgrAvg  = avgRatings(r.managerEval?.ratings);
-      const gap     = (selfAvg !== null && mgrAvg !== null) ? (selfAvg - mgrAvg) : null;
-      const gapTxt  = gap !== null ? (gap >= 0 ? `+${gap.toFixed(1)}` : gap.toFixed(1)) : '—';
-      const gapClr  = gap === null ? 'var(--muted)' : Math.abs(gap) > 0.5 ? 'var(--yellow)' : 'var(--green-mid)';
-      const sBadgeCls = selfAvg===null ? '' : selfAvg>=4?'sp-high':selfAvg>=3?'sp-mid':'sp-low';
-      const mBadgeCls = mgrAvg===null  ? '' : mgrAvg>=4?'sp-high':mgrAvg>=3?'sp-mid':'sp-low';
-      return `<tr>
-        <td>
-          <div class="voice-emp-name">${escHtml(fullName(emp))}</div>
-          <div class="voice-dept">${escHtml(emp?.department||'')}</div>
-        </td>
-        <td>${selfAvg!==null?`<span class="self-score-badge score-pill ${sBadgeCls}">${selfAvg.toFixed(1)}</span>`:'—'}</td>
-        <td>${mgrAvg!==null?`<span class="self-score-badge score-pill ${mBadgeCls}">${mgrAvg.toFixed(1)}</span>`:'—'}</td>
-        <td style="font-weight:700;color:${gapClr}">${gapTxt}</td>
-        <td class="voice-text">${escHtml(truncate(r.selfEval?.q1))}</td>
-        <td class="voice-text">${escHtml(truncate(r.selfEval?.q2))}</td>
-        <td class="voice-text">${escHtml(truncate(r.selfEval?.q4))}</td>
-      </tr>`;
-    }).join('');
+// ── EXECUTIVE ─────────────────────────────────────
+function renderExecutiveView(firstName) {
+  showView('view-executive');
+  const el = document.getElementById('exec-greeting');
+  el.innerHTML = `${greet()}, <span style="color:var(--green-mid)">${escHtml(firstName)}.</span>`;
+  document.getElementById('exec-cycle-sub').textContent = `${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})} · ${activeCycleName}`;
+  document.getElementById('exec-standout-year').textContent = currentYear;
+  document.getElementById('exec-ring-year').textContent = currentYear;
+
+  const myId    = currentEmployee?.id;
+  const myTeam  = Object.values(allEmployees).filter(e => e.executiveId === myId);
+  const myRevs  = allReviews.filter(r => myTeam.some(e => e.id === r.employeeId));
+
+  const ready    = myRevs.filter(r => r.managerEval?.completedAt && r.status !== 'completed').length;
+  const done     = myRevs.filter(r => r.status === 'completed').length;
+  const inProg   = myRevs.filter(r => !['completed'].includes(r.status) && !r.managerEval?.completedAt).length;
+  const pct      = myRevs.length ? Math.round((done / myRevs.length) * 100) : 0;
+
+  document.getElementById('exec-kpi-total').textContent = myRevs.length;
+  document.getElementById('exec-kpi-ready').textContent = ready;
+  document.getElementById('exec-kpi-done').textContent  = done;
+  document.getElementById('exec-kpi-prog').textContent  = inProg;
+  document.getElementById('exec-ring-pct').textContent  = pct + '%';
+  document.getElementById('exec-ready-badge').textContent = `${ready} reviews`;
+  document.getElementById('exec-done-badge').textContent  = `${done} complete`;
+  setRing('exec-ring-fill', pct);
+
+  // Standouts — need manager scores
+  const scored = myRevs.filter(r => r.managerEval?.ratings).map(r => ({
+    rev: r, emp: allEmployees[r.employeeId], score: avgScore(r.managerEval)
+  })).filter(x => x.emp && x.score !== null).sort((a,b) => b.score - a.score);
+
+  if (scored.length) {
+    const top = scored[0];
+    document.getElementById('exec-top-name').textContent  = fullName(top.emp);
+    document.getElementById('exec-top-dept').textContent  = `${top.emp.department||''}${top.emp.branch?' · '+top.emp.branch:''}`;
+    document.getElementById('exec-top-score').innerHTML   = `${top.score.toFixed(1)}<sub>/5</sub>`;
+    document.getElementById('exec-top-note').textContent  = `Highest score this cycle — ${scoreLabel(top.score)}.`;
+  }
+  if (scored.length > 1) {
+    const mid = scored[Math.floor(scored.length/2)] || scored[scored.length-1];
+    document.getElementById('exec-imp-name').textContent  = fullName(mid.emp);
+    document.getElementById('exec-imp-dept').textContent  = `${mid.emp.department||''}${mid.emp.branch?' · '+mid.emp.branch:''}`;
+    document.getElementById('exec-imp-score').innerHTML   = `${mid.score.toFixed(1)}<sub>/5</sub>`;
+    document.getElementById('exec-imp-note').textContent  = `${scoreLabel(mid.score)} — solid performance this cycle.`;
   }
 
-  // ── Department Intelligence ───────────────────────────────────────────────
-  function renderDeptIntel(reviews, completed, employees) {
-    const grid = document.getElementById('dept-intel-grid');
-    const depts = {};
-
-    reviews.forEach(r => {
-      const emp  = employees[r.employeeId];
-      if (!emp) return;
-      const dept = emp.department || 'Unknown';
-      if (!depts[dept]) depts[dept] = { emps: new Set(), reviews: [], completed: [] };
-      depts[dept].emps.add(r.employeeId);
-      depts[dept].reviews.push(r);
-      if (r.status === 'completed') depts[dept].completed.push(r);
-    });
-
-    if (!Object.keys(depts).length) {
-      grid.innerHTML = '<div class="report-card" style="grid-column:1/-1"><div class="empty-block">No department data available.</div></div>';
-      return;
-    }
-
-    grid.innerHTML = Object.entries(depts).sort((a,b) => b[1].reviews.length - a[1].reviews.length).map(([dept, d]) => {
-      const scoredHere = d.completed.map(r => ({ r, score: reviewScore(r) })).filter(x => x.score !== null);
-      const avgSc = scoredHere.length ? scoredHere.reduce((a,x)=>a+x.score,0)/scoredHere.length : null;
-      const compRate = d.reviews.length ? Math.round(d.completed.length/d.reviews.length*100) : 0;
-      const scCls = avgSc===null?'mid':avgSc>=4?'hi':avgSc>=3?'mid':'lo';
-
-      // Best and lowest in dept
-      const topInDept = scoredHere.length ? [...scoredHere].sort((a,b)=>b.score-a.score)[0] : null;
-      const botInDept = scoredHere.length ? [...scoredHere].sort((a,b)=>a.score-b.score)[0] : null;
-      const topEmp = topInDept ? employees[topInDept.r.employeeId] : null;
-      const botEmp = botInDept && botInDept.r.employeeId !== topInDept?.r.employeeId ? employees[botInDept.r.employeeId] : null;
-
-      // Best competency in this dept
-      const compSums = {}, compCnts = {};
-      d.completed.forEach(r => {
-        const mr = r.managerEval?.ratings || {};
-        COMPETENCIES.forEach(c => {
-          const v = Number(mr[c.key]);
-          if (v >= 1 && v <= 5) {
-            compSums[c.key] = (compSums[c.key]||0) + v;
-            compCnts[c.key] = (compCnts[c.key]||0) + 1;
-          }
-        });
-      });
-      let deptBestComp = null, deptBestVal = -1, deptWorstComp = null, deptWorstVal = 6;
-      COMPETENCIES.forEach(c => {
-        if (!compCnts[c.key]) return;
-        const avg = compSums[c.key]/compCnts[c.key];
-        if (avg > deptBestVal)  { deptBestVal = avg; deptBestComp = c.label; }
-        if (avg < deptWorstVal) { deptWorstVal = avg; deptWorstComp = c.label; }
-      });
-
-      return `<div class="dept-card">
-        <div class="dept-card-head">
-          <div class="dept-card-name">${escHtml(dept)}</div>
-          <div class="dept-card-score ${scCls}">${avgSc!==null?avgSc.toFixed(1):'—'}<span style="font-size:0.7rem;font-weight:600;opacity:.5">/5</span></div>
-        </div>
-        <div class="dept-card-meta">${d.emps.size} employee${d.emps.size!==1?'s':''} · ${d.completed.length}/${d.reviews.length} reviews completed</div>
-        ${topEmp ? `<div class="dept-insight"><span class="dept-insight-icon">🏆</span><span><strong>Top performer:</strong> ${escHtml(fullName(topEmp))} (${topInDept.score.toFixed(1)}/5)</span></div>` : ''}
-        ${botEmp ? `<div class="dept-insight"><span class="dept-insight-icon">📌</span><span><strong>Needs attention:</strong> ${escHtml(fullName(botEmp))} (${botInDept.score.toFixed(1)}/5)</span></div>` : ''}
-        ${deptBestComp ? `<div class="dept-insight"><span class="dept-insight-icon">✅</span><span><strong>Strength:</strong> ${escHtml(deptBestComp)} (${deptBestVal.toFixed(1)}/5)</span></div>` : ''}
-        ${deptWorstComp && deptWorstComp !== deptBestComp ? `<div class="dept-insight"><span class="dept-insight-icon">📈</span><span><strong>Growth area:</strong> ${escHtml(deptWorstComp)} (${deptWorstVal.toFixed(1)}/5)</span></div>` : ''}
-        <div class="dept-prog-bar"><div class="dept-prog-fill" style="width:${compRate}%"></div></div>
-        <div style="font-size:0.7rem;color:var(--muted);margin-top:0.35rem">${compRate}% completion rate</div>
-      </div>`;
-    }).join('');
+  // Needs attention — no review started
+  const noStart = myTeam.find(e => !myRevs.find(r => r.employeeId === e.id) || myRevs.find(r => r.employeeId === e.id)?.status === 'not-started');
+  if (noStart) {
+    document.getElementById('exec-attn-name').textContent  = fullName(noStart);
+    document.getElementById('exec-attn-dept').textContent  = `${noStart.department||''}${noStart.branch?' · '+noStart.branch:''}`;
+    document.getElementById('exec-attn-score').textContent = '—';
+    document.getElementById('exec-attn-note').textContent  = 'Self-evaluation not yet submitted. Follow up with manager.';
   }
 
-  // ── Payroll Impact ────────────────────────────────────────────────────────
-  function renderPayrollImpact(employees, reviews) {
-    const HRS = 2080;
-    const fmt$ = v => '$' + Math.round(v).toLocaleString('en-US');
-    const fmtRate = (rate, isSal) => isSal
-      ? '$' + Math.round(rate).toLocaleString('en-US') + '/yr'
-      : '$' + Number(rate).toFixed(2) + '/hr';
-
-    // Build lookup: employeeId → completed review with approvedIncrease
-    const approvedMap = {};
-    const completedMap = {};
-    reviews.forEach(r => {
-      if (!r.employeeId) return;
-      if (r.status === 'completed') {
-        completedMap[r.employeeId] = r;
-        if (r.approvedIncrease?.newRate != null) {
-          approvedMap[r.employeeId] = r.approvedIncrease;
-        }
-      }
-    });
-
-    let curTotal = 0, newTotal = 0, pendingCount = 0;
-    const rows = [];
-
-    const empList = Object.values(employees).filter(e => e.status !== 'inactive');
-    empList.sort((a,b) => (a.lastName||'').localeCompare(b.lastName||''));
-
-    empList.forEach(emp => {
-      const isSal = emp.payType === 'salary';
-      const curRate = emp.currentRate ? Number(emp.currentRate) : null;
-      if (curRate == null) return; // skip employees with no pay data
-
-      const curAnnual = isSal ? curRate : curRate * HRS;
-      curTotal += curAnnual;
-
-      const ai = approvedMap[emp.id];
-      const hasReview = !!completedMap[emp.id];
-      let newRate = null, newAnnual = null, dollarInc = null, pctInc = null, status = '';
-
-      if (ai) {
-        newRate = Number(ai.newRate);
-        newAnnual = isSal ? newRate : newRate * HRS;
-        dollarInc = newAnnual - curAnnual;
-        pctInc = curAnnual > 0 ? (dollarInc / curAnnual) * 100 : 0;
-        newTotal += newAnnual;
-        status = '<span style="color:var(--green-mid);font-weight:600">Approved</span>';
-      } else {
-        newTotal += curAnnual; // no change approved yet
-        if (hasReview) {
-          pendingCount++;
-          status = '<span style="color:var(--amber,#f59e0b);font-weight:600">Pending</span>';
-        } else {
-          status = '<span style="color:var(--text-muted)">No Review</span>';
-        }
-      }
-
-      const pctCls = pctInc == null ? '' : pctInc >= 5 ? 'color:var(--green-mid)' : pctInc >= 2 ? 'color:var(--blue-mid,#3b82f6)' : 'color:var(--text-muted)';
-
-      rows.push(`<tr>
-        <td>${emp.firstName||''} ${emp.lastName||''}</td>
-        <td>${emp.department||'—'}</td>
-        <td>${isSal ? 'Salary' : 'Hourly'}</td>
-        <td>${fmtRate(curRate, isSal)}</td>
-        <td style="font-variant-numeric:tabular-nums">${fmt$(curAnnual)}</td>
-        <td>${newRate != null ? fmtRate(newRate, isSal) : '—'}</td>
-        <td style="font-variant-numeric:tabular-nums">${newAnnual != null ? fmt$(newAnnual) : '—'}</td>
-        <td style="font-variant-numeric:tabular-nums;${pctCls}">${dollarInc != null ? fmt$(dollarInc) : '—'}</td>
-        <td style="${pctCls}">${pctInc != null ? pctInc.toFixed(1) + '%' : '—'}</td>
-        <td>${status}</td>
-      </tr>`);
-    });
-
-    // KPI cards
-    const diffAmt = newTotal - curTotal;
-    const diffPct = curTotal > 0 ? (diffAmt / curTotal) * 100 : 0;
-    document.getElementById('pr-current').textContent = fmt$(curTotal);
-    document.getElementById('pr-new').textContent = fmt$(newTotal);
-    document.getElementById('pr-diff').textContent = fmt$(diffAmt);
-    document.getElementById('pr-diff-pct').textContent = diffPct.toFixed(1) + '% increase';
-    document.getElementById('pr-pending').textContent = pendingCount;
-
-    // Table
-    const tbody = document.getElementById('payroll-tbody');
-    tbody.innerHTML = rows.length ? rows.join('') : '<tr><td colspan="10" class="empty-block">No employee pay data found.</td></tr>';
-
-    // Footer
-    const foot = document.getElementById('payroll-foot');
-    foot.style.display = '';
-    document.getElementById('pr-foot-current').textContent = fmt$(curTotal);
-    document.getElementById('pr-foot-new').textContent = fmt$(newTotal);
-    document.getElementById('pr-foot-diff').textContent = (diffAmt >= 0 ? '+' : '') + fmt$(diffAmt) + ' (' + diffPct.toFixed(1) + '%)';
-  }
-
-  // ── Compensation ──────────────────────────────────────────────────────────
-  function renderCompSection(records, employees) {
-    const total = records.length;
-    document.getElementById('comp-total').textContent = total;
-
-    if (!total) {
-      document.getElementById('comp-avg-pct').textContent    = '—';
-      document.getElementById('comp-total-dollar').textContent = '$0';
-      document.getElementById('comp-promotions').textContent  = '0';
-      document.getElementById('comp-tbody').innerHTML = '<tr><td colspan="7" class="empty-block">No compensation records for this year</td></tr>';
-      return;
-    }
-
-    const pcts = records.map(r => parseFloat(r.changePercent)).filter(n => !isNaN(n));
-    const avgPct = pcts.length ? (pcts.reduce((a,b)=>a+b,0)/pcts.length).toFixed(1) : '—';
-    document.getElementById('comp-avg-pct').textContent = avgPct !== '—' ? avgPct + '%' : '—';
-
-    const totalDollars = records.reduce((sum, r) => {
-      const prev = parseFloat(r.previousRate), next = parseFloat(r.newRate);
-      if (!isNaN(prev) && !isNaN(next)) {
-        const mult = r.payType === 'hourly' ? 2080 : 1;
-        return sum + (next - prev) * mult;
-      }
-      return sum;
-    }, 0);
-    document.getElementById('comp-total-dollar').textContent = '$' + Math.round(totalDollars).toLocaleString();
-    document.getElementById('comp-promotions').textContent = records.filter(r => r.changeType === 'promotion').length;
-
-    const sorted = [...records].sort((a,b) => (b.effectiveDate||'').localeCompare(a.effectiveDate||'')).slice(0, 15);
-    document.getElementById('comp-tbody').innerHTML = sorted.map(r => {
-      const emp = employees[r.employeeId];
-      const name = emp ? fullName(emp) : '—';
-      const pct  = r.changePercent ? `+${parseFloat(r.changePercent).toFixed(1)}%` : '—';
-      const typeLabel = { 'merit-increase': 'Merit', bonus: 'Bonus', promotion: 'Promotion', adjustment: 'Adjustment' }[r.changeType] || r.changeType || '—';
-      return `<tr>
-        <td style="font-weight:600">${escHtml(name)}</td>
-        <td><span class="type-badge">${escHtml(typeLabel)}</span></td>
-        <td style="color:var(--gray-600)">${r.previousRate ? '$' + parseFloat(r.previousRate).toFixed(2) : '—'}</td>
-        <td style="color:var(--gray-600)">${r.newRate ? '$' + parseFloat(r.newRate).toFixed(2) : '—'}</td>
-        <td style="font-weight:700;color:var(--success)">${pct}</td>
-        <td style="color:var(--gray-400)">${r.effectiveDate || '—'}</td>
-        <td style="color:var(--gray-600);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escHtml(r.notes||'')}">${escHtml(r.notes || '—')}</td>
-      </tr>`;
-    }).join('');
-  }
-
-  // ── Manager Upward Feedback ───────────────────────────────────────────────
-  function renderManagerFeedback(reviews, employees) {
-    const RATING_LABEL = { '5':'Excellent','4':'Good','3':'Average','2':'Below Average','1':'Poor' };
-    const ratingColor  = r => r >= 4 ? 'var(--green-mid)' : r >= 3 ? 'var(--blue-mid,#3b82f6)' : 'var(--error,#ef4444)';
-    const CATS = [
-      { key: 'mfbR1', label: 'Communication & Expectations' },
-      { key: 'mfbR2', label: 'Support & Helpfulness' },
-      { key: 'mfbR3', label: 'Field Awareness' },
-      { key: 'mfbR4', label: 'Recognition & Fairness' },
-      { key: 'mfbRating', label: 'Overall Leadership' },
-    ];
-
-    const withFeedback = reviews.filter(r =>
-      employees[r.employeeId] &&
-      (r.selfEval?.mfbRating || r.selfEval?.mfbR1 || r.selfEval?.mfbR2 ||
-       r.selfEval?.mfbR3 || r.selfEval?.mfbR4 || r.selfEval?.mfb1 || r.selfEval?.mfb2)
-    );
-
-    document.getElementById('mfb-count').textContent = withFeedback.length;
-
-    if (!withFeedback.length) {
-      document.getElementById('mfb-avg').textContent = '—';
-      document.getElementById('mfb-mgr-count').textContent = '0';
-      document.getElementById('mfb-mgr-grid').innerHTML =
-        '<div class="report-card"><div class="empty-block">No manager feedback submitted yet.</div></div>';
-      return;
-    }
-
-    const catAvg = (entries, key) => {
-      const vals = entries.map(x => x.r.selfEval?.[key]).filter(v => v).map(Number);
-      return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
-    };
-
-    // Avg overall rating across all
-    const overallAvgs = withFeedback.map(r => r.selfEval?.mfbRating).filter(v=>v).map(Number);
-    const avg = overallAvgs.length ? overallAvgs.reduce((a,b)=>a+b,0)/overallAvgs.length : null;
-    document.getElementById('mfb-avg').textContent = avg !== null ? avg.toFixed(1) : '—';
-    if (avg !== null) document.getElementById('mfb-avg').style.color = ratingColor(avg);
-
-    const byMgr = {};
-    withFeedback.forEach(r => {
-      const emp = employees[r.employeeId];
-      const mgrId = emp?.managerId || '__none__';
-      if (!byMgr[mgrId]) byMgr[mgrId] = { mgrId, entries: [] };
-      byMgr[mgrId].entries.push({ r, emp });
-    });
-
-    document.getElementById('mfb-mgr-count').textContent = Object.keys(byMgr).filter(k => k !== '__none__').length;
-
-    const ratingBar = (val) => {
-      if (val === null) return '<span style="color:var(--muted);font-size:.75rem">—</span>';
-      const pct = (val / 5 * 100).toFixed(0);
-      const col = ratingColor(val);
-      return `<div style="display:flex;align-items:center;gap:.5rem">
-        <div style="flex:1;height:6px;background:var(--border2);border-radius:99px;overflow:hidden">
-          <div style="height:6px;width:${pct}%;background:${col};border-radius:99px"></div>
-        </div>
-        <span style="font-size:.75rem;font-weight:700;color:${col};min-width:2rem">${val.toFixed(1)}</span>
-      </div>`;
-    };
-
-    const grid = document.getElementById('mfb-mgr-grid');
-    grid.innerHTML = Object.values(byMgr).map(({ mgrId, entries }) => {
-      const mgr = employees[mgrId];
-      const mgrName = mgr ? `${mgr.firstName||''} ${mgr.lastName||''}`.trim() : 'Unassigned';
-      const mgrRole = mgr?.position || mgr?.role || '';
-      const mgrDept = mgr?.department || '';
-
-      const mgrAvg = catAvg(entries, 'mfbRating');
-
-      // Category averages panel
-      const catBars = CATS.map(c => {
-        const val = catAvg(entries, c.key);
-        return `<div style="margin-bottom:.55rem">
-          <div style="font-size:.68rem;font-weight:600;color:var(--text);margin-bottom:.25rem">${c.label}</div>
-          ${ratingBar(val)}
-        </div>`;
-      }).join('');
-
-      // Per-employee response rows
-      const rows = entries.map(({ r, emp }) => {
-        const empName = `${emp.firstName||''} ${emp.lastName||''}`.trim();
-        const cats = CATS.map(c => {
-          const v = r.selfEval?.[c.key];
-          return `<td style="text-align:center;padding:.4rem .35rem">
-            ${v ? `<span style="font-weight:700;color:${ratingColor(+v)}">${v}</span>` : '<span style="color:var(--muted)">—</span>'}
-          </td>`;
-        }).join('');
-        const mfb1 = r.selfEval?.mfb1 || '';
-        const mfb2 = r.selfEval?.mfb2 || '';
-        return `<tr style="border-bottom:1px solid var(--border2)">
-          <td style="padding:.5rem .5rem;font-weight:600;color:var(--text);font-size:.78rem;white-space:nowrap">
-            ${escHtml(empName)}
-            <div style="font-size:.68rem;color:var(--muted);font-weight:400">${escHtml(emp.department||'')}</div>
-          </td>
-          ${cats}
-          <td style="padding:.5rem .5rem;font-size:.74rem;color:var(--sub);font-style:italic">${escHtml(mfb1)||'<span style="color:var(--muted)">—</span>'}</td>
-          <td style="padding:.5rem .5rem;font-size:.74rem;color:var(--sub);font-style:italic">${escHtml(mfb2)||'<span style="color:var(--muted)">—</span>'}</td>
+  // Sign-off table
+  const signoffRevs = myRevs.filter(r => r.managerEval?.completedAt && r.status !== 'completed');
+  const signoffBody = document.getElementById('exec-signoff-body');
+  signoffBody.innerHTML = !signoffRevs.length
+    ? '<tr><td colspan="4" style="padding:1.5rem;color:var(--muted)">No reviews ready for sign-off.</td></tr>'
+    : signoffRevs.map(r => {
+        const emp = allEmployees[r.employeeId];
+        const mgr = Object.values(allEmployees).find(e => e.id === emp?.managerId);
+        const s   = avgScore(r.managerEval);
+        return `<tr>
+          <td><span class="emp-av">${emp?initials(emp):'?'}</span><div style="display:inline-block"><div class="row-name">${escHtml(emp?fullName(emp):'Unknown')}</div><div class="row-dept">${escHtml(emp?`${emp.department||''}${emp.branch?' · '+emp.branch:''}`:' ')}</div></div></td>
+          <td style="font-size:.75rem">${mgr?fullName(mgr):'—'}</td>
+          <td>${s!==null?`<span class="score-hi">${s.toFixed(1)}</span><span style="font-size:.65rem;color:var(--muted)">/5</span>`:'—'}</td>
+          <td><a href="reviews.html" class="btn btn-pri btn-sm">Sign Off</a></td>
         </tr>`;
       }).join('');
 
-      const avgBadge = mgrAvg !== null
-        ? `<span style="font-size:1.1rem;font-weight:700;color:${ratingColor(mgrAvg)}">${mgrAvg.toFixed(1)}</span>
-           <span style="font-size:.75rem;color:var(--muted);margin-left:.3rem">/ 5 overall</span>`
-        : '';
-
-      let coaching = '';
-      if (mgrAvg !== null && mgrAvg < 3) {
-        coaching = `<div style="margin-top:.75rem;padding:.65rem .9rem;background:rgba(239,68,68,.08);border-left:3px solid var(--error,#ef4444);border-radius:0 6px 6px 0;font-size:.78rem;color:var(--text)">
-          <strong>Coaching Recommended:</strong> Overall rating below 3.0 — schedule a 1:1 leadership conversation and build a targeted development plan for ${escHtml(mgrName)}.
-        </div>`;
-      } else if (mgrAvg !== null && mgrAvg < 4) {
-        coaching = `<div style="margin-top:.75rem;padding:.65rem .9rem;background:rgba(245,158,11,.08);border-left:3px solid var(--amber,#f59e0b);border-radius:0 6px 6px 0;font-size:.78rem;color:var(--text)">
-          <strong>Development Opportunity:</strong> Rating 3.0–3.9 — solid foundation with clear areas to grow. Review the lowest-scoring categories and discuss in next check-in.
-        </div>`;
-      } else if (mgrAvg !== null) {
-        coaching = `<div style="margin-top:.75rem;padding:.65rem .9rem;background:rgba(34,197,94,.08);border-left:3px solid var(--green-mid);border-radius:0 6px 6px 0;font-size:.78rem;color:var(--text)">
-          <strong>Strong Leadership:</strong> Team rates this manager 4.0+. Recognize this performance and consider as a mentor for developing leaders.
-        </div>`;
-      }
-
-      const thCat = CATS.map(c =>
-        `<th style="text-align:center;padding:.35rem .35rem;font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap">${c.label}</th>`
-      ).join('');
-
-      return `<div class="report-card" style="padding:1.25rem">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
-          <div>
-            <div style="font-size:.9rem;font-weight:700;color:var(--text)">${escHtml(mgrName)}</div>
-            <div style="font-size:.72rem;color:var(--muted)">${escHtml(mgrRole)}${mgrRole && mgrDept ? ' · ' : ''}${escHtml(mgrDept)}</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:.4rem">${avgBadge}
-            <span style="font-size:.72rem;color:var(--muted)">(${entries.length} response${entries.length!==1?'s':''})</span>
-          </div>
-        </div>
-
-        <!-- Category avg bars -->
-        <div style="background:var(--surface2);border-radius:8px;padding:.85rem 1rem;margin-bottom:1rem">
-          <div style="font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.65rem">Category Averages</div>
-          ${catBars}
-        </div>
-
-        <!-- Per-employee detail -->
-        <div style="overflow-x:auto">
-          <table style="width:100%;border-collapse:collapse;font-size:.78rem">
-            <thead>
-              <tr style="border-bottom:2px solid var(--border2)">
-                <th style="text-align:left;padding:.35rem .5rem;font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Employee</th>
-                ${thCat}
-                <th style="text-align:left;padding:.35rem .5rem;font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">What They Do Well</th>
-                <th style="text-align:left;padding:.35rem .5rem;font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">What Could Improve</th>
-              </tr>
-            </thead>
-            <tbody>${rows}</tbody>
-          </table>
-        </div>
-        ${coaching}
-      </div>`;
-    }).join('');
-  }
-
-  // ── Game Plan ─────────────────────────────────────────────────────────────
-  function renderGamePlan(completed, scored, employees, goals) {
-    const grid = document.getElementById('gameplan-grid');
-
-    // Build org-wide competency averages (mgr ratings only)
-    const compSums = {}, compCnts = {};
-    COMPETENCIES.forEach(c => { compSums[c.key]=0; compCnts[c.key]=0; });
-    completed.forEach(r => {
-      const mr = r.managerEval?.ratings || {};
-      COMPETENCIES.forEach(c => {
-        const v = Number(mr[c.key]);
-        if (v >= 1 && v <= 5) { compSums[c.key] += v; compCnts[c.key]++; }
-      });
-    });
-    const compAvgs = COMPETENCIES.map(c => ({
-      ...c, avg: compCnts[c.key] ? compSums[c.key]/compCnts[c.key] : null
-    })).filter(c => c.avg !== null).sort((a,b) => a.avg - b.avg);
-
-    // Overall score average
-    const avgSc = scored.length ? scored.reduce((a,x)=>a+x.score,0)/scored.length : null;
-
-    const plans = [];
-
-    // Priority 1: Lowest competency
-    if (compAvgs.length) {
-      const worst = compAvgs[0];
-      const cls   = worst.avg < 2.5 ? 'lo' : worst.avg < 3.5 ? 'mid' : 'hi';
-      plans.push({ cls, title: `Develop ${worst.label}`, body: `Org average for ${worst.label} is ${worst.avg.toFixed(2)}/5 — the lowest across all competencies. Schedule targeted training or shadowing sessions to address this gap before the next review cycle.` });
-    }
-
-    // Priority 2: Strength to leverage
-    if (compAvgs.length > 1) {
-      const best = compAvgs[compAvgs.length - 1];
-      plans.push({ cls: 'hi', title: `Leverage ${best.label}`, body: `Your organization scores ${best.avg.toFixed(2)}/5 on ${best.label} — the highest competency. Use high performers in this area as internal coaches or leads to lift the rest of the team.` });
-    }
-
-    // Priority 3: Overall performance band
-    if (avgSc !== null) {
-      if (avgSc < 3) {
-        plans.push({ cls: 'lo', title: 'Performance Improvement Plan', body: `Organization average score is ${avgSc.toFixed(2)}/5 — below expectations. Consider structured PIPs for employees below 2.5, and a mid-cycle check-in cadence for managers.` });
-      } else if (avgSc >= 4) {
-        plans.push({ cls: 'hi', title: 'Recognize & Retain Top Talent', body: `Average score of ${avgSc.toFixed(2)}/5 reflects strong overall performance. Ensure compensation and career-growth conversations happen before year-end to reduce attrition risk.` });
-      } else {
-        plans.push({ cls: 'mid', title: 'Raise the Floor', body: `Average score is ${avgSc.toFixed(2)}/5 — solid but room to grow. Focus on moving "Meets Expectations" employees to "Exceeds" through mentorship pairings and clear goal-setting for next cycle.` });
-      }
-    }
-
-    // Priority 4: Goals
-    const overdue = goals.filter(g => g.status === 'On Hold' || g.status === 'Not Started');
-    if (overdue.length) {
-      plans.push({ cls: 'lo', title: `${overdue.length} Goal${overdue.length>1?'s':''} Need Attention`, body: `${overdue.length} goal${overdue.length>1?'s are':' is'} overdue or on hold. Review with managers and either recommit with a new deadline or close goals that are no longer relevant. Carry forward only what remains actionable.` });
-    }
-
-    // Priority 5: Completion rate
-    if (completed.length < 1 && scored.length === 0) {
-      plans.push({ cls: 'mid', title: 'Complete the Review Cycle', body: `Reviews are still in progress. Finalize all assessments to get full analytics. Set a deadline with managers and follow up on any stalled reviews via the dashboard.` });
-    }
-
-    // Priority 6: Self-awareness coaching
-    const withBoth = completed.filter(r => r.selfEval?.ratings && r.managerEval?.ratings);
-    if (withBoth.length) {
-      const gaps = withBoth.map(r => {
-        const s = avgRatings(r.selfEval.ratings), m = avgRatings(r.managerEval.ratings);
-        return (s !== null && m !== null) ? Math.abs(s - m) : null;
-      }).filter(g => g !== null);
-      const avgGap = gaps.length ? gaps.reduce((a,b)=>a+b,0)/gaps.length : null;
-      if (avgGap !== null && avgGap > 0.5) {
-        plans.push({ cls: 'mid', title: 'Close the Self-Awareness Gap', body: `Average gap between self-ratings and manager ratings is ${avgGap.toFixed(2)} points. Include self-awareness exercises in the in-person review meeting — comparing scores together builds trust and alignment.` });
-      }
-    }
-
-    if (!plans.length) {
-      plans.push({ cls: 'hi', title: 'Complete Your Reviews to Unlock the Game Plan', body: 'Once reviews are finalized, a personalized set of recommended priorities will auto-generate here based on your team\'s actual scores and competency data.' });
-    }
-
-    grid.innerHTML = plans.map((p, i) => `
-      <div class="plan-item">
-        <div class="plan-num ${p.cls}">${i+1}</div>
-        <div>
-          <div class="plan-title">${escHtml(p.title)}</div>
-          <div class="plan-body">${escHtml(p.body)}</div>
-        </div>
-      </div>`).join('');
-  }
-
-  // ── Goal section ──────────────────────────────────────────────────────────
-  function renderGoalSection(goals) {
-    const statusColors = { 'Not Started': '#dee8d8', 'In Progress': '#8B6914', 'Completed': '#2E7D32', 'On Hold': '#E65100' };
-    const statusCounts = { 'Not Started': 0, 'In Progress': 0, 'Completed': 0, 'On Hold': 0 };
-    goals.forEach(g => { if (statusCounts[g.status] !== undefined) statusCounts[g.status]++; else statusCounts['Not Started']++; });
-    const total = goals.length;
-
-    const donutEl = document.getElementById('goal-donut-row');
-    if (!total) { donutEl.innerHTML = '<div class="empty-block" style="flex:1">No goals yet</div>'; }
-    else {
-      const completedPct = Math.round((statusCounts['Completed'] / total) * 100);
-      const r = 45, circ = 2 * Math.PI * r;
-      let offset = 0;
-      const segments = Object.entries(statusColors).map(([s, color]) => {
-        const pct  = statusCounts[s] / total;
-        const dash = pct * circ;
-        const seg  = `<circle cx="60" cy="60" r="${r}" fill="none" stroke="${color}" stroke-width="12" stroke-dasharray="${dash} ${circ}" stroke-dashoffset="${-offset}" />`;
-        offset += dash;
-        return seg;
+  // Done table
+  const doneRevs = myRevs.filter(r => r.status === 'completed');
+  const doneBody = document.getElementById('exec-done-body');
+  doneBody.innerHTML = !doneRevs.length
+    ? '<tr><td colspan="4" style="padding:1.5rem;color:var(--muted)">No finalized reviews yet.</td></tr>'
+    : doneRevs.map(r => {
+        const emp = allEmployees[r.employeeId];
+        const mgr = Object.values(allEmployees).find(e => e.id === emp?.managerId);
+        const s   = avgScore(r.executiveEval) || avgScore(r.managerEval);
+        return `<tr>
+          <td><span class="emp-av">${emp?initials(emp):'?'}</span><div style="display:inline-block"><div class="row-name">${escHtml(emp?fullName(emp):'Unknown')}</div></div></td>
+          <td style="font-size:.75rem">${mgr?fullName(mgr):'—'}</td>
+          <td>${s!==null?`<span class="score-hi">${s.toFixed(1)}</span><span style="font-size:.65rem;color:var(--muted)">/5</span>`:'—'}</td>
+          <td><span class="chip chip-final">Delivered</span></td>
+        </tr>`;
       }).join('');
-      donutEl.innerHTML = `
-        <div class="donut-wrap">
-          <svg class="donut-svg" width="120" height="120" viewBox="0 0 120 120">${segments}</svg>
-          <div class="donut-center"><div class="donut-pct">${completedPct}%</div><div class="donut-lbl">Complete</div></div>
-        </div>
-        <div class="goal-legend">
-          ${Object.entries(statusCounts).map(([s,c]) => `
-            <div class="gl-row">
-              <div class="gl-dot-label"><div class="gl-dot" style="background:${statusColors[s]}"></div><span style="font-size:0.8125rem;color:var(--gray-600)">${s}</span></div>
-              <span class="gl-count">${c}</span>
-            </div>`).join('')}
-          <div class="gl-row" style="border-top:1px solid var(--border);padding-top:0.5rem">
-            <div class="gl-dot-label"><span style="font-size:0.8125rem;font-weight:700;color:var(--gray-900)">Total</span></div>
-            <span class="gl-count">${total}</span>
-          </div>
-        </div>`;
-    }
 
-    const catEl = document.getElementById('goal-cat-chart');
-    const cats = {};
-    goals.forEach(g => { const k = g.category || 'Other'; cats[k] = (cats[k]||0) + 1; });
-    const catSorted = Object.entries(cats).sort((a,b) => b[1]-a[1]);
-    const maxCat = catSorted[0]?.[1] || 1;
-    if (!catSorted.length) { catEl.innerHTML = '<div class="empty-block">No goals data</div>'; return; }
-    catEl.innerHTML = catSorted.map(([cat, count]) => `
-      <div class="bar-row">
-        <div class="bar-row-label" title="${escHtml(cat)}">${escHtml(cat)}</div>
-        <div class="bar-track"><div class="bar-fill" style="width:${count/maxCat*100}%"></div></div>
-        <div class="bar-pct">${count}</div>
-      </div>`).join('');
-  }
-
-  // ── Auth / Nav ────────────────────────────────────────────────────────────
-  async function logout() { await signOut(auth); window.location.href = 'index.html'; }
-  document.getElementById('logout-btn').addEventListener('click', logout);
-  document.getElementById('logout-btn-mobile').addEventListener('click', logout);
-  const hamburger  = document.getElementById('hamburger');
-  const mobileMenu = document.getElementById('mobile-menu');
-  hamburger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
-  document.addEventListener('click', e => {
-    if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) mobileMenu.classList.remove('open');
+  // By manager
+  const mgrMap = {};
+  myTeam.forEach(e => {
+    const mId = e.managerId;
+    if (!mId) return;
+    if (!mgrMap[mId]) mgrMap[mId] = { total: 0, done: 0 };
+    mgrMap[mId].total++;
+    if (myRevs.find(r => r.employeeId === e.id && r.status === 'completed')) mgrMap[mId].done++;
   });
+  const byMgrEl = document.getElementById('exec-by-manager');
+  byMgrEl.innerHTML = Object.entries(mgrMap).map(([mId, d]) => {
+    const mgr = allEmployees[mId];
+    const pctM = d.total ? Math.round((d.done/d.total)*100) : 0;
+    const color = pctM >= 75 ? 'var(--green-mid)' : pctM >= 40 ? 'var(--yellow)' : 'var(--red)';
+    return `<div style="padding:.6rem 1.25rem;display:flex;align-items:center;gap:.75rem;border-bottom:1px solid var(--border2)">
+      <div style="flex:1;font-size:.75rem;font-weight:700;color:var(--text)">${mgr?fullName(mgr):'Unknown'}</div>
+      <div style="font-size:.7rem;color:var(--muted)">${d.done}/${d.total}</div>
+      <div style="width:80px;height:5px;background:var(--border);border-radius:99px"><div style="width:${pctM}%;height:5px;background:${color};border-radius:99px"></div></div>
+    </div>`;
+  }).join('') || '<div style="padding:1rem 1.25rem;font-size:.75rem;color:var(--muted)">No manager data available.</div>';
+}
 
-  function toast(msg, type = 'success') {
-    const wrap = document.getElementById('toast-wrap');
-    const t = document.createElement('div');
-    t.className = `toast ${type}`; t.textContent = msg;
-    wrap.appendChild(t);
-    setTimeout(() => t.remove(), 4000);
+// ── ADMIN ─────────────────────────────────────────
+function renderAdminView(firstName) {
+  showView('view-admin');
+  document.getElementById('admin-cycle-sub').textContent = `${activeCycleName} · Full organization access`;
+
+  const total    = allReviews.length;
+  const done     = allReviews.filter(r => r.status === 'completed').length;
+  const inProg   = allReviews.filter(r => ['draft','submitted','in-review'].includes(r.status)).length;
+  const idle     = allReviews.filter(r => r.status === 'not-started').length;
+
+  const scores = allReviews.filter(r => r.status === 'completed')
+    .map(r => avgScore(r.executiveEval) || avgScore(r.managerEval)).filter(s => s !== null);
+  const avgSc = scores.length ? (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1) : '—';
+
+  document.getElementById('adm-kpi-total').textContent = Object.keys(allEmployees).length;
+  document.getElementById('adm-kpi-done').textContent  = done;
+  document.getElementById('adm-kpi-prog').textContent  = inProg;
+  document.getElementById('adm-kpi-idle').textContent  = idle;
+  document.getElementById('adm-kpi-avg').textContent   = avgSc;
+
+  document.getElementById('adm-sb-done').textContent   = `${done} / ${total}`;
+  document.getElementById('adm-sb-avg').textContent    = avgSc === '—' ? '—' : `${avgSc}/5`;
+  document.getElementById('adm-sb-cycle').textContent  = currentYear;
+
+  // Comp table — finalized reviews
+  const finalized = allReviews.filter(r => r.status === 'completed');
+  document.getElementById('adm-comp-badge').textContent = `${finalized.length} finalized`;
+  document.getElementById('adm-prog-badge').textContent = `${allReviews.length - finalized.length} remaining`;
+
+  const compBody = document.getElementById('adm-comp-body');
+  if (!finalized.length) {
+    compBody.innerHTML = '<tr><td colspan="9" style="padding:1.5rem;color:var(--muted)">No finalized reviews yet.</td></tr>';
+  } else {
+    compBody.innerHTML = finalized.map(r => {
+      const emp  = allEmployees[r.employeeId];
+      const mgr  = emp ? Object.values(allEmployees).find(e => e.id === emp.managerId) : null;
+      const s    = avgScore(r.executiveEval) || avgScore(r.managerEval);
+      const sCls = !s ? '' : s >= 4 ? 'score-hi' : s >= 3 ? 'score-md' : 'score-lo';
+      // Suggested raise — use explicitly set overallScore (integer 1-5), matches comp panel logic
+      const SCORE_SUGGEST = { 5: '5–7%', 4: '4–5%', 3: '2–3%', 2: '1–2%', 1: '0–1%' };
+      const overallScore  = r.executiveEval?.overallScore || r.managerEval?.overallScore;
+      const suggestTxt    = overallScore ? SCORE_SUGGEST[+overallScore] : null;
+      const proposedPct   = overallScore ? +overallScore : null;
+      const propCls       = !proposedPct ? '' : proposedPct >= 4 ? 'inc-high' : proposedPct >= 3 ? 'inc-mid' : 'inc-low';
+      // Actual raise % given (from approvedIncrease saved by exec)
+      const actualPct   = r.approvedIncrease?.pct != null ? Number(r.approvedIncrease.pct) : null;
+      const actCls      = actualPct === null ? '' : actualPct >= 5 ? 'inc-high' : actualPct >= 3 ? 'inc-mid' : 'inc-low';
+      const dept = emp ? `${emp.department||''}${emp.branch?' · '+emp.branch:''}` : '';
+      const empId = r.employeeId;
+      const actionBtns = `<button class="abtn abtn-letter" onclick="location.href='letters.html?empId=${empId}'">✉ Letter</button>`;
+      // Current pay and new pay
+      const isSalary = emp?.payType === 'salary';
+      const curRate  = emp?.currentRate ? Number(emp.currentRate) : null;
+      const fmtPay   = (v) => v === null ? '—' : isSalary
+        ? '$' + v.toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:0}) + '/yr'
+        : '$' + v.toFixed(2) + '/hr';
+      const curPayTxt = fmtPay(curRate);
+      // New pay: use approvedIncrease if present, else suggest from proposedPct
+      let newPayTxt = '—';
+      if (r.approvedIncrease?.newRate) {
+        newPayTxt = fmtPay(Number(r.approvedIncrease.newRate));
+      } else if (curRate !== null && overallScore) {
+        // Use midpoint of suggested range for the estimate
+        const midPct = { 5: 6, 4: 4.5, 3: 2.5, 2: 1.5, 1: 0.5 }[+overallScore] || 0;
+        const suggested = isSalary
+          ? Math.round(curRate * (1 + midPct / 100))
+          : Math.round(curRate * (1 + midPct / 100) * 100) / 100;
+        newPayTxt = '<span style="opacity:.6">' + fmtPay(suggested) + '</span>';
+      }
+      return `<tr>
+        <td><div style="display:flex;align-items:center"><span class="emp-av">${emp?initials(emp):'?'}</span><div><div class="row-name">${escHtml(emp?fullName(emp):'Unknown')}</div><div class="row-dept">${escHtml(dept)}</div></div></div></td>
+        <td style="font-size:.75rem">${mgr?fullName(mgr):'—'}</td>
+        <td style="font-size:.75rem">${escHtml(emp?.department||'—')}</td>
+        <td>${s!==null?`<span class="${sCls}">${s.toFixed(1)}</span><span style="font-size:.65rem;color:var(--muted)">/5</span>`:'—'}</td>
+        <td style="font-variant-numeric:tabular-nums;font-weight:600;color:var(--text)">${curPayTxt}</td>
+        <td>${suggestTxt?`<span class="inc-pill ${propCls}">↑ ${suggestTxt}</span>`:'—'}</td>
+        <td>${actualPct!==null?`<span class="inc-pill ${actCls}">↑ ${actualPct.toFixed(1)}%</span>`:'<span style="font-size:.72rem;color:var(--muted)">Pending</span>'}</td>
+        <td style="font-variant-numeric:tabular-nums;font-weight:800;color:var(--text)">${newPayTxt}</td>
+        <td><div class="row-actions">${actionBtns}</div></td>
+      </tr>`;
+    }).join('');
+
+    document.getElementById('adm-comp-foot').style.display = 'flex';
+    document.getElementById('adm-foot-count').textContent = finalized.length;
+    document.getElementById('adm-foot-avg').textContent   = avgSc;
   }
+
+  // In-progress table — skip reviews with no matching employee doc
+  const progRevs = allReviews.filter(r => r.status !== 'completed' && allEmployees[r.employeeId]);
+  const progBody = document.getElementById('adm-prog-body');
+  progBody.innerHTML = !progRevs.length
+    ? '<tr><td colspan="7" style="padding:1.5rem;color:var(--muted)">All reviews are complete.</td></tr>'
+    : progRevs.map(r => {
+        const emp = allEmployees[r.employeeId];
+        const mgr = emp ? Object.values(allEmployees).find(e => e.id === emp.managerId) : null;
+        const dept = emp ? `${emp.department||''}${emp.branch?' · '+emp.branch:''}` : '';
+        const selfDone = r.status !== 'not-started';
+        const mgrDone  = !!r.managerEval?.completedAt;
+        const execDone = !!(r.executiveEval?.completedAt);
+        const blocking = !selfDone
+          ? `<span style="font-size:.72rem;color:var(--red);font-weight:700">⚠ Employee not started</span>`
+          : !mgrDone
+          ? `<span style="font-size:.72rem;color:var(--yellow);font-weight:700">⏳ Awaiting manager</span>`
+          : !execDone
+          ? `<span style="font-size:.72rem;color:var(--yellow);font-weight:700">⏳ Awaiting exec sign-off</span>`
+          : `<span style="font-size:.72rem;color:var(--green-mid);font-weight:700">✓ Pending finalization</span>`;
+        return `<tr>
+          <td><div style="display:flex;align-items:center"><span class="emp-av">${emp?initials(emp):'?'}</span><div><div class="row-name">${escHtml(emp?fullName(emp):'Unknown')}</div><div class="row-dept">${escHtml(dept)}</div></div></div></td>
+          <td style="font-size:.75rem">${mgr?fullName(mgr):'—'}</td>
+          <td style="font-size:.75rem">${escHtml(emp?.department||'—')}</td>
+          <td>${selfDone?'<span class="chip chip-done">Done</span>':'<span class="chip chip-idle">Not Started</span>'}</td>
+          <td>${mgrDone?'<span class="chip chip-done">Done</span>':selfDone?'<span class="chip chip-act">Pending</span>':'<span class="chip chip-idle">Waiting</span>'}</td>
+          <td>${execDone?'<span class="chip chip-done">Done</span>':mgrDone?'<span class="chip chip-act">Pending</span>':'<span class="chip chip-idle">Waiting</span>'}</td>
+          <td>${blocking}</td>
+        </tr>`;
+      }).join('');
+}
+
+// ── LETTER ────────────────────────────────────────
+function ltrLetterHead(doctype) {
+  return `<div class="ltr-hdr-wrap">
+    <div class="ltr-hdr-top">
+      <div class="ltr-hdr-logo-placeholder">
+        <svg width="24" height="24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </div>
+      <div>
+        <div class="ltr-hdr-company">Southwest Landscape</div>
+        <div class="ltr-hdr-tagline">Improving Landscapes Through Managed Care</div>
+      </div>
+    </div>
+    <div class="ltr-hdr-bot">
+      <span class="ltr-hdr-doctype">${doctype}</span>
+      <span class="ltr-hdr-address">410 West Grove Ave., Ste 180 · Orange, CA 92865 · Corporate</span>
+    </div>
+  </div>`;
+}
+
+function ltrSigBlock(name, title) {
+  const nameStr  = name  || '___________________________';
+  const titleStr = title || '';
+  return `<div class="sig-area">
+    <div class="sig-sender">
+      <p>Sincerely,</p>
+      <div style="height:56px;border-bottom:1px solid #ccc;width:200px;margin-bottom:4px"></div>
+      <div class="sig-sender-name">${escHtml(nameStr)}</div>
+      <div class="sig-sender-title">${escHtml(titleStr)}</div>
+      <div class="sig-sender-title">Southwest Landscape</div>
+    </div>
+    <div class="sig-title">EMPLOYEE ACKNOWLEDGEMENT:</div>
+    <div class="sig-row">
+      <div class="sig-block"><div class="sig-line"></div><div class="sig-label">Employee Signature</div></div>
+      <div class="sig-block"><div class="sig-line" style="width:140px"></div><div class="sig-label">Date</div></div>
+    </div>
+    <div class="sig-row" style="margin-top:1.25rem">
+      <div class="sig-block" style="max-width:280px"><div class="sig-line"></div><div class="sig-label">Print Name</div></div>
+    </div>
+  </div>`;
+}
+
+function buildMeritLetterHtml(emp, score, letterDate, effDate, currentSalary, increaseAmt, newSalary, pct, signerName, signerTitle) {
+  const name      = fullName(emp);
+  const firstName = emp.firstName || name;
+  const dept      = `${emp.department||''}${emp.branch?' · '+emp.branch:''}`;
+  const scoreText = score ? scoreLabel(score) : '';
+  const scoreDisplay = score ? score.toFixed(1) + ' / 5.0' : '—';
+
+  const compLines = (currentSalary && increaseAmt && newSalary)
+    ? `<p><span class="section-head">Compensation:</span></p>
+       <p style="padding-left:1rem">
+         Current Annual Salary: <strong>${escHtml(currentSalary)}</strong><br>
+         Merit Increase: <strong>${pct ? pct+'%' : ''} (${escHtml(increaseAmt)})</strong><br>
+         New Annual Salary: <strong>${escHtml(newSalary)}</strong>
+       </p>`
+    : `<p><em>Enter current salary and increase % in the left panel to calculate compensation details.</em></p>`;
+
+  return `<div class="letter">
+    ${ltrLetterHead('Merit Increase Letter')}
+    <div class="ltr-body-pad">
+      <p>${escHtml(letterDate)}</p>
+      <p><strong>${escHtml(name)}</strong><br>${escHtml(dept)}</p>
+      <p class="spaced"><strong>Re: Merit-Based Compensation Increase — ${currentYear} Annual Review</strong></p>
+      <p class="spaced"><strong>Dear ${escHtml(firstName)},</strong></p>
+      <p class="spaced">On behalf of Southwest Landscape, I am pleased to inform you that based on the results of your ${currentYear} Annual Performance Review, you have been awarded a merit-based compensation increase${effDate && effDate !== '—' ? ' effective <strong>' + escHtml(effDate) + '</strong>' : ''}.</p>
+      <p><span class="section-head">Review Score:</span> ${escHtml(scoreDisplay)}${scoreText ? ' — ' + escHtml(scoreText) : ''}</p>
+      <p class="spaced">Your dedication, performance, and contributions to the ${escHtml(dept)} team have been recognized by both your manager and leadership. Your review score reflects consistent excellence across all evaluated competencies.</p>
+      ${compLines}
+      <p class="spaced">This increase will be reflected in your paycheck beginning the pay period of${effDate && effDate !== '—' ? ' <strong>' + escHtml(effDate) + '</strong>' : ' the effective date stated above'}. If you have any questions regarding your compensation, please speak with your manager or contact Human Resources.</p>
+      <p class="spaced">We appreciate your hard work and look forward to your continued contributions to Southwest Landscape.</p>
+    </div>
+    ${ltrSigBlock(signerName, signerTitle)}
+  </div>`;
+}
+
+window._openLetter = function(employeeId) {
+  const emp = allEmployees[employeeId];
+  if (!emp) return;
+  letterEmployee = emp;
+
+  showView('view-letter');
+  document.getElementById('letter-page-title').textContent = `Merit Increase Letter — ${fullName(emp)}`;
+
+  // Populate left panel
+  document.getElementById('ltr-emp-name').textContent  = fullName(emp);
+  document.getElementById('ltr-emp-dept').textContent  = `${emp.department||''}${emp.branch?' · '+emp.branch:''}`;
+  const mgr = Object.values(allEmployees).find(e => e.id === emp.managerId);
+  document.getElementById('ltr-emp-mgr').textContent   = mgr ? fullName(mgr) : '—';
+
+  const rev   = allReviews.find(r => r.employeeId === employeeId);
+  const score = rev ? (avgScore(rev.executiveEval) || avgScore(rev.managerEval)) : null;
+  document.getElementById('ltr-emp-score').textContent = score !== null ? `${score.toFixed(1)} / 5.0` : 'Pending';
+
+  // Store score on element for updateLetter to read
+  document.getElementById('ltr-emp-score').dataset.score = score !== null ? score : '';
+
+  // Defaults
+  document.getElementById('ltr-increase-pct').value    = score ? (score >= 4.5 ? '8' : score >= 4 ? '5' : '3') : '3';
+  document.getElementById('ltr-eff-date').value        = '';
+  document.getElementById('ltr-signer').value          = '';
+  document.getElementById('ltr-title').value           = '';
+  document.getElementById('ltr-current-pay').value     = '';
+
+  window.updateLetter();
+};
+
+window.updateLetter = function() {
+  if (!letterEmployee) return;
+  const emp = letterEmployee;
+
+  const payStr  = (document.getElementById('ltr-current-pay').value||'').replace(/[^0-9.]/g,'');
+  const pctStr  = (document.getElementById('ltr-increase-pct').value||'').replace(/[^0-9.]/g,'');
+  const eff     = document.getElementById('ltr-eff-date').value || '—';
+  const signer  = document.getElementById('ltr-signer').value  || '';
+  const title   = document.getElementById('ltr-title').value   || '';
+
+  const pay = parseFloat(payStr);
+  const pct = parseFloat(pctStr);
+  const fmt = v => '$' + Math.round(v).toLocaleString();
+
+  let currentSalary = '', increaseAmt = '', newSalary = '', pctLabel = '';
+  if (!isNaN(pay) && pay > 0 && !isNaN(pct) && pct > 0) {
+    const increase = Math.round(pay * pct / 100);
+    const newPay   = pay + increase;
+    currentSalary  = fmt(pay);
+    increaseAmt    = fmt(increase);
+    newSalary      = fmt(newPay);
+    pctLabel       = pct + '%';
+    document.getElementById('ltr-raise-display').textContent = pct + '%';
+    document.getElementById('ltr-raise-amt').textContent     = `+ ${fmt(increase)} increase`;
+    document.getElementById('ltr-raise-new').textContent     = `New salary: ${fmt(newPay)}`;
+  } else {
+    document.getElementById('ltr-raise-display').textContent = pct ? pct+'%' : '—%';
+    document.getElementById('ltr-raise-amt').textContent     = 'Enter salary above to calculate';
+    document.getElementById('ltr-raise-new').textContent     = '';
+  }
+
+  const scoreRaw = document.getElementById('ltr-emp-score').dataset.score;
+  const score    = scoreRaw ? parseFloat(scoreRaw) : null;
+  const today    = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+
+  document.getElementById('letter-doc-inner').innerHTML = buildMeritLetterHtml(
+    emp, score, today, eff !== '—' ? eff : '',
+    currentSalary, increaseAmt, newSalary, pctLabel, signer, title
+  );
+};
+
+window.backToAdmin = function() {
+  showView('view-admin');
+};
+
+window.sendAllLetters  = function() { alert('This will open each finalized employee letter in sequence. Feature coming soon.'); };
+window.exportAdminCSV  = function() { alert('CSV export coming soon.'); };
+
+// ── Auth ──────────────────────────────────────────
+async function logout() { await signOut(auth); window.location.href = 'index.html'; }
+document.getElementById('logout-btn').addEventListener('click', logout);
+document.getElementById('logout-btn-mobile').addEventListener('click', logout);
+
+const hamburger  = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobile-menu');
+hamburger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+document.addEventListener('click', e => {
+  if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target))
+    mobileMenu.classList.remove('open');
+});
 </script>
 </body>
 </html>
