@@ -1570,7 +1570,7 @@
     appId: "1:465838605580:web:c3322da1833f219725b529"
   };
 
-  console.log('%creviews.html build: viewable-ids-2026-10-19', 'color:#16a34a;font-weight:700');
+  console.log('%creviews.html build: viewable-can-review-2026-10-19', 'color:#16a34a;font-weight:700');
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -2131,7 +2131,10 @@
     const emp = allEmployees[currentReview.employeeId];
     const mgr = emp?.managerId ? allEmployees[emp.managerId] : null;
     isOwn      = currentEmployee?.id === currentReview.employeeId;
-    isMgrOfEmp = currentEmployee?.id === emp?.managerId;
+    // A manager/exec who has this employee on their "Can view" list conducts
+    // their review too (not just views it), the same as a directly-assigned one.
+    const inViewList = Array.isArray(currentEmployee?.viewableIds) && currentEmployee.viewableIds.includes(emp?.id);
+    isMgrOfEmp = currentEmployee?.id === emp?.managerId || (currentEmployee?.role === 'manager' && inViewList);
     isExecOfEmp= currentEmployee?.role === 'executive' || currentEmployee?.id === emp?.executiveId;
     isAdmin    = isAdminUser();
     const testRoleVal = document.getElementById('fp-test-role')?.value;
