@@ -1570,7 +1570,7 @@
     appId: "1:465838605580:web:c3322da1833f219725b529"
   };
 
-  console.log('%creviews.html build: admin-email-allowlist-2026-10-19', 'color:#16a34a;font-weight:700');
+  console.log('%creviews.html build: viewable-ids-2026-10-19', 'color:#16a34a;font-weight:700');
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -1846,7 +1846,8 @@
 
   // The reviews the current user is allowed to see:
   //  • admin  → all
-  //  • manager/executive → their own review + their direct team
+  //  • manager/executive → their own review + either an explicit "can view"
+  //      list set by an admin (viewableIds), or, if none, their direct team
   //  • employee → only their own
   //  • unmatched (non-admin) → none
   function reviewsVisibleTo() {
@@ -1855,10 +1856,13 @@
     if (!currentEmployee) return [];
     const role = currentEmployee.role;
     if (role === 'manager' || role === 'executive') {
+      const explicit = Array.isArray(currentEmployee.viewableIds) && currentEmployee.viewableIds.length
+        ? new Set(currentEmployee.viewableIds) : null;
       return all.filter(r => {
-        const emp = allEmployees[r.employeeId];
-        return r.employeeId === currentEmployee.id ||
-          (emp && (emp.managerId === currentEmployee.id || emp.executiveId === currentEmployee.id));
+        if (r.employeeId === currentEmployee.id) return true;           // always their own
+        if (explicit) return explicit.has(r.employeeId);                // admin-chosen list wins
+        const emp = allEmployees[r.employeeId];                         // else their direct team
+        return emp && (emp.managerId === currentEmployee.id || emp.executiveId === currentEmployee.id);
       });
     }
     return all.filter(r => r.employeeId === currentEmployee.id);
