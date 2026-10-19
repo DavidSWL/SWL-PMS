@@ -951,9 +951,12 @@
     if (_rAv) _rAv.textContent = _rName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
     const snap = await getDocs(query(collection(db, 'employees'), where('email', '==', user.email)));
     if (!snap.empty) currentEmployee = { id: snap.docs[0].id, ...snap.docs[0].data() };
-    // Reports is admin-only — non-admins are redirected away from this page
-    if (currentEmployee && currentEmployee.role !== 'admin') { window.location.replace('reviews.html'); return; }
-    const isAdmin = !currentEmployee || currentEmployee.role === 'admin' || currentEmployee.role === 'executive';
+    // Reports is admin-only — access is granted ONLY to the email allowlist,
+    // never by the employee record's role field.
+    const ADMIN_EMAILS = ['coachdavidbp@icloud.com'];
+    const isAllowlisted = ADMIN_EMAILS.includes((user.email || '').trim().toLowerCase());
+    if (!isAllowlisted) { window.location.replace('reviews.html'); return; }
+    const isAdmin = true;
     if (isAdmin) {
       const el = document.getElementById('nav-admin'); if (el) el.style.display = '';
       const el2 = document.getElementById('mobile-nav-admin'); if (el2) el2.style.display = '';
@@ -1013,8 +1016,8 @@
   }
 
   function renderReport(employees, reviews, compRecords, goals) {
-    // Scope to assigned team for managers
-    const isAdmin = !currentEmployee || currentEmployee.role === 'admin' || currentEmployee.role === 'executive';
+    // Only allowlisted admins reach this page, so the report is always org-wide.
+    const isAdmin = true;
     const isMgr   = currentEmployee?.role === 'manager';
     if (!isAdmin && isMgr && currentEmployee) {
       const assignedIds = new Set(Object.values(employees).filter(e => e.managerId === currentEmployee.id).map(e => e.id));
