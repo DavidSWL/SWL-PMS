@@ -749,25 +749,29 @@ onAuthStateChanged(auth, async user => {
     });
   } catch(e) {}
 
-  const role = currentEmployee?.role || 'admin';
+  // Full admin (admin view + Reports/Administration links) is granted ONLY to
+  // the email allowlist — never by the employee record's role field, and an
+  // unmatched login is treated as a plain employee, not an admin.
+  const ADMIN_EMAILS = ['coachdavidbp@icloud.com'];
+  const isAdmin = ADMIN_EMAILS.includes((user.email || '').trim().toLowerCase());
+  const role = currentEmployee?.role || 'employee';
 
   // Show admin nav links (Reports + Administration are admin-only)
-  if (role === 'admin' || !currentEmployee) {
+  if (isAdmin) {
     document.getElementById('nav-reports')?.style.setProperty('display','');
     document.getElementById('mobile-nav-reports')?.style.setProperty('display','');
     document.getElementById('nav-admin')?.style.setProperty('display','');
     document.getElementById('mobile-nav-admin')?.style.setProperty('display','');
   }
 
-  if (role === 'employee') {
-    renderEmployeeView(firstName, displayName);
+  if (isAdmin) {
+    renderAdminView(firstName);
   } else if (role === 'manager') {
     renderManagerView(firstName);
   } else if (role === 'executive') {
     renderExecutiveView(firstName);
   } else {
-    // admin
-    renderAdminView(firstName);
+    renderEmployeeView(firstName, displayName);
   }
 });
 

@@ -713,8 +713,13 @@
   const db   = getFirestore(app);
 
   // ── Auth guard ─────────────────────────────────────────────────
+  // Only these logins may open the employee editor. Nothing in the employee
+  // data can grant access — same allowlist used across the app.
+  const ADMIN_EMAILS = ['coachdavidbp@icloud.com'];
   onAuthStateChanged(auth, user => {
     if (!user) { window.location.href = 'index.html'; return; }
+    const email = (user.email || '').trim().toLowerCase();
+    if (!ADMIN_EMAILS.includes(email)) { window.location.replace('reviews.html'); return; }
     const _aName = user.displayName || user.email.split('@')[0];
     document.getElementById('nav-user-name').textContent = _aName;
     const _aAv = document.getElementById('user-avatar');
