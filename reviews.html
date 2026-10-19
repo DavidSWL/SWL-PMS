@@ -1570,7 +1570,7 @@
     appId: "1:465838605580:web:c3322da1833f219725b529"
   };
 
-  console.log('%creviews.html build: viewable-can-review-2026-10-19', 'color:#16a34a;font-weight:700');
+  console.log('%creviews.html build: admin-david-swl-2026-10-19', 'color:#16a34a;font-weight:700');
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -1838,7 +1838,7 @@
   // Full admin (sees the whole company + admin controls) is granted ONLY to the
   // logins listed here — NOTHING in the employee data (role field, missing
   // record, etc.) can grant it. To add another admin, add their login email.
-  const ADMIN_EMAILS = ['coachdavidbp@icloud.com'];
+  const ADMIN_EMAILS = ['david@southwestlandscape.com', 'coachdavidbp@icloud.com'];
   function isAdminUser() {
     const email = (currentUser?.email || '').trim().toLowerCase();
     return ADMIN_EMAILS.includes(email);

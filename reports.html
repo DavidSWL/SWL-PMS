@@ -953,7 +953,7 @@
     if (!snap.empty) currentEmployee = { id: snap.docs[0].id, ...snap.docs[0].data() };
     // Reports is admin-only — access is granted ONLY to the email allowlist,
     // never by the employee record's role field.
-    const ADMIN_EMAILS = ['coachdavidbp@icloud.com'];
+    const ADMIN_EMAILS = ['david@southwestlandscape.com', 'coachdavidbp@icloud.com'];
     const isAllowlisted = ADMIN_EMAILS.includes((user.email || '').trim().toLowerCase());
     if (!isAllowlisted) { window.location.replace('reviews.html'); return; }
     const isAdmin = true;

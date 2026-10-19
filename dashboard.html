@@ -752,7 +752,7 @@ onAuthStateChanged(auth, async user => {
   // Full admin (admin view + Reports/Administration links) is granted ONLY to
   // the email allowlist — never by the employee record's role field, and an
   // unmatched login is treated as a plain employee, not an admin.
-  const ADMIN_EMAILS = ['coachdavidbp@icloud.com'];
+  const ADMIN_EMAILS = ['david@southwestlandscape.com', 'coachdavidbp@icloud.com'];
   const isAdmin = ADMIN_EMAILS.includes((user.email || '').trim().toLowerCase());
   const role = currentEmployee?.role || 'employee';
 
