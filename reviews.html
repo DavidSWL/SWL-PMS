@@ -1570,7 +1570,7 @@
     appId: "1:465838605580:web:c3322da1833f219725b529"
   };
 
-  console.log('%creviews.html build: admin-david-swl-2026-10-19', 'color:#16a34a;font-weight:700');
+  console.log('%creviews.html build: salary-admin-only-2026-10-19', 'color:#16a34a;font-weight:700');
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -3159,8 +3159,8 @@
     activeTab = 'self';
   }
   function showCompPanel(show) {
-    const execOrAdmin = isExecOfEmp || isAdmin;
-    document.getElementById('comp-panel').classList.toggle('hidden', !show || !execOrAdmin);
+    // Compensation/salary is admin-only — never shown to managers or executives.
+    document.getElementById('comp-panel').classList.toggle('hidden', !show || !isAdmin);
   }
   on('modal-close', 'click', closeModal);
   on('modal-print', 'click', printReview);
@@ -4075,7 +4075,7 @@
 
   async function updateCompPanel() {
     if (!currentReview) return;
-    if (!isExecOfEmp && !isAdmin) { showCompPanel(false); return; }
+    if (!isAdmin) { showCompPanel(false); return; }   // salary is admin-only
     const score = document.getElementById('exec-overall-score').value;
     const action = document.getElementById('exec-action').value;
     const panel = document.getElementById('comp-panel');
@@ -4225,8 +4225,7 @@
   function renderIncreaseApproval() {
     const wrap = document.getElementById('inc-approval-wrap');
     if (!wrap) return;
-    const isExec = isExecOfEmp || isAdmin;
-    if (!isExec) { wrap.style.display = 'none'; return; }
+    if (!isAdmin) { wrap.style.display = 'none'; return; }   // salary/increase is admin-only
     wrap.style.display = 'block';
 
     const emp = currentReview ? allEmployees[currentReview.employeeId] : null;
