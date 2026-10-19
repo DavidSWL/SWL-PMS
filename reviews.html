@@ -1570,7 +1570,7 @@
     appId: "1:465838605580:web:c3322da1833f219725b529"
   };
 
-  console.log('%creviews.html build: role-scope-fix-2026-10-19', 'color:#16a34a;font-weight:700');
+  console.log('%creviews.html build: admin-email-allowlist-2026-10-19', 'color:#16a34a;font-weight:700');
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -1812,7 +1812,7 @@
 
   function renderNav() {
     const role = currentEmployee?.role || 'employee';
-    const isAdmin = role === 'admin';
+    const isAdmin = isAdminUser();
     const isMgrOrUp = isAdmin || role === 'manager' || role === 'executive';
     const show = id => { const el = document.getElementById(id); if (el) el.style.display = ''; };
     if (isMgrOrUp) { show('nav-dashboard'); show('mobile-nav-dashboard'); }
@@ -1835,13 +1835,13 @@
   }
 
   // ── Access helpers ──
-  // A signed-in user is only an admin if their employee record says so. An
-  // unmatched login (no employee record found) is NOT admin unless the
-  // employee list is genuinely empty (first-time setup), so a login whose email
-  // doesn't match a record can never see everyone.
+  // Full admin (sees the whole company + admin controls) is granted ONLY to the
+  // logins listed here — NOTHING in the employee data (role field, missing
+  // record, etc.) can grant it. To add another admin, add their login email.
+  const ADMIN_EMAILS = ['coachdavidbp@icloud.com'];
   function isAdminUser() {
-    if (currentEmployee) return currentEmployee.role === 'admin';
-    return Object.keys(allEmployees).length === 0;
+    const email = (currentUser?.email || '').trim().toLowerCase();
+    return ADMIN_EMAILS.includes(email);
   }
 
   // The reviews the current user is allowed to see:
