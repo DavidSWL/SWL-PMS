@@ -870,9 +870,18 @@
         <div>
           <div class="cycle-label"><strong id="banner-name"></strong>Annual Performance Review Cycle</div>
           <div class="cycle-label" id="banner-status-wrap"></div>
+          <div class="cycle-label" id="banner-due-wrap" style="display:none;margin-top:.15rem">
+            <span style="font-weight:700;color:var(--green-dark,#0A3B22)">Due:</span>
+            <span id="banner-due">—</span>
+          </div>
         </div>
       </div>
       <div class="cycle-actions" id="admin-cycle-actions" style="display:none">
+        <div style="display:flex;align-items:center;gap:.4rem">
+          <label for="cycle-due-input" style="font-size:.78rem;font-weight:700;color:var(--muted)">Due date</label>
+          <input type="date" id="cycle-due-input" class="year-select" style="padding:.4rem .55rem" />
+          <button class="btn btn-secondary" id="save-due-btn">Save</button>
+        </div>
         <button class="btn btn-secondary" id="close-cycle-btn">Close Cycle</button>
       </div>
     </div>
@@ -1548,7 +1557,7 @@
   import { initializeApp }    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
   import { getAuth, signOut, onAuthStateChanged }
                                from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-  import { getFirestore, collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc,
+  import { getFirestore, collection, doc, getDocs, getDoc, addDoc, updateDoc, setDoc, deleteDoc,
            query, orderBy, where, serverTimestamp }
                                from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
@@ -1561,7 +1570,7 @@
     appId: "1:465838605580:web:c3322da1833f219725b529"
   };
 
-  console.log('%creviews.html build: employee-own-only-2026-07-16', 'color:#16a34a;font-weight:700');
+  console.log('%creviews.html build: role-scope-fix-2026-10-19', 'color:#16a34a;font-weight:700');
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -1584,6 +1593,7 @@
   let allEmployees = {};
   let allReviews = {};
   let selectedYear = new Date().getFullYear();
+  let cycleDueDate = null;   // 'YYYY-MM-DD' for the selected year's cycle (cycles/{year})
   let currentReview = null;
   let activeTab = 'self';
   let selfRatings = {};
@@ -1824,6 +1834,36 @@
     sel.addEventListener('change', () => { selectedYear = +sel.value; loadData(); });
   }
 
+  // ── Access helpers ──
+  // A signed-in user is only an admin if their employee record says so. An
+  // unmatched login (no employee record found) is NOT admin unless the
+  // employee list is genuinely empty (first-time setup), so a login whose email
+  // doesn't match a record can never see everyone.
+  function isAdminUser() {
+    if (currentEmployee) return currentEmployee.role === 'admin';
+    return Object.keys(allEmployees).length === 0;
+  }
+
+  // The reviews the current user is allowed to see:
+  //  • admin  → all
+  //  • manager/executive → their own review + their direct team
+  //  • employee → only their own
+  //  • unmatched (non-admin) → none
+  function reviewsVisibleTo() {
+    const all = Object.values(allReviews);
+    if (isAdminUser()) return all;
+    if (!currentEmployee) return [];
+    const role = currentEmployee.role;
+    if (role === 'manager' || role === 'executive') {
+      return all.filter(r => {
+        const emp = allEmployees[r.employeeId];
+        return r.employeeId === currentEmployee.id ||
+          (emp && (emp.managerId === currentEmployee.id || emp.executiveId === currentEmployee.id));
+      });
+    }
+    return all.filter(r => r.employeeId === currentEmployee.id);
+  }
+
   // ── Load Data ──
   async function loadData() {
     document.getElementById('loading-state').style.display = 'flex';
@@ -1880,8 +1920,8 @@
 
     document.getElementById('loading-state').style.display = 'none';
 
-    // If no employee record found for current user, treat as admin (initial setup)
-    const isAdmin = !currentEmployee || currentEmployee.role === 'admin';
+    // Admin only if their record says so (unmatched login is never admin)
+    const isAdmin = isAdminUser();
     const isMgr   = currentEmployee?.role === 'manager';
 
     const hasReviews = Object.keys(allReviews).length > 0;
@@ -1893,17 +1933,26 @@
       return;
     }
 
+    // Load this cycle's due date (cycles/{year})
+    try {
+      const cd = await getDoc(doc(db, 'cycles', String(selectedYear)));
+      cycleDueDate = cd.exists() ? (cd.data().dueDate || null) : null;
+    } catch { cycleDueDate = null; }
+
     // A plain employee only sees their own review — no org-wide stats, cycle
-    // completion, filters, or roster.
-    const isEmployee = currentEmployee && currentEmployee.role !== 'admin'
-      && currentEmployee.role !== 'manager' && currentEmployee.role !== 'executive';
+    // completion, filters, or roster. An unmatched (non-admin) login with no
+    // record is treated the same: their review set is empty.
+    const isEmployee = !isAdmin && currentEmployee && currentEmployee.role !== 'manager'
+      && currentEmployee.role !== 'executive';
 
     if (isEmployee) {
       // Friendlier header + hide everything org-level
       const h1 = document.querySelector('.page-title h1');
       const sub = document.querySelector('.page-title p');
       if (h1)  h1.textContent  = 'My Review';
-      if (sub) sub.textContent = 'View and complete your annual performance review.';
+      if (sub) sub.textContent = cycleDueDate
+        ? `Complete your annual performance review by ${fmtDueDate(cycleDueDate)}.`
+        : 'View and complete your annual performance review.';
       document.getElementById('cycle-banner').style.display = 'none';
       document.getElementById('stats-row').style.display    = 'none';
       document.getElementById('toolbar').style.display      = 'none';
@@ -1914,22 +1963,39 @@
       return;
     }
 
-    // Show banner (managers / execs / admins)
-    const completed = Object.values(allReviews).filter(r => r.status === 'completed').length;
-    const total = Object.keys(allReviews).length;
+    // Show banner (managers / execs / admins). Managers/execs see only their
+    // team's numbers; admins see the whole org.
+    const visible   = reviewsVisibleTo();
+    const completed = visible.filter(r => r.status === 'completed').length;
+    const total     = visible.length;
     document.getElementById('banner-year').textContent = selectedYear;
     document.getElementById('banner-name').textContent = `${selectedYear} `;
     const pct = total ? Math.round(completed / total * 100) : 0;
-    document.getElementById('banner-status-wrap').textContent = `${completed} of ${total} completed (${pct}%)`;
+    document.getElementById('banner-status-wrap').textContent = isAdmin
+      ? `${completed} of ${total} completed (${pct}%)`
+      : `Your team: ${completed} of ${total} completed (${pct}%)`;
     document.getElementById('cycle-banner').style.display = 'flex';
-    if (!currentEmployee || currentEmployee.role === 'admin') {
+    // Cycle due date: show to everyone; editable input for admins
+    const dueWrap = document.getElementById('banner-due-wrap');
+    if (dueWrap) {
+      if (cycleDueDate) {
+        dueWrap.style.display = 'block';
+        document.getElementById('banner-due').textContent = fmtDueDate(cycleDueDate);
+      } else {
+        dueWrap.style.display = 'none';
+      }
+      document.getElementById('cycle-due-input').value = cycleDueDate || '';
+    }
+    if (isAdmin) {
       document.getElementById('admin-cycle-actions').style.display = 'flex';
       document.getElementById('init-btn').style.display = 'inline-flex';
+    } else {
+      document.getElementById('admin-cycle-actions')?.style.setProperty('display', 'none');
     }
 
-    // Stats
-    const inProgress = Object.values(allReviews).filter(r => ['draft','submitted','in-review','mgr-complete'].includes(r.status)).length;
-    const notStarted = Object.values(allReviews).filter(r => r.status === 'not-started').length;
+    // Stats (scoped to what this user can see)
+    const inProgress = visible.filter(r => ['draft','submitted','in-review','mgr-complete'].includes(r.status)).length;
+    const notStarted = visible.filter(r => r.status === 'not-started').length;
     document.getElementById('stat-total').textContent    = total;
     document.getElementById('stat-done').textContent     = completed;
     document.getElementById('stat-progress').textContent = inProgress;
@@ -1947,26 +2013,13 @@
     const dept   = document.getElementById('filter-dept').value;
     const branch = document.getElementById('filter-branch').value;
     const status = document.getElementById('filter-status').value;
-    const isAdmin = !currentEmployee || currentEmployee.role === 'admin';
-    const isMgr   = currentEmployee?.role === 'manager';
-    const isExec  = currentEmployee?.role === 'executive';
 
-    // Build rows: match reviews to employees
-    let rows = Object.values(allReviews).map(rev => ({
+    // Start from only the reviews this user is allowed to see (admin = all,
+    // manager/exec = own + team, employee = own, unmatched = none).
+    let rows = reviewsVisibleTo().map(rev => ({
       review: rev,
       emp: allEmployees[rev.employeeId] || null
     })).filter(r => r.emp);
-
-    // Role filter
-    if (!isAdmin && (isMgr || isExec) && currentEmployee) {
-      rows = rows.filter(r =>
-        r.emp.managerId === currentEmployee.id ||
-        r.emp.executiveId === currentEmployee.id ||
-        r.review.employeeId === currentEmployee.id
-      );
-    } else if (!isAdmin && !isMgr && !isExec && currentEmployee) {
-      rows = rows.filter(r => r.review.employeeId === currentEmployee.id);
-    }
 
     // Search / filter
     rows = rows.filter(({ emp, review }) => {
@@ -2076,7 +2129,7 @@
     isOwn      = currentEmployee?.id === currentReview.employeeId;
     isMgrOfEmp = currentEmployee?.id === emp?.managerId;
     isExecOfEmp= currentEmployee?.role === 'executive' || currentEmployee?.id === emp?.executiveId;
-    isAdmin    = !currentEmployee || currentEmployee.role === 'admin';
+    isAdmin    = isAdminUser();
     const testRoleVal = document.getElementById('fp-test-role')?.value;
     if (testRoleVal === 'employee')  { isOwn = true;  isMgrOfEmp = false; isExecOfEmp = false; isAdmin = false; }
     else if (testRoleVal === 'manager')   { isOwn = false; isMgrOfEmp = true;  isExecOfEmp = false; isAdmin = false; }
@@ -3033,6 +3086,31 @@
     document.getElementById('init-confirm').textContent = 'Create Reviews';
     toast(`Created ${created} review${created !== 1 ? 's' : ''} for ${selectedYear}.`, 'success');
     await loadData();
+  });
+
+  // Format a 'YYYY-MM-DD' cycle due date as a readable local date
+  function fmtDueDate(d) {
+    if (!d) return '';
+    const dt = new Date(d + 'T00:00:00');
+    return isNaN(dt) ? d : dt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  }
+
+  // Save / change the due date for the current cycle (admins)
+  on('save-due-btn', 'click', async () => {
+    const val = document.getElementById('cycle-due-input').value;   // '' clears it
+    const btn = document.getElementById('save-due-btn');
+    btn.disabled = true; const prev = btn.textContent; btn.textContent = 'Saving…';
+    try {
+      await setDoc(doc(db, 'cycles', String(selectedYear)),
+        { year: selectedYear, dueDate: val || null, updatedAt: serverTimestamp() }, { merge: true });
+      cycleDueDate = val || null;
+      toast(cycleDueDate ? `Due date set to ${fmtDueDate(cycleDueDate)}.` : 'Due date cleared.', 'success');
+      await loadData();
+    } catch (e) {
+      console.error(e); toast('Could not save the due date.', 'error');
+    } finally {
+      btn.disabled = false; btn.textContent = prev;
+    }
   });
 
   on('init-cancel', 'click', () => {
