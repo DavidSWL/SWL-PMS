@@ -642,6 +642,21 @@
           <span class="field-error hidden" id="err-role"></span>
         </div>
 
+        <!-- Who this person can view in Reviews (managers/execs only) -->
+        <div class="form-group span-3" id="viewable-wrap" style="display:none">
+          <label>Can view these employees' reviews
+            <span class="form-hint" style="display:block;font-weight:400">
+              Leave all unchecked to use the default (their direct team by Manager/Executive). Check specific people to set exactly who this person can see.
+            </span>
+          </label>
+          <div style="display:flex;gap:.5rem;margin:.4rem 0">
+            <button type="button" class="btn btn-secondary" id="viewable-all" style="padding:.3rem .7rem;font-size:.78rem">Select all</button>
+            <button type="button" class="btn btn-secondary" id="viewable-none" style="padding:.3rem .7rem;font-size:.78rem">Clear all</button>
+            <input type="text" id="viewable-search" placeholder="Filter…" style="flex:1;min-width:120px;padding:.3rem .6rem;border:1.5px solid var(--border);border-radius:8px;font-size:.82rem" />
+          </div>
+          <div id="viewable-list" style="max-height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;padding:.5rem .7rem;display:grid;grid-template-columns:1fr 1fr;gap:.25rem .9rem"></div>
+        </div>
+
       </div>
     </div>
     <div class="modal-footer">
@@ -926,6 +941,39 @@
     if (current) sel.value = current;
   }
 
+  // ── "Can view" picker (managers/execs choose exactly who they can see) ──
+  let viewableSelected = new Set();   // employee ids this person may view
+  function renderViewableList(excludeId = null) {
+    const list = document.getElementById('viewable-list');
+    const filter = (document.getElementById('viewable-search').value || '').toLowerCase();
+    const rows = allEmployees
+      .filter(e => e.id !== excludeId && e.status !== 'inactive')
+      .filter(e => !filter || `${e.firstName} ${e.lastName} ${e.position || ''}`.toLowerCase().includes(filter))
+      .sort((a,b) => `${a.lastName}${a.firstName}`.localeCompare(`${b.lastName}${b.firstName}`));
+    list.innerHTML = rows.map(e => `
+      <label style="display:flex;align-items:center;gap:.45rem;font-size:.84rem;cursor:pointer">
+        <input type="checkbox" class="viewable-cb" value="${e.id}" ${viewableSelected.has(e.id) ? 'checked' : ''}>
+        <span>${e.firstName} ${e.lastName}${e.position ? ' <span style="color:var(--gray-400)">· ' + e.position + '</span>' : ''}</span>
+      </label>`).join('') || '<div style="color:var(--gray-400);font-size:.82rem">No matching employees.</div>';
+    list.querySelectorAll('.viewable-cb').forEach(cb => cb.addEventListener('change', () => {
+      if (cb.checked) viewableSelected.add(cb.value); else viewableSelected.delete(cb.value);
+    }));
+  }
+  function toggleViewableWrap() {
+    const role = document.getElementById('f-role').value;
+    const show = role === 'manager' || role === 'executive';
+    document.getElementById('viewable-wrap').style.display = show ? 'block' : 'none';
+    if (show) renderViewableList(editingId);
+  }
+  document.getElementById('f-role').addEventListener('change', toggleViewableWrap);
+  document.getElementById('viewable-search').addEventListener('input', () => renderViewableList(editingId));
+  document.getElementById('viewable-all').addEventListener('click', () => {
+    document.querySelectorAll('.viewable-cb').forEach(cb => { cb.checked = true; viewableSelected.add(cb.value); });
+  });
+  document.getElementById('viewable-none').addEventListener('click', () => {
+    viewableSelected.clear(); document.querySelectorAll('.viewable-cb').forEach(cb => cb.checked = false);
+  });
+
   // ── Filters & search ───────────────────────────────────────────
   ['search-input','filter-branch','filter-dept','filter-status'].forEach(id =>
     document.getElementById(id).addEventListener('input', renderTable)
@@ -946,6 +994,9 @@
     document.getElementById('f-status').value = 'active';
     document.getElementById('f-manager').value   = '';
     document.getElementById('f-executive').value = '';
+    viewableSelected = new Set();
+    document.getElementById('viewable-wrap').style.display = 'none';
+    const vs = document.getElementById('viewable-search'); if (vs) vs.value = '';
     clearErrors();
     hideFormAlert();
   }
@@ -1013,6 +1064,10 @@
     document.getElementById('f-rate').value     = emp.currentRate || '';
     document.getElementById('f-role').value     = emp.role        || '';
     document.getElementById('f-status').value   = emp.status      || 'active';
+    // Load this person's explicit "can view" list (if any)
+    viewableSelected = new Set(Array.isArray(emp.viewableIds) ? emp.viewableIds : []);
+    document.getElementById('viewable-search').value = '';
+    toggleViewableWrap();
     openModal();
   };
 
@@ -1068,13 +1123,16 @@
     saveBtn.textContent = 'Saving…';
 
     try {
+      // Explicit view list only applies to managers/executives
+      const viewableIds = (role === 'manager' || role === 'executive')
+        ? Array.from(viewableSelected) : [];
       await saveEmployee({
         firstName, lastName, email, position, department, branch,
         hireDate:    hireDate    || null,
         managerId:   managerId   || null,
         executiveId: executiveId || null,
         payType, currentRate: parseFloat(currentRate),
-        role, status,
+        role, status, viewableIds,
       });
       closeModal();
       toast(editingId ? 'Employee updated.' : 'Employee added.', 'success');
