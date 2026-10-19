@@ -708,6 +708,11 @@ function showView(id) {
 onAuthStateChanged(auth, async user => {
   if (!user) { window.location.href = 'index.html'; return; }
 
+  // Diagnostic: shows the exact login email the app sees + admin match
+  const _ADMIN_EMAILS = ['david@southwestlandscape.com', 'coachdavidbp@icloud.com'];
+  console.log('%c[SWL] logged in as: ' + user.email + ' · admin: ' + _ADMIN_EMAILS.includes((user.email||'').trim().toLowerCase()),
+    'color:#0E4C2D;font-weight:700;font-size:13px');
+
   const displayName = user.displayName || user.email.split('@')[0];
   const firstName   = displayName.split(' ')[0];
   const inits       = displayName.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase();
@@ -752,7 +757,7 @@ onAuthStateChanged(auth, async user => {
   // Full admin (admin view + Reports/Administration links) is granted ONLY to
   // the email allowlist — never by the employee record's role field, and an
   // unmatched login is treated as a plain employee, not an admin.
-  const ADMIN_EMAILS = ['coachdavidbp@icloud.com'];
+  const ADMIN_EMAILS = ['david@southwestlandscape.com', 'coachdavidbp@icloud.com'];
   const isAdmin = ADMIN_EMAILS.includes((user.email || '').trim().toLowerCase());
   const role = currentEmployee?.role || 'employee';
 
