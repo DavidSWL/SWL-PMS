@@ -1570,7 +1570,7 @@
     appId: "1:465838605580:web:c3322da1833f219725b529"
   };
 
-  console.log('%creviews.html build: admin-correct-email-2026-10-19', 'color:#16a34a;font-weight:700');
+  console.log('%creviews.html build: safe-open-2026-10-20', 'color:#16a34a;font-weight:700');
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -2075,10 +2075,10 @@
     }).join('');
 
     tbody.querySelectorAll('.btn-action').forEach(btn => {
-      btn.addEventListener('click', () => openReview(btn.dataset.id));
+      btn.addEventListener('click', () => safeOpenReview(btn.dataset.id));
     });
     tbody.querySelectorAll('.clickable-score').forEach(el => {
-      el.addEventListener('click', () => openReview(el.dataset.id));
+      el.addEventListener('click', () => safeOpenReview(el.dataset.id));
     });
     tbody.querySelectorAll('.btn-delete-review').forEach(btn => {
       btn.addEventListener('click', () => confirmDeleteReview(btn.dataset.delId, btn.dataset.delName));
@@ -2129,6 +2129,15 @@
   });
 
   // ── Open Review Modal ──
+  // Wrapper so a click never fails silently — any error is logged and shown.
+  function safeOpenReview(reviewId) {
+    try {
+      openReview(reviewId);
+    } catch (e) {
+      console.error('[SWL] openReview failed for', reviewId, e);
+      toast('Could not open this review: ' + (e?.message || e), 'error');
+    }
+  }
   function openReview(reviewId) {
     currentReview = allReviews[reviewId];
     const emp = allEmployees[currentReview.employeeId];
