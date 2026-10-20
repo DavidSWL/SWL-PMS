@@ -1570,7 +1570,7 @@
     appId: "1:465838605580:web:c3322da1833f219725b529"
   };
 
-  console.log('%creviews.html build: safe-open-2026-10-20', 'color:#16a34a;font-weight:700');
+  console.log('%creviews.html build: init-status-fix-2026-10-20', 'color:#16a34a;font-weight:700');
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -3078,7 +3078,9 @@
     document.getElementById('init-confirm').disabled = true;
     document.getElementById('init-confirm').textContent = 'Creating…';
 
-    const activeEmps = Object.values(allEmployees).filter(e => e.status === 'active');
+    // Create a review for everyone who isn't explicitly inactive (so a blank or
+    // oddly-cased status never silently skips someone).
+    const activeEmps = Object.values(allEmployees).filter(e => String(e.status || '').toLowerCase() !== 'inactive');
     // Find existing review employee IDs for this year to avoid dupes
     const existing = new Set(Object.values(allReviews).map(r => r.employeeId));
 
