@@ -1570,7 +1570,7 @@
     appId: "1:465838605580:web:c3322da1833f219725b529"
   };
 
-  console.log('%creviews.html build: init-status-fix-2026-10-20', 'color:#16a34a;font-weight:700');
+  console.log('%creviews.html build: email-match-ci-2026-10-21', 'color:#16a34a;font-weight:700');
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -1809,8 +1809,29 @@
   });
 
   async function loadCurrentEmployee() {
-    const snap = await getDocs(query(collection(db, 'employees'), where('email', '==', currentUser.email)));
-    if (!snap.empty) currentEmployee = { id: snap.docs[0].id, ...snap.docs[0].data() };
+    // Match the logged-in user to their employee record by email, case-insensitively
+    // and ignoring stray whitespace. A plain Firestore `where('email','==',…)` is
+    // exact and case-sensitive, so "Jessica@…" logging in would not match a record
+    // stored as "jessica@…" and the person would be treated as an unmatched user
+    // (empty "Your team: 0 of 0" screen). Scanning + normalizing avoids that.
+    const wanted = (currentUser?.email || '').trim().toLowerCase();
+    if (!wanted) return;
+    try {
+      const snap = await getDocs(collection(db, 'employees'));
+      let match = null, exact = null;
+      snap.forEach(d => {
+        const e = { id: d.id, ...d.data() };
+        if ((e.email || '').trim().toLowerCase() === wanted) {
+          if (e.email === currentUser.email) exact = exact || e;   // prefer an exact hit
+          match = match || e;
+        }
+      });
+      currentEmployee = exact || match;
+    } catch (e) {
+      // Fall back to the exact query if a full read is denied by rules
+      const snap = await getDocs(query(collection(db, 'employees'), where('email', '==', currentUser.email)));
+      if (!snap.empty) currentEmployee = { id: snap.docs[0].id, ...snap.docs[0].data() };
+    }
   }
 
   function renderNav() {
