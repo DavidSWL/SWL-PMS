@@ -1570,7 +1570,7 @@
     appId: "1:465838605580:web:c3322da1833f219725b529"
   };
 
-  console.log('%creviews.html build: email-match-ci-2026-10-21', 'color:#16a34a;font-weight:700');
+  console.log('%creviews.html build: mgr-self-review-2026-10-23', 'color:#16a34a;font-weight:700');
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -2170,6 +2170,11 @@
     isMgrOfEmp = currentEmployee?.id === emp?.managerId || (currentEmployee?.role === 'manager' && inViewList);
     isExecOfEmp= currentEmployee?.role === 'executive' || currentEmployee?.id === emp?.executiveId;
     isAdmin    = isAdminUser();
+    // Your OWN review is always your self-assessment. A manager/executive reviewing
+    // their own record must not be treated as their own reviewer (which could happen
+    // if they appear on their own "Can view" list), otherwise the self-evaluation
+    // would lock. Managers still see and conduct their team's reviews (isOwn=false).
+    if (isOwn) { isMgrOfEmp = false; isExecOfEmp = false; }
     const testRoleVal = document.getElementById('fp-test-role')?.value;
     if (testRoleVal === 'employee')  { isOwn = true;  isMgrOfEmp = false; isExecOfEmp = false; isAdmin = false; }
     else if (testRoleVal === 'manager')   { isOwn = false; isMgrOfEmp = true;  isExecOfEmp = false; isAdmin = false; }
