@@ -950,7 +950,7 @@
     return s.length > n ? s.slice(0, n).trimEnd() + '…' : s;
   }
 
-  console.log('%creports.html build: report-reflects-submitted-2026-11-04', 'color:#065F46;font-weight:700');
+  console.log('%creports.html build: report-reflects-submitted-2026-11-04b', 'color:#065F46;font-weight:700');
 
   // ── Auth Guard ────────────────────────────────────────────────────────────
   onAuthStateChanged(auth, async user => {
@@ -966,10 +966,13 @@
     const ADMIN_EMAILS = ['david@southwestlandscapeinc.com', 'david@southwestlandscape.com', 'coachdavidbp@icloud.com'];
     const isAllowlisted = ADMIN_EMAILS.includes((user.email || '').trim().toLowerCase());
     if (!isAllowlisted) { window.location.replace('reviews.html'); return; }
-    // Owner-only: reflect submitted self-reviews in the report (scoped to this
-    // account so it affects no one else's view).
-    REPORT_INCLUDE_SUBMITTED = ['coachdavidbp@icloud.com', 'david@southwestlandscapeinc.com']
-      .includes((user.email || '').trim().toLowerCase());
+    // Owner-only: reflect submitted self-reviews in the report. Every email on the
+    // admin allowlist is the owner's own address (no one else can reach this page),
+    // so enabling it for the allowlist keeps it scoped to the owner's account and
+    // works no matter which spelling of the address they sign in with.
+    REPORT_INCLUDE_SUBMITTED = isAllowlisted;
+    console.log('%c[SWL] reports · ' + (user.email || '') + ' · reflect-submitted: ' + REPORT_INCLUDE_SUBMITTED,
+      'color:#065F46;font-weight:700');
     const isAdmin = true;
     if (isAdmin) {
       const el = document.getElementById('nav-admin'); if (el) el.style.display = '';
