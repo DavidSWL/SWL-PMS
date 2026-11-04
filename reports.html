@@ -905,14 +905,22 @@
     return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
   }
 
+  // When true, the report also reflects reviews whose self-evaluation has been
+  // submitted (not just exec-finalized ones), and a review's score may fall back
+  // to the self-eval average. This is enabled ONLY for the owner's own account
+  // (see the auth guard) so it changes nothing for any other admin.
+  let REPORT_INCLUDE_SUBMITTED = false;
+
   // Final authoritative score for a completed review:
   // Prefer exec overallScore → mgr overallScore → avg of exec competencyRatings → avg of mgr ratings
+  // (→ avg of self ratings, only when REPORT_INCLUDE_SUBMITTED is on).
   function reviewScore(r) {
     if (r.executiveEval?.overallScore) return +r.executiveEval.overallScore;
     if (r.managerEval?.overallScore)   return +r.managerEval.overallScore;
     const execAvg = avgRatings(r.executiveEval?.competencyRatings);
     const mgrAvg  = avgRatings(r.managerEval?.ratings);
-    return execAvg ?? mgrAvg ?? null;
+    const selfAvg = REPORT_INCLUDE_SUBMITTED ? avgRatings(r.selfEval?.ratings) : null;
+    return execAvg ?? mgrAvg ?? selfAvg ?? null;
   }
 
   function scoreLbl(s) {
@@ -942,6 +950,8 @@
     return s.length > n ? s.slice(0, n).trimEnd() + '…' : s;
   }
 
+  console.log('%creports.html build: report-reflects-submitted-2026-11-04', 'color:#065F46;font-weight:700');
+
   // ── Auth Guard ────────────────────────────────────────────────────────────
   onAuthStateChanged(auth, async user => {
     if (!user) { window.location.href = 'index.html'; return; }
@@ -956,6 +966,10 @@
     const ADMIN_EMAILS = ['david@southwestlandscapeinc.com', 'david@southwestlandscape.com', 'coachdavidbp@icloud.com'];
     const isAllowlisted = ADMIN_EMAILS.includes((user.email || '').trim().toLowerCase());
     if (!isAllowlisted) { window.location.replace('reviews.html'); return; }
+    // Owner-only: reflect submitted self-reviews in the report (scoped to this
+    // account so it affects no one else's view).
+    REPORT_INCLUDE_SUBMITTED = ['coachdavidbp@icloud.com', 'david@southwestlandscapeinc.com']
+      .includes((user.email || '').trim().toLowerCase());
     const isAdmin = true;
     if (isAdmin) {
       const el = document.getElementById('nav-admin'); if (el) el.style.display = '';
@@ -1026,9 +1040,17 @@
       goals       = goals.filter(g => assignedIds.has(g.employeeId));
     }
 
-    const activeEmps  = Object.values(employees).filter(e => e.status === 'active');
-    const completed   = reviews.filter(r => r.status === 'completed');
-    const inProgress  = reviews.filter(r => ['draft','submitted','in-review','mgr-complete'].includes(r.status));
+    const activeEmps  = Object.values(employees).filter(e =>
+      REPORT_INCLUDE_SUBMITTED ? String(e.status || '').toLowerCase() !== 'inactive' : e.status === 'active');
+    // Normally "completed" means exec-finalized. For the owner's account, a review
+    // whose self-evaluation has been submitted also counts toward the report so the
+    // numbers move as self-reviews come in (a submitted review is then no longer
+    // double-counted under "in progress").
+    const completed   = REPORT_INCLUDE_SUBMITTED
+      ? reviews.filter(r => r.status === 'completed' || r.selfEval?.submitted)
+      : reviews.filter(r => r.status === 'completed');
+    const inProgress  = reviews.filter(r => ['draft','submitted','in-review','mgr-complete'].includes(r.status)
+      && !(REPORT_INCLUDE_SUBMITTED && r.selfEval?.submitted));
     const notStarted  = reviews.filter(r => r.status === 'not-started');
     const total       = reviews.length;
 
