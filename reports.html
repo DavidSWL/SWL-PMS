@@ -950,7 +950,7 @@
     return s.length > n ? s.slice(0, n).trimEnd() + '…' : s;
   }
 
-  console.log('%creports.html build: report-reflects-submitted-2026-11-04b', 'color:#065F46;font-weight:700');
+  console.log('%creports.html build: report-reflects-submitted-2026-11-04c', 'color:#065F46;font-weight:700');
 
   // ── Auth Guard ────────────────────────────────────────────────────────────
   onAuthStateChanged(auth, async user => {
@@ -1049,11 +1049,16 @@
     // whose self-evaluation has been submitted also counts toward the report so the
     // numbers move as self-reviews come in (a submitted review is then no longer
     // double-counted under "in progress").
+    // A self-eval "counts" once it has been submitted OR has any ratings entered
+    // (a saved draft), so the report moves whether people submitted or just saved.
+    const selfHasData = r => !!(r.selfEval?.submitted
+      || (r.selfEval?.ratings && Object.keys(r.selfEval.ratings).length)
+      || r.selfEval?.q1 || r.selfEval?.q2);
     const completed   = REPORT_INCLUDE_SUBMITTED
-      ? reviews.filter(r => r.status === 'completed' || r.selfEval?.submitted)
+      ? reviews.filter(r => r.status === 'completed' || selfHasData(r))
       : reviews.filter(r => r.status === 'completed');
     const inProgress  = reviews.filter(r => ['draft','submitted','in-review','mgr-complete'].includes(r.status)
-      && !(REPORT_INCLUDE_SUBMITTED && r.selfEval?.submitted));
+      && !(REPORT_INCLUDE_SUBMITTED && selfHasData(r)));
     const notStarted  = reviews.filter(r => r.status === 'not-started');
     const total       = reviews.length;
 
