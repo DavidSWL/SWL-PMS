@@ -1570,7 +1570,7 @@
     appId: "1:465838605580:web:c3322da1833f219725b529"
   };
 
-  console.log('%creviews.html build: mgr-self-review-2026-10-23', 'color:#16a34a;font-weight:700');
+  console.log('%creviews.html build: assigned-manager-sees-team-2026-11-06', 'color:#16a34a;font-weight:700');
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -1870,26 +1870,26 @@
 
   // The reviews the current user is allowed to see:
   //  • admin  → all
-  //  • manager/executive → their own review + either an explicit "can view"
-  //      list set by an admin (viewableIds), or, if none, their direct team
-  //  • employee → only their own
+  //  • anyone who is the assigned manager/executive of an employee, OR has an
+  //      admin-set "can view" list (viewableIds) → their own review + those people.
+  //      This is keyed off being the assigned manager/exec, NOT off the viewer's
+  //      own "role" field — so a person set as someone's manager can always see and
+  //      review their reports even if their System Role was left as "Employee".
+  //  • everyone else → only their own
   //  • unmatched (non-admin) → none
   function reviewsVisibleTo() {
     const all = Object.values(allReviews);
     if (isAdminUser()) return all;
     if (!currentEmployee) return [];
-    const role = currentEmployee.role;
-    if (role === 'manager' || role === 'executive') {
-      const explicit = Array.isArray(currentEmployee.viewableIds) && currentEmployee.viewableIds.length
-        ? new Set(currentEmployee.viewableIds) : null;
-      return all.filter(r => {
-        if (r.employeeId === currentEmployee.id) return true;           // always their own
-        if (explicit) return explicit.has(r.employeeId);                // admin-chosen list wins
-        const emp = allEmployees[r.employeeId];                         // else their direct team
-        return emp && (emp.managerId === currentEmployee.id || emp.executiveId === currentEmployee.id);
-      });
-    }
-    return all.filter(r => r.employeeId === currentEmployee.id);
+    const explicit = Array.isArray(currentEmployee.viewableIds) && currentEmployee.viewableIds.length
+      ? new Set(currentEmployee.viewableIds) : null;
+    return all.filter(r => {
+      if (r.employeeId === currentEmployee.id) return true;             // always their own
+      const emp = allEmployees[r.employeeId];
+      if (emp && (emp.managerId === currentEmployee.id || emp.executiveId === currentEmployee.id)) return true; // assigned manager/exec
+      if (explicit && explicit.has(r.employeeId)) return true;          // admin-chosen "can view" list
+      return false;
+    });
   }
 
   // ── Load Data ──
@@ -1950,7 +1950,16 @@
 
     // Admin only if their record says so (unmatched login is never admin)
     const isAdmin = isAdminUser();
-    const isMgr   = currentEmployee?.role === 'manager';
+    // Treat anyone who actually has reports (is the assigned manager/executive of
+    // someone, or has an admin-set "can view" list) as a manager for layout, even
+    // if their System Role field says "Employee". This keeps the team view/roster
+    // in step with reviewsVisibleTo so an assigned manager like Casey isn't shown
+    // the stripped-down "My Review" screen.
+    const hasReports = !!currentEmployee && (
+      Object.values(allEmployees).some(e => e.managerId === currentEmployee.id || e.executiveId === currentEmployee.id)
+      || (Array.isArray(currentEmployee.viewableIds) && currentEmployee.viewableIds.length > 0)
+    );
+    const isMgr   = currentEmployee?.role === 'manager' || hasReports;
 
     const hasReviews = Object.keys(allReviews).length > 0;
 
@@ -1971,7 +1980,7 @@
     // completion, filters, or roster. An unmatched (non-admin) login with no
     // record is treated the same: their review set is empty.
     const isEmployee = !isAdmin && currentEmployee && currentEmployee.role !== 'manager'
-      && currentEmployee.role !== 'executive';
+      && currentEmployee.role !== 'executive' && !hasReports;
 
     if (isEmployee) {
       // Friendlier header + hide everything org-level
