@@ -1570,7 +1570,7 @@
     appId: "1:465838605580:web:c3322da1833f219725b529"
   };
 
-  console.log('%creviews.html build: assigned-manager-sees-team-2026-11-06', 'color:#16a34a;font-weight:700');
+  console.log('%creviews.html build: mgr-edit-after-exec-2026-11-09', 'color:#16a34a;font-weight:700');
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -1963,6 +1963,23 @@
 
     const hasReviews = Object.keys(allReviews).length > 0;
 
+    // ── Diagnostic: explain exactly what the logged-in person can see ──
+    try {
+      const reviewsByEmp = new Set(Object.values(allReviews).map(r => r.employeeId));
+      const reports = currentEmployee
+        ? Object.values(allEmployees).filter(e => e.managerId === currentEmployee.id || e.executiveId === currentEmployee.id)
+        : [];
+      console.log('%c[SWL] review access check', 'color:#0E4C2D;font-weight:700');
+      console.log('  login email :', currentUser?.email);
+      console.log('  matched record:', currentEmployee
+        ? `${currentEmployee.firstName} ${currentEmployee.lastName} (id=${currentEmployee.id}, role=${currentEmployee.role||'—'}, email=${currentEmployee.email||'—'})`
+        : 'NONE — login email does not match any employee record');
+      console.log(`  ${selectedYear} reviews loaded:`, Object.keys(allReviews).length, '· visible to me:', reviewsVisibleTo().length);
+      console.log('  people who report to me:', reports.length
+        ? reports.map(e => `${e.firstName} ${e.lastName} [review ${reviewsByEmp.has(e.id) ? 'EXISTS' : 'MISSING — not initialized'}]`).join(' · ')
+        : '(none point to my record)');
+    } catch (e) { console.warn('[SWL] diag failed', e); }
+
     if (!hasReviews) {
       document.getElementById('no-cycle-year').textContent = selectedYear;
       document.getElementById('no-cycle-card').style.display = 'block';
@@ -2220,10 +2237,13 @@
     execGoals   = JSON.parse(JSON.stringify(currentReview.executiveEval?.goals || []));
 
     const canEditSelfGoals = isOwn && !currentReview.selfEval?.submitted;
-    const canEditMgrGoals  = (isMgrOfEmp || isAdmin) && currentReview.status !== 'completed';
+    // The manager can edit until THEY complete their own review — not when the
+    // executive finishes. If an exec finalizes out of order (before the manager),
+    // the manager must still be able to fill in ratings/comments.
+    const canEditMgrGoals  = (isMgrOfEmp || isAdmin) && !currentReview.managerEval?.completedAt;
 
     buildCompetencies('self-competencies', selfRatings, isOwn && !currentReview.selfEval?.submitted, 'self');
-    buildCompetencies('mgr-competencies',  mgrRatings,  (isMgrOfEmp || isAdmin) && currentReview.status !== 'completed', 'mgr', { ratings: selfRatings, notes: selfNotes });
+    buildCompetencies('mgr-competencies',  mgrRatings,  (isMgrOfEmp || isAdmin) && !currentReview.managerEval?.completedAt, 'mgr', { ratings: selfRatings, notes: selfNotes });
 
     renderGoalList('self', selfGoals, canEditSelfGoals);
     renderGoalList('mgr',  mgrGoals,  canEditMgrGoals);
@@ -2282,9 +2302,10 @@
     setField('mgr-view-q2', currentReview.selfEval?.q2 || '(Not submitted yet)', true);
     setField('mgr-view-q4', currentReview.selfEval?.q4 || '(Not provided)', true);
 
-    // Mgr fields
+    // Mgr fields — editable until the manager completes their own review, even if
+    // the executive has already finalized the overall review (out-of-order case).
     const completed = currentReview.status === 'completed';
-    const canEditMgr = (isMgrOfEmp || isAdmin) && !completed;
+    const canEditMgr = (isMgrOfEmp || isAdmin) && !currentReview.managerEval?.completedAt;
     setField('mgr-comments',      currentReview.managerEval?.comments || '', !canEditMgr);
     setField('mgr-support',       currentReview.managerEval?.managerSupport || '', !canEditMgr);
     setField('mgr-score-recommendation', currentReview.managerEval?.scoreRecommendation || '', !canEditMgr, true);
@@ -2924,7 +2945,8 @@
         ...getMgrScoreRecPayload(),
         savedAt: serverTimestamp()
       },
-      status: 'in-review',
+      // Never downgrade a review the executive already finalized.
+      status: currentReview.status === 'completed' ? 'completed' : 'in-review',
       updatedAt: serverTimestamp()
     };
     await updateDoc(doc(db, 'reviews', currentReview.id), payload);
@@ -3046,7 +3068,8 @@
         ...getMgrScoreRecPayload(),
         completedAt: serverTimestamp()
       },
-      status: 'mgr-complete',
+      // Keep the executive's completion if it already happened (out-of-order fill-in).
+      status: currentReview.status === 'completed' ? 'completed' : 'mgr-complete',
       updatedAt: serverTimestamp()
     };
     await updateDoc(doc(db, 'reviews', currentReview.id), payload);
