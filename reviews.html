@@ -1570,7 +1570,7 @@
     appId: "1:465838605580:web:c3322da1833f219725b529"
   };
 
-  console.log('%creviews.html build: mgr-edit-after-exec-2026-11-09', 'color:#16a34a;font-weight:700');
+  console.log('%creviews.html build: increase-default-current-rate-2026-11-25', 'color:#16a34a;font-weight:700');
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -4330,6 +4330,15 @@
     } else {
       approvedState.style.display = 'none';
       inputState.style.display    = 'block';
+      // Default the field to the employee's EXACT current rate so an unchanged
+      // salary reads as +$0.00 / 0.00%. Previously the field was blank and an
+      // admin typing a rounded whole-dollar figure (e.g. 100102 for a current
+      // $100,101.50) produced a phantom $0.50 "increase". Only pre-fill when the
+      // field is still empty so we never clobber a value being entered.
+      if (input && input.value.trim() === '' && currentRate != null) {
+        input.value = currentRate;
+        input.dispatchEvent(new Event('input'));
+      }
     }
   }
 
